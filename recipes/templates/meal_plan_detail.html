@@ -1,0 +1,337 @@
+{% extends 'base.html' %}
+{% load static recipe_filters %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/meal_plan_detail.css' %}">
+<link rel="stylesheet" href="{% static 'css/browse_recipes.css' %}">
+
+<div class="meal-plan-detail-container">
+    <!-- Sticky Header with Buttons -->
+    <header class="meal-plan-header sticky">
+        <div class="header-content">
+            <h1 class="meal-plan-title">{{ meal_plan.title }}</h1>
+            <p class="meal-plan-dates">
+                {% if meal_plan.start_date %}
+                    {{ meal_plan.start_date|date:"F j, Y" }}
+                    {% if meal_plan.end_date %}
+                        - {{ meal_plan.end_date|date:"F j, Y" }}
+                    {% endif %}
+                {% else %}
+                    No dates set
+                {% endif %}
+            </p>
+            <div class="plan-actions">
+                <a href="{% url 'my_meal_plans' %}" class="action-btn back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Plans
+                </a>
+                <a href="{% url 'edit_meal_plan' meal_plan.id %}" class="action-btn edit-btn">
+                    <i class="fas fa-edit"></i> Edit Plan
+                </a>
+                {% if meal_plan.grocery_list %}
+                <a href="{% url 'grocery_list_detail' meal_plan.grocery_list.id %}"
+                   class="action-btn grocery-btn">
+                    <i class="fas fa-shopping-cart"></i> Grocery List
+                </a>
+            {% endif %}
+                <button class="action-btn share-btn" onclick="shareMealPlan()">
+                    <i class="fas fa-share-alt"></i> Share
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Indicator -->
+    <section class="progress-section">
+        <h2>Plan Progress</h2>
+        <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ progress_percentage }}%;"></div>
+        </div>
+        <p>{{ planned_meals }} of {{ total_slots }} meal slots filled</p>
+    </section>
+
+    <!-- Nutritional Summary -->
+    <section class="nutrition-summary">
+        <h2>Nutritional Overview for <span id="nutrition-day"></span></h2>
+        <div class="nutrition-grid">
+            <div class="nutrition-item">
+                <i class="fas fa-fire"></i> Calories: <span id="nutrition-calories">N/A</span> kcal
+            </div>
+            <div class="nutrition-item">
+                <i class="fas fa-dumbbell"></i> Protein: <span id="nutrition-proteins">N/A</span> g
+            </div>
+            <div class="nutrition-item">
+                <i class="fas fa-bread-slice"></i> Carbs: <span id="nutrition-carbs">N/A</span> g
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Timeline -->
+    <section class="timeline-section">
+        <h2>Meal Timeline</h2>
+        <div class="timeline-nav">
+            <button class="timeline-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="timeline-next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="timeline">
+            {% for day in meal_plan_date_range %}
+                <div class="timeline-day {% if forloop.first %}active{% endif %}" 
+                     data-date="{{ day|date:'Y-m-d' }}"
+                     role="tab"
+                     aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                     tabindex="0">
+                    <span>{{ day|date:"M j" }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Planned Recipes -->
+    <section class="meal-plan-recipes">
+        <h2>Planned Recipes</h2>
+        <div class="recipes-timeline">
+            {% for day in meal_plan_date_range %}
+                <div class="day-group {% if forloop.first %}active{% endif %}" id="day-{{ day|date:'Y-m-d' }}">
+                    <h3 class="day-header">
+                        {{ day|date:"F j, Y" }} ({{ day|date:"l" }})
+                    </h3>
+                    {% with recipes_for_day=meal_plan_recipes|filter_by_day:day %}
+                        {% if recipes_for_day %}
+                            {% regroup recipes_for_day by meal_type as recipes_by_meal %}
+                            <div class="meal-group">
+                                {% for meal_group in recipes_by_meal %}
+                                    <div class="meal-section">
+                                        <h4 class="meal-type">{{ meal_group.grouper|title }}</h4>
+                                        <div class="recipe-grid">
+                                            {% for meal_plan_recipe in meal_group.list %}
+                                                <article class="browse-recipe-card">
+                                                    <div class="browse-card-image">
+                                                        {% if meal_plan_recipe.recipe.images.first %}
+                                                            <img src="{{ meal_plan_recipe.recipe.images.first.image.url }}"
+                                                                 alt="{{ meal_plan_recipe.recipe.title }}"
+                                                                 loading="lazy">
+                                                        {% else %}
+                                                            <div class="browse-image-placeholder">
+                                                                <i class="fas fa-image"></i>
+                                                            </div>
+                                                        {% endif %}
+                                                        <!-- Status Labels -->
+                                                        <div class="browse-status-labels">
+                                                            {% if meal_plan_recipe.recipe.is_popular %}
+                                                                <span class="browse-label popular">
+                                                                    <i class="fas fa-fire"></i> Popular
+                                                                </span>
+                                                            {% endif %}
+                                                            {% if meal_plan_recipe.recipe.is_quick_meal %}
+                                                                <span class="browse-label quick">
+                                                                    <i class="fas fa-clock"></i> Quick
+                                                                </span>
+                                                            {% endif %}
+                                                            {% if meal_plan_recipe.recipe.is_new %}
+                                                                <span class="browse-label new">
+                                                                    <i class="fas fa-certificate"></i> New
+                                                                </span>
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="browse-card-overlay">
+                                                            <div class="browse-quick-actions">
+                                                                <button class="browse-action-btn browse-quick-view-btn"
+                                                                        data-recipe-id="{{ meal_plan_recipe.recipe.id }}"
+                                                                        title="Quick View">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="browse-card-content">
+                                                        <h3 class="browse-card-title">
+                                                            <a href="{% url 'recipe_detail' meal_plan_recipe.recipe.pk %}" class="browse-title-link">
+                                                                {{ meal_plan_recipe.recipe.title }}
+                                                                <span class="browse-link-hover"></span>
+                                                            </a>
+                                                        </h3>
+                                                        <div class="browse-card-category">
+                                                            <span class="browse-category-label">
+                                                                {{ meal_plan_recipe.recipe.category|get_category_label }}
+                                                            </span>
+                                                        </div>
+                                                        <div class="browse-card-meta">
+                                                            <span class="browse-meta-item">
+                                                                <i class="fas fa-clock"></i>
+                                                                {{ meal_plan_recipe.recipe.cooking_time }} min
+                                                            </span>
+                                                            <span class="browse-meta-item">
+                                                                <i class="fas fa-fire"></i>
+                                                                {{ meal_plan_recipe.recipe.calories|default:"-" }} kcal
+                                                            </span>
+                                                        </div>
+                                                        {% if meal_plan_recipe.recipe.dietary_tags.exists %}
+                                                            <div class="browse-card-tags">
+                                                                {% for tag in meal_plan_recipe.recipe.dietary_tags.all|slice:":3" %}
+                                                                    <span class="browse-tag">{{ tag.get_name_display }}</span>
+                                                                {% endfor %}
+                                                            </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </article>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                        <div class="no-recipes-day">
+                            <p>No recipes planned for this day.</p>
+                            <a href="{% url 'edit_meal_plan' meal_plan.id %}" class="browse-link">Add Recipes</a>
+                        </div>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- Quick View Drawer -->
+    <div id="quick-view-drawer" class="browse-quick-view-drawer">
+        <div class="browse-drawer-content">
+            <div id="quick-view-loader" class="browse-skeleton-loader">
+                <div class="browse-skeleton-image"></div>
+                <div class="browse-skeleton-text"></div>
+                <div class="browse-skeleton-text"></div>
+            </div>
+            <div id="quick-view-content"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Pass daily nutrition data to JavaScript
+    const dailyNutrition = {{ daily_nutrition|safe }};
+
+    // Prevent Double-Tap Zoom
+    document.querySelectorAll('.browse-recipe-card, .action-btn, .browse-link, .browse-quick-view-btn').forEach(element => {
+        element.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            element.click();
+        }, { passive: false });
+    });
+
+    // Quick View Handler
+    document.querySelectorAll('.browse-quick-view-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const recipeId = btn.dataset.recipeId;
+            const drawer = document.getElementById('quick-view-drawer');
+            const loader = document.getElementById('quick-view-loader');
+            const content = document.getElementById('quick-view-content');
+
+            loader.style.display = 'block';
+            content.innerHTML = '';
+            drawer.classList.add('active');
+
+            try {
+                const response = await fetch(`/recipes/${recipeId}/quick-view/`);
+                if (!response.ok) throw new Error('Network error');
+                content.innerHTML = await response.text();
+            } catch (error) {
+                content.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load recipe preview</p>
+                    </div>
+                `;
+            } finally {
+                loader.style.display = 'none';
+            }
+        });
+    });
+
+    // Close Drawer
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('qv-close') || 
+            e.target.classList.contains('drawer-close')) {
+            document.getElementById('quick-view-drawer').classList.remove('active');
+        }
+    });
+
+    // Timeline Navigation
+    const timelineDays = document.querySelectorAll('.timeline-day');
+    const prevBtn = document.querySelector('.timeline-prev');
+    const nextBtn = document.querySelector('.timeline-next');
+    let currentIndex = 0;
+
+    function updateTimeline() {
+        // Update timeline days
+        timelineDays.forEach((day, index) => {
+            day.classList.toggle('active', index === currentIndex);
+            day.setAttribute('aria-selected', index === currentIndex);
+        });
+
+        // Update day groups
+        const dayGroups = document.querySelectorAll('.day-group');
+        dayGroups.forEach((group, index) => {
+            group.classList.toggle('active', index === currentIndex);
+            if (index === currentIndex) {
+                const targetDay = document.getElementById(`day-${timelineDays[index].dataset.date}`);
+                if (targetDay) {
+                    targetDay.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+        });
+
+        // Update nutritional overview
+        const activeDay = timelineDays[currentIndex].dataset.date;
+        const nutrition = dailyNutrition[activeDay] || { calories: 0, proteins: 0, carbs: 0 };
+        document.getElementById('nutrition-day').textContent = new Date(activeDay).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
+        });
+        document.getElementById('nutrition-calories').textContent = nutrition.calories || 'N/A';
+        document.getElementById('nutrition-proteins').textContent = nutrition.proteins || 'N/A';
+        document.getElementById('nutrition-carbs').textContent = nutrition.carbs || 'N/A';
+
+        // Update navigation buttons
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex === timelineDays.length - 1;
+    }
+
+    // Initialize the first day
+    updateTimeline();
+
+    prevBtn.addEventListener('click', () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateTimeline();
+        }
+    });
+
+    nextBtn.addEventListener('click', () => {
+        if (currentIndex < timelineDays.length - 1) {
+            currentIndex++;
+            updateTimeline();
+        }
+    });
+
+    timelineDays.forEach((day, index) => {
+        day.addEventListener('click', () => {
+            currentIndex = index;
+            updateTimeline();
+        });
+        day.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                currentIndex = index;
+                updateTimeline();
+                day.focus();
+            }
+        });
+    });
+
+    // Share Function
+    function shareMealPlan() {
+        navigator.clipboard.writeText(window.location.href);
+        alert('Meal plan link copied to clipboard!');
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<div class="account-settings">
+    <!-- Back Button -->
+    <a href="{% url 'profile' %}" class="back-button">
+      <i class="fas fa-arrow-left"></i> Back to My Profile
+  </a>
+
+    <h1>Account Settings</h1>
+
+
+
+    <!-- MAIN FORM: personal info -->
+    <form id="accountSettingsForm" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h2>Personal Info</h2>
+        {{ user_form.as_p }}
+        <button type="submit" id="saveChangesBtn" name="save_changes" value="SaveChanges">Save Changes</button>
+    </form>
+    
+
+    <!-- CHANGE PASSWORD button: opens the modal -->
+
+    <button type="button" onclick="openModal()" class="button-change-password">
+      <i class="fas fa-lock"></i> Change Password
+    </button>
+
+    <!-- THE MODAL (hidden by default) -->
+    <div id="passwordModal" class="modal">
+        <div class="modal-content">
+            <!-- close icon -->
+            <span class="close" onclick="closeModal()">&times;</span>
+
+            <h2>Change Your Password</h2>
+            <p>Enter your old password and choose a new password.</p>
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Display non-field errors (if any) -->
+                {% if password_form.non_field_errors %}
+                    <div class="error-message">
+                        {{ password_form.non_field_errors }}
+                    </div>
+                {% endif %}
+                
+                <!-- Old Password Field -->
+                <div>
+                    <label for="{{ password_form.old_password.id_for_label }}">Old Password:</label>
+                    {{ password_form.old_password }}
+                    {% if password_form.is_bound and password_form.old_password.errors %}
+                        <div class="error-message">
+                            {{ password_form.old_password.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <!-- New Password Field -->
+                <div>
+                    <label for="{{ password_form.new_password1.id_for_label }}">New Password:</label>
+                    {{ password_form.new_password1 }}
+                    {% if password_form.is_bound and password_form.new_password1.errors %}
+                        <div class="error-message">
+                            {{ password_form.new_password1.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <!-- New Password Confirmation Field -->
+                <div>
+                    <label for="{{ password_form.new_password2.id_for_label }}">Confirm New Password:</label>
+                    {{ password_form.new_password2 }}
+                    {% if password_form.is_bound and password_form.new_password2.errors %}
+                        <div class="error-message">
+                            {{ password_form.new_password2.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <button type="submit" name="change_password" value="ChangePassword">Change Password</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    // Utility function to clear all error messages in the password modal
+    function clearPasswordErrors() {
+        // Select all elements within the modal that have the error-message class
+        const errorElements = document.querySelectorAll("#passwordModal .error-message");
+        errorElements.forEach(function(elem) {
+            elem.innerHTML = ""; // Clear the error text (or you can remove the element if you prefer)
+        });
+    }
+    
+    function openModal() {
+        document.getElementById("passwordModal").style.display = "flex";
+        // When opening the modal, remove any stored "closed" flag
+        localStorage.removeItem('passwordModalClosed');
+    }
+    
+    function closeModal() {
+        document.getElementById("passwordModal").style.display = "none";
+        // Set a flag indicating that the user closed the modal manually
+        localStorage.setItem('passwordModalClosed', 'true');
+        // Clear any error messages currently displayed
+        clearPasswordErrors();
+    }
+    
+    // Close the modal if the user clicks outside of it
+    window.onclick = function(event) {
+        let modal = document.getElementById("passwordModal");
+        if (event.target === modal) {
+            closeModal();
+        }
+    };
+    
+    // On page load, decide whether to auto-open the modal or clear errors based on the localStorage flag
+    window.addEventListener('load', function() {
+        // Get the flag from your server-side context indicating whether there are password errors
+        var showModal = {% if show_password_modal %}true{% else %}false{% endif %};
+    
+        // Check if the user manually closed the modal before (flag is set)
+        if (localStorage.getItem('passwordModalClosed')) {
+            // If the modal was closed manually, clear any error messages
+            clearPasswordErrors();
+            // Ensure the modal stays closed
+            document.getElementById("passwordModal").style.display = "none";
+        } else if (showModal) {
+            // If there are errors (showModal true) and the user did not manually close the modal,
+            // then open the modal so that errors can be seen.
+            openModal();
+        }
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+    // Get the form and its initial data
+    const form = document.querySelector('#accountSettingsForm');
+    const initialData = new FormData(form);
+    let isDirty = false;
+
+    // Listen for changes on any form input
+    form.addEventListener('input', function() {
+        // Check if any field's current value is different from the initial value.
+        isDirty = false; // reset dirty flag
+        for (let [key, initialValue] of initialData.entries()) {
+            let currentField = form.elements[key];
+            if (currentField && currentField.value !== initialValue) {
+                isDirty = true;
+                break;
+            }
+        }
+        // Optionally enable/disable the save button
+        const saveButton = document.querySelector('#saveChangesBtn');
+        if (saveButton) {
+            saveButton.disabled = !isDirty;
+        }
+    });
+
+    // Intercept form submission if no changes were made
+    form.addEventListener('submit', function(e) {
+        if (!isDirty) {
+            e.preventDefault();
+            // Show a temporary message (you can style this as needed)
+            const infoMsg = document.createElement('div');
+            infoMsg.textContent = "No changes were made.";
+            infoMsg.style.color = "blue";
+            infoMsg.classList.add("info-message");
+            form.prepend(infoMsg);
+            // Remove the message after 3 seconds
+            setTimeout(() => {
+                infoMsg.remove();
+            }, 3000);
+        }
+    });
+});
+    </script>
+    
+    
+
+{% endblock content %}

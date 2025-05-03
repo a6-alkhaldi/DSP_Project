@@ -1,0 +1,549 @@
+{% extends 'base.html' %}
+{% load static recipe_filters %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/browse_recipes.css' %}">
+<link rel="stylesheet" href="{% static 'css/edit_meal_plan.css' %}">
+<div class="edit-meal-plan-container">
+    <header class="edit-meal-plan-header">
+        <h1>Edit "{{ meal_plan.title }}"</h1>
+        <p>
+            {{ meal_plan.start_date|date:"F j, Y" }}
+            {% if meal_plan.end_date %}
+                - {{ meal_plan.end_date|date:"F j, Y" }}
+            {% endif %}
+        </p>
+    </header>
+
+    <div class="edit-meal-plan-content">
+        <!-- Recipe Browsing Panel -->
+        <aside class="recipe-panel">
+            <h2>Choose Recipes</h2>
+            <p>Tap a recipe to add it to your plan or use the form below.</p>
+            <form method="get" class="filter-form">
+                <div class="search-bar">
+                    <div class="search-input-wrapper">
+                        <input type="text" name="q" placeholder="Search recipes (e.g., pasta, vegan)" value="{{ search_query }}" class="search-input" aria-label="Search recipes">
+                        <button type="submit" class="search-btn" aria-label="Search">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="filter-group">
+                    <div class="filter-wrapper">
+                        <select name="category" class="filter-select" onchange="this.form.submit()" aria-label="Filter by category">
+                            <option value="">All Categories</option>
+                            {% for value, label in categories %}
+                                <option value="{{ value }}" {% if category == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <i class="fas fa-chevron-down filter-icon"></i>
+                    </div>
+                    <div class="filter-wrapper">
+                        <select name="dietary_tag" class="filter-select" onchange="this.form.submit()" aria-label="Filter by dietary tag">
+                            <option value="">All Dietary Tags</option>
+                            {% for tag in dietary_tags %}
+                                <option value="{{ tag.name }}" {% if dietary_tag == tag.name %}selected{% endif %}>{{ tag.get_name_display }}</option>
+                            {% endfor %}
+                        </select>
+                        <i class="fas fa-chevron-down filter-icon"></i>
+                    </div>
+                </div>
+            </form>
+            <section class="recipe-grid" role="grid">
+                {% for recipe in suggestions %}
+                    <article class="recipe-card" data-recipe-id="{{ recipe.pk }}" draggable="true" role="gridcell" aria-label="Add {{ recipe.title }} to plan" tabindex="0">
+                        <div class="recipe-card-image">
+                            {% if recipe.images.first %}
+                                <img src="{{ recipe.images.first.image.url }}" alt="{{ recipe.title }}" loading="lazy">
+                            {% else %}
+                                <div class="image-placeholder"><i class="fas fa-image"></i></div>
+                            {% endif %}
+                            <div class="status-labels">
+                                {% if recipe.is_popular %}
+                                    <span class="label popular"><i class="fas fa-fire"></i> Popular</span>
+                                {% endif %}
+                                {% if recipe.is_quick_meal %}
+                                    <span class="label quick"><i class="fas fa-clock"></i> Quick</span>
+                                {% endif %}
+                                {% if recipe.is_new %}
+                                    <span class="label new"><i class="fas fa-certificate"></i> New</span>
+                                {% endif %}
+                            </div>
+                            <div class="card-overlay">
+                                <div class="quick-actions">
+                                    <button class="action-btn quick-view-btn" data-recipe-id="{{ recipe.pk }}" title="Quick View {{ recipe.title }}" aria-label="Quick view {{ recipe.title }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn add-recipe-btn" data-recipe-id="{{ recipe.pk }}" data-recipe-title="{{ recipe.title }}" title="Add {{ recipe.title }} to plan" aria-label="Add {{ recipe.title }} to plan">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="recipe-card-content">
+                            <h3 class="recipe-card-title">{{ recipe.title }}</h3>
+                            <div class="recipe-card-category">
+                                <span class="category-label">{{ recipe.category|get_category_label }}</span>
+                            </div>
+                            <div class="recipe-card-meta">
+                                <span><i class="fas fa-clock"></i> {{ recipe.cooking_time }} min</span>
+                                <span><i class="fas fa-fire"></i> {{ recipe.calories|default:"-" }} kcal</span>
+                            </div>
+                            <div class="recipe-card-footer">
+                                <div class="engagement">
+                                    <div class="rating-display">
+                                        <i class="fas fa-star"></i>
+                                        <span class="rating-value">
+                                            {% if recipe.average_rating %}
+                                                {{ recipe.average_rating|floatformat:1 }}
+                                            {% else %}
+                                                --
+                                            {% endif %}
+                                        </span>
+                                        <span class="rating-count">({{ recipe.total_ratings }})</span>
+                                    </div>
+                                </div>
+                                <a href="{% url 'public_profile' recipe.author.username %}" class="author">
+                                    <i class="fas fa-user"></i> {{ recipe.author.username }}
+                                </a>
+                            </div>
+                            {% if recipe.dietary_tags.exists %}
+                                <div class="recipe-card-tags">
+                                    {% for tag in recipe.dietary_tags.all %}
+                                        <span class="tag">{{ tag.get_name_display }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </article>
+                {% empty %}
+                    <div class="no-results">
+                        <i class="fas fa-utensils"></i>
+                        <p>No recipes found. Try adjusting your search or filters.</p>
+                    </div>
+                {% endfor %}
+            </section>
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <nav class="pagination-nav" aria-label="Recipe pagination">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li><a href="?{% param_replace request page=page_obj.previous_page_number q=search_query category=category dietary_tag=dietary_tag %}" class="page-link" aria-label="Previous page"><i class="fas fa-chevron-left"></i></a></li>
+                        {% endif %}
+                        {% for num in page_obj.paginator.page_range %}
+                            <li class="{% if page_obj.number == num %}active{% endif %}">
+                                <a href="?{% param_replace request page=num q=search_query category=category dietary_tag=dietary_tag %}" class="page-link" aria-label="Page {{ num }}">{{ num }}</a>
+                            </li>
+                        {% endfor %}
+                        {% if page_obj.has_next %}
+                            <li><a href="?{% param_replace request page=page_obj.next_page_number q=search_query category=category dietary_tag=dietary_tag %}" class="page-link" aria-label="Next page"><i class="fas fa-chevron-right"></i></a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </aside>
+
+        <!-- Meal Plan Grid -->
+        <main class="meal-plan-grid">
+            <h2>Your Meal Plan</h2>
+            <div class="plan-timeline">
+                {% for day in meal_plan_date_range %}
+                    <section class="day-section" data-day="{{ day|date:'Y-m-d' }}">
+                        <h3 class="day-header">{{ day|date:"F j, Y" }} <span class="day-weekday">({{ day|date:"l" }})</span></h3>
+                        {% for meal_type, label in meal_types %}
+                            <div class="meal-slot" data-meal-type="{{ meal_type }}" role="region" aria-label="{{ label }} slot for {{ day|date:'F j, Y' }}">
+                                <span class="meal-label">{{ label }}</span>
+                                <div class="assigned-recipes">
+                                    {% for mpr in meal_plan_recipes %}
+                                        {% if mpr.day == day and mpr.meal_type == meal_type %}
+                                            <div class="assigned-recipe-card" data-recipe-id="{{ mpr.recipe.pk }}" draggable="true" role="button" aria-label="Drag or remove {{ mpr.recipe.title }}" tabindex="0">
+                                                <span class="recipe-title">{{ mpr.recipe.title }}</span>
+                                                <button class="remove-recipe" title="Remove {{ mpr.recipe.title }}" aria-label="Remove {{ mpr.recipe.title }}">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </section>
+                {% endfor %}
+            </div>
+        </main>
+    </div>
+    <div class="plan-actions">
+        <button class="save-btn" onclick="saveMealPlan()">Save Changes</button>
+        <a href="{% url 'meal_plan_detail' meal_plan.id %}" class="cancel-btn">Cancel</a>
+        <button class="delete-btn" onclick="deleteMealPlan()">Delete Plan</button>
+    </div>
+    <!-- Quick View Drawer -->
+    <div id="quick-view-drawer" class="quick-view-drawer">
+        <div class="drawer-content">
+            <div id="quick-view-loader" class="skeleton-loader">
+                <div class="skeleton-image"></div>
+                <div class="skeleton-text"></div>
+                <div class="skeleton-text"></div>
+            </div>
+            <div id="quick-view-content"></div>
+        </div>
+    </div>
+    <!-- Add Recipe Modal -->
+    <div id="add-recipe-modal" class="modal" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Close modal"><i class="fas fa-times"></i></button>
+            <h2 id="modal-title">Add Recipe to Meal Plan</h2>
+            <p>Add "<span id="modal-recipe-title"></span>" to your meal plan.</p>
+            <form id="modal-add-form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="recipe_id" id="modal_recipe_id">
+                <div class="form-group">
+                    <label for="modal_day">Day <span class="required">*</span></label>
+                    <div class="date-input-wrapper">
+                        <select name="day" id="modal_day" class="filter-select" required>
+                            {% for day in meal_plan_date_range %}
+                                <option value="{{ day|date:'Y-m-d' }}">{{ day|date:"F j, Y" }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="modal_meal_type">Meal Type <span class="required">*</span></label>
+                    <select name="meal_type" id="modal_meal_type" class="filter-select" required>
+                        {% for meal_type, label in meal_types %}
+                            <option value="{{ meal_type }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="submit" class="submit-btn">Add to Plan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Drag and Drop functionality
+    const recipeCards = document.querySelectorAll('.recipe-card');
+    const assignedRecipes = document.querySelectorAll('.assigned-recipe-card');
+    const mealSlots = document.querySelectorAll('.meal-slot');
+    const modal = document.getElementById('add-recipe-modal');
+    const modalRecipeTitle = document.getElementById('modal-recipe-title');
+    const modalRecipeId = document.getElementById('modal_recipe_id');
+    const modalForm = document.getElementById('modal-add-form');
+    const form = document.getElementById('add-recipe-form');
+    let draggedElement = null;
+
+    // Handle drag start for recipe cards
+    recipeCards.forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+            draggedElement = card;
+            card.classList.add('dragging');
+            e.dataTransfer.setData('recipe-id', card.dataset.recipeId);
+        });
+
+        card.addEventListener('dragend', () => {
+            card.classList.remove('dragging');
+            mealSlots.forEach(slot => slot.classList.remove('drag-over'));
+            draggedElement = null;
+        });
+
+        // Tap support for mobile
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('.action-btn')) return; // Ignore action button clicks
+            card.classList.add('tapped');
+            setTimeout(() => card.classList.remove('tapped'), 300);
+        }, { passive: true });
+    });
+
+    // Handle drag start for assigned recipes
+    assignedRecipes.forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+            draggedElement = card;
+            card.classList.add('dragging');
+            e.dataTransfer.setData('recipe-id', card.dataset.recipeId);
+        });
+
+        card.addEventListener('dragend', () => {
+            card.classList.remove('dragging');
+            mealSlots.forEach(slot => slot.classList.remove('drag-over'));
+            draggedElement = null;
+        });
+    });
+
+    // Handle drag over and drop for meal slots
+    mealSlots.forEach(slot => {
+        slot.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            slot.classList.add('drag-over');
+        });
+
+        slot.addEventListener('dragleave', () => {
+            slot.classList.remove('drag-over');
+        });
+
+        slot.addEventListener('drop', async (e) => {
+            e.preventDefault();
+            slot.classList.remove('drag-over');
+
+            const recipeId = e.dataTransfer.getData('recipe-id');
+            const day = slot.closest('.day-section').dataset.day;
+            const mealType = slot.dataset.mealType;
+
+            // Check current number of recipes in this slot
+            const assignedRecipes = slot.querySelectorAll('.assigned-recipe-card');
+            const recipeLimit = 3; // Limit to 3 recipes per meal period
+
+            if (assignedRecipes.length >= recipeLimit) {
+                alert('You can only add up to 3 recipes per meal period.');
+                return; // Stop if the limit is reached
+            }
+
+            try {
+                // Send request to add new recipe
+                const response = await fetch(`/meal-plans/{{ meal_plan.id }}/edit/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        recipe_id: recipeId,
+                        day: day,
+                        meal_type: mealType
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    // Create new assigned recipe card
+                    const assignedDiv = document.createElement('div');
+                    assignedDiv.className = 'assigned-recipe-card';
+                    assignedDiv.dataset.recipeId = recipeId;
+                    assignedDiv.draggable = true;
+                    assignedDiv.setAttribute('role', 'button');
+                    assignedDiv.setAttribute('aria-label', `Drag or remove ${data.recipe_title}`);
+                    assignedDiv.tabIndex = 0;
+
+                    assignedDiv.innerHTML = `
+                        <span class="recipe-title">${data.recipe_title}</span>
+                        <button class="remove-recipe" title="Remove ${data.recipe_title}" aria-label="Remove ${data.recipe_title}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+
+                    slot.querySelector('.assigned-recipes').appendChild(assignedDiv);
+
+                    // Add drag events to new card
+                    assignedDiv.addEventListener('dragstart', (e) => {
+                        draggedElement = assignedDiv;
+                        assignedDiv.classList.add('dragging');
+                        e.dataTransfer.setData('recipe-id', recipeId);
+                    });
+
+                    assignedDiv.addEventListener('dragend', () => {
+                        assignedDiv.classList.remove('dragging');
+                        mealSlots.forEach(s => s.classList.remove('drag-over'));
+                        draggedElement = null;
+                    });
+
+                    // Add remove functionality
+                    assignedDiv.querySelector('.remove-recipe').addEventListener('click', () => removeRecipe(assignedDiv, recipeId, day, mealType));
+                } else {
+                    alert(`Error: ${data.error}`);
+                }
+            } catch (error) {
+                alert('Failed to add recipe to meal plan.');
+            }
+        });
+    });
+
+    // Handle remove recipe
+    function removeRecipe(card, recipeId, day, mealType) {
+        fetch(`/meal-plans/{{ meal_plan.id }}/remove-recipe/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify({
+                recipe_id: recipeId,
+                day: day,
+                meal_type: mealType
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                card.remove();
+            } else {
+                alert('Failed to remove recipe.');
+            }
+        })
+        .catch(() => alert('Failed to remove recipe.'));
+    }
+
+    // Attach remove event to existing assigned recipes
+    document.querySelectorAll('.remove-recipe').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const card = btn.closest('.assigned-recipe-card');
+            const recipeId = card.dataset.recipeId;
+            const day = card.closest('.day-section').dataset.day;
+            const mealType = card.closest('.meal-slot').dataset.mealType;
+            removeRecipe(card, recipeId, day, mealType);
+        });
+    });
+
+    // Handle add recipe button clicks
+    document.querySelectorAll('.add-recipe-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const recipeId = btn.dataset.recipeId;
+            const recipeTitle = btn.dataset.recipeTitle;
+            modalRecipeId.value = recipeId;
+            modalRecipeTitle.textContent = recipeTitle;
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            modal.focus();
+        });
+    });
+
+    // Handle modal close
+    document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', () => {
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            modalForm.reset();
+        });
+    });
+
+    // Handle modal form submission
+    modalForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const recipeId = modalRecipeId.value;
+        const day = document.getElementById('modal_day').value;
+        const mealType = document.getElementById('modal_meal_type').value;
+
+        try {
+            const response = await fetch(`/meal-plans/{{ meal_plan.id }}/edit/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    recipe_id: recipeId,
+                    day: day,
+                    meal_type: mealType
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                const slot = document.querySelector(`.day-section[data-day="${day}"] .meal-slot[data-meal-type="${mealType}"]`);
+                const assignedDiv = document.createElement('div');
+                assignedDiv.className = 'assigned-recipe-card';
+                assignedDiv.dataset.recipeId = recipeId;
+                assignedDiv.draggable = true;
+                assignedDiv.setAttribute('role', 'button');
+                assignedDiv.setAttribute('aria-label', `Drag or remove ${data.recipe_title}`);
+                assignedDiv.tabIndex = 0;
+
+                assignedDiv.innerHTML = `
+                    <span class="recipe-title">${data.recipe_title}</span>
+                    <button class="remove-recipe" title="Remove ${data.recipe_title}" aria-label="Remove ${data.recipe_title}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+
+                slot.querySelector('.assigned-recipes').appendChild(assignedDiv);
+
+                assignedDiv.addEventListener('dragstart', (e) => {
+                    draggedElement = assignedDiv;
+                    assignedDiv.classList.add('dragging');
+                    e.dataTransfer.setData('recipe-id', recipeId);
+                });
+
+                assignedDiv.addEventListener('dragend', () => {
+                    assignedDiv.classList.remove('dragging');
+                    mealSlots.forEach(s => s.classList.remove('drag-over'));
+                    draggedElement = null;
+                });
+
+                assignedDiv.querySelector('.remove-recipe').addEventListener('click', () => removeRecipe(assignedDiv, recipeId, day, mealType));
+
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+                modalForm.reset();
+            } else {
+                alert(`Error: ${data.error}`);
+            }
+        } catch (error) {
+            alert('Failed to add recipe to meal plan.');
+        }
+    });
+
+    // Quick View Handler
+    document.querySelectorAll('.quick-view-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const recipeId = btn.dataset.recipeId;
+            const drawer = document.getElementById('quick-view-drawer');
+            const loader = document.getElementById('quick-view-loader');
+            const content = document.getElementById('quick-view-content');
+
+            loader.style.display = 'block';
+            content.innerHTML = '';
+            drawer.classList.add('active');
+
+            try {
+                const response = await fetch(`/recipes/${recipeId}/quick-view/`);
+                const html = await response.text();
+                content.innerHTML = html;
+            } catch (error) {
+                content.innerHTML = '<p>Error loading recipe details.</p>';
+            } finally {
+                loader.style.display = 'none';
+            }
+        });
+    });
+
+    // Close Quick View Drawer
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('drawer-close') || e.target.closest('.qv-close')) {
+            document.getElementById('quick-view-drawer').classList.remove('active');
+        }
+    });
+
+    // Save Meal Plan
+    window.saveMealPlan = function() {
+        window.location.href = '{% url "meal_plan_detail" meal_plan.id %}';
+    };
+
+    // Delete Meal Plan
+    window.deleteMealPlan = function() {
+        if (confirm('Are you sure you want to delete this meal plan?')) {
+            fetch(`/meal-plans/{{ meal_plan.id }}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '{% url "my_meal_plans" %}';
+                } else {
+                    alert('Failed to delete meal plan.');
+                }
+            })
+            .catch(() => alert('Failed to delete meal plan.'));
+        }
+    };
+});
+</script>
+{% endblock %}

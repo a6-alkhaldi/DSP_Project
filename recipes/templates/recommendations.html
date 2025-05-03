@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% load static recipe_filters %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/recommendations.css' %}">
+
+<div class="recommendations-container">
+    <!-- Page Header -->
+    <header class="recommendations-header">
+        <h1 class="recommendations-title">
+            <span class="accent-text">Personalized</span> Recommendations
+            <div class="title-decoration"></div>
+        </h1>
+        <p class="recommendations-subtitle">Discover recipes tailored just for you based on your preferences and saved recipes</p>
+    </header>
+
+    <!-- Recipe Grid -->
+    <section class="recommendations-recipe-grid">
+        {% for recipe in recommended_recipes %}
+        <article class="recommendations-recipe-card">
+            <div class="recommendations-card-image">
+                {% if recipe.images.first %}
+                <img src="{{ recipe.images.first.image.url }}" alt="{{ recipe.title }}" loading="lazy">
+                {% else %}
+                <div class="recommendations-image-placeholder">
+                    <i class="fas fa-image"></i>
+                </div>
+                {% endif %}
+
+                <!-- Status Labels -->
+                <div class="recommendations-status-labels">
+                    {% if recipe.is_popular %}
+                        <span class="recommendations-label popular">
+                            <i class="fas fa-fire"></i>
+                            Popular Choice
+                        </span>
+                    {% endif %}
+                    {% if recipe.is_quick_meal %}
+                        <span class="recommendations-label quick">
+                            <i class="fas fa-clock"></i>
+                            Quick Meal
+                        </span>
+                    {% endif %}
+                    {% if recipe.is_new %}
+                        <span class="recommendations-label new">
+                            <i class="fas fa-certificate"></i>
+                            New Recipe
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="recommendations-card-overlay">
+                    <div class="recommendations-quick-actions">
+                        {% if request.user.is_authenticated %}
+                            <!-- Save -->
+                            <button
+                                class="recommendations-action-btn recommendations-save-btn"
+                                data-recipe-id="{{ recipe.pk }}"
+                                title="{% if recipe.pk in saved_recipe_ids %}Unsave Recipe{% else %}Save Recipe{% endif %}"
+                            >
+                                <i class="{% if recipe.pk in saved_recipe_ids %}fas fa-bookmark saved{% else %}far fa-bookmark{% endif %}"></i>
+                            </button>
+                        {% else %}
+                            <!-- Save (redirect to login) -->
+                            <button
+                                class="recommendations-action-btn"
+                                title="Log in to save recipes"
+                                onclick="window.location.href='{% url 'login' %}?next={{ request.get_full_path|urlencode }}'"
+                            >
+                                <i class="far fa-bookmark"></i>
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="recommendations-card-content">
+                <h3 class="recommendations-card-title">
+                    <a href="{% url 'recipe-detail' recipe.pk %}" class="recommendations-title-link">
+                        {{ recipe.title }}
+                        <span class="recommendations-link-hover"></span>
+                    </a>
+                </h3>
+                <div class="recommendations-card-category">
+                    <span class="recommendations-category-label">
+                        {{ recipe.category|get_category_label }}
+                    </span>
+                </div>
+                <div class="recommendations-card-meta">
+                    <span class="recommendations-meta-item">
+                        <i class="fas fa-clock"></i>
+                        {{ recipe.cooking_time }} min
+                    </span>
+                    <span class="recommendations-meta-item">
+                        <i class="fas fa-fire"></i>
+                        {{ recipe.calories|default:"-" }} kcal
+                    </span>
+                </div>
+                <div class="recommendations-card-footer">
+                    <div class="recommendations-engagement">
+                        <div class="recommendations-rating-display">
+                            <i class="fas fa-star"></i>
+                            <span class="recommendations-rating-value">
+                                {% if recipe.average_rating %}{{ recipe.average_rating|floatformat:1 }}{% else %}--{% endif %}
+                            </span>
+                            <span class="recommendations-rating-count">({{ recipe.total_ratings }})</span>
+                        </div>
+                        <div class="recommendations-comments">
+                            <i class="fas fa-comment"></i>
+                            <span>{{ recipe.comments.count }}</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'public_profile' recipe.author.username %}" class="recommendations-author">
+                        <i class="fas fa-user"></i> {{ recipe.author.username }}
+                    </a>
+                </div>
+                {% if recipe.dietary_tags.exists %}
+                <div class="recommendations-card-tags">
+                    {% for tag in recipe.dietary_tags.all|slice:":3" %}
+                    <span class="recommendations-tag">{{ tag.get_name_display }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </article>
+        {% empty %}
+        <div class="recommendations-no-results">
+            <i class="fas fa-utensils"></i>
+            <p>No recommendations available. Save some recipes to get personalized suggestions!</p>
+        </div>
+        {% endfor %}
+    </section>
+<!-- Pagination -->
+{% if page_obj.has_other_pages %}
+<nav class="pagination-nav">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a href="?{% param_replace request page=page_obj.previous_page_number %}" class="page-link">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <li class="page-item active">
+            <span class="page-link">{{ num }}</span>
+        </li>
+        {% else %}
+        <li class="page-item">
+            <a href="?{% param_replace request page=num %}" class="page-link">{{ num }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a href="?{% param_replace request page=page_obj.next_page_number %}" class="page-link">
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // Save to My Saved Recipes
+    document.querySelectorAll('.recommendations-save-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const recipeId = btn.dataset.recipeId;
+            try {
+                const response = await fetch(`/recipes/${recipeId}/save/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    const icon = btn.querySelector('i');
+                    if (data.action === 'saved') {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas', 'saved');
+                        btn.title = 'Unsave Recipe';
+                        showToast('Recipe saved!', 'success');
+                    } else {
+                        icon.classList.remove('fas', 'saved');
+                        icon.classList.add('far');
+                        btn.title = 'Save Recipe';
+                        showToast('Recipe removed from saved recipes.', 'info');
+                    }
+                } else {
+                    showToast('Failed to save recipe.', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('An error occurred. Please try again.', 'error');
+            }
+        });
+    });
+
+    // Toast Notification
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 300);
+        }, 3000);
+    }
+});
+</script>
+
+{% endblock %}

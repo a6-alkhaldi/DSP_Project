@@ -1,0 +1,388 @@
+{% extends 'base.html' %}
+{% load static recipe_filters %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/my_lists.css' %}">
+<link rel="stylesheet" href="{% static 'css/browse_recipes.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<div class="my-lists-container">
+    <!-- Header -->
+    <header class="my-lists-header">
+      <a href="{% url 'profile' %}" class="back-button">
+          <i class="fas fa-arrow-left"></i> My Profile
+      </a>
+      <div class="my-lists-header-content">
+          <h1 class="my-lists-title">
+              <span class="accent-text">My</span> Saved Recipes
+              <div class="title-decoration"></div>
+          </h1>
+          <p class="my-lists-subtitle">Your collection of favorite recipes, ready to cook anytime.</p>
+      </div>
+  </header>
+
+    <!-- Recipe Grid -->
+    <section class="browse-recipe-grid">
+        {% for saved_recipe in saved_recipes %}
+        <article class="browse-recipe-card">
+            <div class="browse-card-image">
+                {% if saved_recipe.recipe.images.first %}
+                <img src="{{ saved_recipe.recipe.images.first.image.url }}" alt="{{ saved_recipe.recipe.title }}" loading="lazy">
+                {% else %}
+                <div class="browse-image-placeholder">
+                    <i class="fas fa-image"></i>
+                </div>
+                {% endif %}
+
+                <!-- Status Labels -->
+                <div class="browse-status-labels">
+                    {% if saved_recipe.recipe.is_popular %}
+                        <span class="browse-label popular">
+                            <i class="fas fa-fire"></i> Popular Choice
+                        </span>
+                    {% endif %}
+                    {% if saved_recipe.recipe.is_quick_meal %}
+                        <span class="browse-label quick">
+                            <i class="fas fa-clock"></i> Quick Meal
+                        </span>
+                    {% endif %}
+                    {% if saved_recipe.recipe.is_new %}
+                        <span class="browse-label new">
+                            <i class="fas fa-certificate"></i> New Recipe
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="browse-card-overlay">
+                    <div class="browse-quick-actions">
+                        <button class="browse-action-btn browse-save-btn" data-recipe-id="{{ saved_recipe.recipe.pk }}" title="Unsave Recipe">
+                            <i class="fas fa-bookmark saved"></i>
+                        </button>
+                        <button class="browse-action-btn browse-mealplan-btn" data-recipe-id="{{ saved_recipe.recipe.pk }}" title="Add to Meal Plan">
+                            <i class="fas fa-calendar-plus"></i>
+                        </button>
+                        <button class="browse-action-btn browse-quick-view-btn" data-recipe-id="{{ saved_recipe.recipe.pk }}" title="Quick View">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="browse-card-content">
+                <h3 class="browse-card-title">
+                    <a href="{% url 'recipe-detail' saved_recipe.recipe.pk %}" class="browse-title-link">
+                        {{ saved_recipe.recipe.title }}
+                        <span class="browse-link-hover"></span>
+                    </a>
+                </h3>
+                <div class="browse-card-category">
+                    <span class="browse-category-label">
+                        {{ saved_recipe.recipe.category|get_category_label }}
+                    </span>
+                </div>
+                <div class="browse-card-meta">
+                    <span class="browse-meta-item">
+                        <i class="fas fa-clock"></i>
+                        {{ saved_recipe.recipe.cooking_time }} min
+                    </span>
+                    <span class="browse-meta-item">
+                        <i class="fas fa-fire"></i>
+                        {{ saved_recipe.recipe.calories|default:"-" }} kcal
+                    </span>
+                </div>
+                <div class="browse-card-footer">
+                    <div class="browse-engagement">
+                        <div class="browse-rating-display">
+                            <i class="fas fa-star"></i>
+                            <span class="browse-rating-value">
+                                {% if saved_recipe.recipe.average_rating %}
+                                    {{ saved_recipe.recipe.average_rating|floatformat:1 }}
+                                {% else %}
+                                    --
+                                {% endif %}
+                            </span>
+                            <span class="browse-rating-count">({{ saved_recipe.recipe.total_ratings }})</span>
+                        </div>
+                        <div class="browse-comments">
+                            <i class="fas fa-comment"></i>
+                            <span>{{ saved_recipe.recipe.comments.count }}</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'public_profile' saved_recipe.recipe.author.username %}" class="browse-author">
+                        <i class="fas fa-user"></i> {{ saved_recipe.recipe.author.username }}
+                    </a>
+                </div>
+                {% if saved_recipe.recipe.dietary_tags.exists %}
+                <div class="browse-card-tags">
+                    {% for tag in saved_recipe.recipe.dietary_tags.all|slice:":3" %}
+                    <span class="browse-tag">{{ tag.get_name_display }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </article>
+        {% empty %}
+        <div class="no-results">
+            <i class="fas fa-utensils"></i>
+            <p>No saved recipes yet. Start saving your favorites!</p>
+        </div>
+        {% endfor %}
+    </section>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination-nav">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a href="?page={{ page_obj.previous_page_number }}" class="page-link" aria-label="Previous">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-label="Next">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    <!-- Quick View Drawer -->
+    <div id="quick-view-drawer" class="browse-quick-view-drawer">
+        <div class="browse-drawer-content">
+            <div id="quick-view-loader" class="browse-skeleton-loader">
+                <div class="browse-skeleton-image"></div>
+                <div class="browse-skeleton-text"></div>
+                <div class="browse-skeleton-text"></div>
+            </div>
+            <div id="quick-view-content"></div>
+        </div>
+    </div>
+
+    <!-- Meal Plan Modal -->
+    <div id="meal-plan-modal" class="modal" role="dialog" aria-labelledby="meal-plan-modal-title" aria-modal="true">
+        <div class="modal-content">
+            <span class="modal-close" role="button" tabindex="0" aria-label="Close modal">×</span>
+            <h2 id="meal-plan-modal-title">Add to Meal Plan</h2>
+            <form id="add-to-meal-plan-form" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="recipe_id" id="meal-plan-recipe-id">
+                <div class="form-group">
+                    <label for="meal_plan_select">Select Meal Plan</label>
+                    <select id="meal_plan_select" name="meal_plan" required>
+                        <!-- Options will be populated via JavaScript -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="day_input">Select Day</label>
+                    <input type="date" id="day_input" name="day" required>
+                </div>
+                <div class="form-group">
+                    <label for="meal_type_select">Select Meal Type</label>
+                    <select id="meal_type_select" name="meal_type" required>
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner">Dinner</option>
+                        <option value="snack">Snack</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">Add to Meal Plan</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Modal Functions
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.add('active');
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('active');
+    }
+
+    document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', () => closeModal(btn.closest('.modal').id));
+    });
+
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal(modal.id);
+        });
+    });
+
+    // Quick View Handler
+    document.querySelectorAll('.browse-quick-view-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const recipeId = btn.dataset.recipeId;
+            const drawer = document.getElementById('quick-view-drawer');
+            const loader = document.getElementById('quick-view-loader');
+            const content = document.getElementById('quick-view-content');
+
+            loader.style.display = 'block';
+            content.innerHTML = '';
+            drawer.classList.add('active');
+
+            try {
+                const response = await fetch(`/recipes/${recipeId}/quick-view/`);
+                if (!response.ok) throw new Error('Network error');
+                content.innerHTML = await response.text();
+            } catch (error) {
+                content.innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load recipe preview</p>
+                    </div>
+                `;
+            } finally {
+                loader.style.display = 'none';
+            }
+        });
+    });
+
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('qv-close') || e.target.classList.contains('drawer-close')) {
+            document.getElementById('quick-view-drawer').classList.remove('active');
+        }
+    });
+
+    // Save/Unsave Recipe
+    document.querySelectorAll('.browse-save-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const recipeId = btn.dataset.recipeId;
+            try {
+                const response = await fetch(`/recipes/${recipeId}/save/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                if (data.success && data.action === 'unsaved') {
+                    btn.closest('.browse-recipe-card').remove();
+                    showToast('Recipe removed from saved recipes.', 'info');
+                    if (!document.querySelector('.browse-recipe-card')) {
+                        const grid = document.querySelector('.browse-recipe-grid');
+                        grid.innerHTML = `
+                            <div class="browse-no-results">
+                                <i class="fas fa-utensils"></i>
+                                <p>No saved recipes yet. Start saving your favorites!</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    showToast('Failed to unsave recipe.', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('An error occurred. Please try again.', 'error');
+            }
+        });
+    });
+
+    // Add to Meal Plan
+    document.querySelectorAll('.browse-mealplan-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const recipeId = btn.dataset.recipeId;
+            document.getElementById('meal-plan-recipe-id').value = recipeId;
+            fetch('/get-user-meal-plans/', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    alert('You need to create a meal plan first.');
+                } else {
+                    const mealPlanSelect = document.getElementById('meal_plan_select');
+                    mealPlanSelect.innerHTML = '<option value="" disabled selected>Choose a Meal Plan</option>';
+                    data.forEach(mp => {
+                        const option = document.createElement('option');
+                        option.value = mp.id;
+                        option.textContent = `${mp.title} (${mp.start_date} - ${mp.end_date || mp.start_date})`;
+                        option.dataset.startDate = mp.start_date;
+                        option.dataset.endDate = mp.end_date || mp.start_date;
+                        mealPlanSelect.appendChild(option);
+                    });
+                    const firstOption = mealPlanSelect.options[1];
+                    if (firstOption) {
+                        document.getElementById('day_input').min = firstOption.dataset.startDate;
+                        document.getElementById('day_input').max = firstOption.dataset.endDate;
+                    }
+                    openModal('meal-plan-modal');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Failed to load meal plans.', 'error');
+            });
+        });
+    });
+
+    document.getElementById('meal_plan_select').addEventListener('change', (e) => {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        document.getElementById('day_input').min = selectedOption.dataset.startDate;
+        document.getElementById('day_input').max = selectedOption.dataset.endDate;
+    });
+
+    document.getElementById('add-to-meal-plan-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        fetch('/add-recipe-to-meal-plan/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast('Recipe added to meal plan successfully!', 'success');
+                closeModal('meal-plan-modal');
+            } else {
+                showToast('Failed to add recipe: ' + data.error, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('An error occurred. Please try again.', 'error');
+        });
+    });
+
+    // Toast Notification
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => document.body.removeChild(toast), 300);
+        }, 3000);
+    }
+});
+</script>
+{% endblock content %}

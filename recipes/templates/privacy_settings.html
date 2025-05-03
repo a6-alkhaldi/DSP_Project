@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="privacy-settings">
+    <!-- Back Button -->
+    <a href="{% url 'profile' %}" class="back-button">
+        <i class="fas fa-arrow-left"></i> Back to My Profile
+    </a>
+
+    <h1>Privacy Settings</h1>
+    <p class="privacy-description">Use the toggles below to control what’s visible on your public profile.</p>
+
+    <form method="post" class="privacy-form">
+        {% csrf_token %}
+
+        <!-- Toggle Switches -->
+        <div class="toggle-group">
+            <label class="switch">
+                {{ display_form.show_name }}
+                <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">Show Name</span>
+        </div>
+
+        <div class="toggle-group">
+            <label class="switch">
+                {{ display_form.show_avatar }}
+                <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">Show Avatar</span>
+        </div>
+
+        <div class="toggle-group">
+            <label class="switch">
+                {{ display_form.show_social_links }}
+                <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">Show Social Links</span>
+        </div>
+
+        <div class="toggle-group">
+            <label class="switch">
+                {{ display_form.show_dietary_restrictions }}
+                <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">Show Dietary Restrictions</span>
+        </div>
+        <div class="toggle-group">
+            <label class="switch">
+                {{ display_form.show_followers }}
+                <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">Show Followers</span>
+        </div>
+        
+        <div class="toggle-group">
+            <label class="switch">
+                {{ display_form.show_following }}
+                <span class="slider round"></span>
+            </label>
+            <span class="toggle-label">Show Following</span>
+        </div>
+
+        <!-- Save Button -->
+        <button type="submit" class="save-button">Save Preferences</button>
+    </form>
+</div>
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock content %}

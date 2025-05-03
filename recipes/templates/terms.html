@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="terms-container">
+  <!-- Hero Section -->
+  <section class="terms-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>Terms & Conditions</h1>
+      <p>Understand the rules and guidelines for using SmartMeal.</p>
+    </div>
+  </section>
+
+  <!-- Terms Content Section -->
+  <section class="terms-content-section">
+    <h2>Our Terms of Use</h2>
+    <p class="section-info">Last Updated: April 20, 2025</p>
+    <div class="terms-content">
+      <h3>1. Acceptance of Terms</h3>
+      <p>By accessing or using SmartMeal, you agree to be bound by these Terms & Conditions. If you do not agree, please do not use our services.</p>
+
+      <h3>2. User Accounts</h3>
+      <p>You are responsible for maintaining the confidentiality of your account and password. You agree to notify us immediately of any unauthorized use of your account.</p>
+
+      <h3>3. Content Submission</h3>
+      <p>Users may submit recipes, comments, and other content. By submitting content, you grant SmartMeal a non-exclusive, royalty-free license to use, modify, and display it.</p>
+
+      <h3>4. Prohibited Activities</h3>
+      <ul>
+        <li>Posting harmful, offensive, or illegal content.</li>
+        <li>Using automated tools to scrape or extract data.</li>
+        <li>Engaging in activities that disrupt the platform’s functionality.</li>
+      </ul>
+
+      <h3>5. Limitation of Liability</h3>
+      <p>SmartMeal is not liable for any damages arising from your use of the platform, including but not limited to recipe inaccuracies or user-generated content.</p>
+
+      <h3>6. Changes to Terms</h3>
+      <p>We may update these Terms & Conditions at any time. Continued use of the platform after changes constitutes acceptance of the new terms.</p>
+
+      <p>For the full Terms & Conditions, please contact us at <a href="#">support@SmartMeal.com</a>.</p>
+    </div>
+  </section>
+</div>
+
+<style>
+/* Terms Container */
+.terms-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    background: linear-gradient(180deg, rgba(252, 224, 224, 0.8), rgba(236, 210, 210, 0.9));
+    min-height: calc(100vh - 4rem);
+    border-radius: 24px;
+    overflow: hidden;
+    padding-bottom: 2rem;
+}
+
+/* Hero Section */
+.terms-hero {
+    position: sticky;
+    top: 0;
+    text-align: center;
+    padding: 4rem 1.5rem 3rem;
+    background: linear-gradient(135deg, #e63946 0%, #f06c76 50%, #ff9a8b 100%); /* Aurora gradient */
+    color: #fff;
+    border-radius: 24px;
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%);
+    margin-bottom: 3rem;
+    backdrop-filter: blur(10px); /* Glassmorphism */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.8s ease-out;
+    z-index: 100;
+}
+
+@keyframes fadeInHero {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 24px;
+  backdrop-filter: blur(5px);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero-content h1 {
+  font-size: 3.5rem;
+  font-weight: 900;
+  font-family: 'Playfair Display', serif;
+  color: #fff;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.hero-content p {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Terms Content Section */
+.terms-content-section {
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  margin-bottom: 3rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: slideInSection 0.8s ease-out;
+  text-align: left;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@keyframes slideInSection {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.terms-content-section h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #333;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, #e63946, #f06c76);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.terms-content-section .section-info {
+  font-size: 1.1rem;
+  color: #666;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.terms-content {
+  font-size: 1rem;
+  color: #333;
+  line-height: 1.8;
+}
+
+.terms-content h3 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #333;
+  margin: 1.5rem 0 0.5rem;
+}
+
+.terms-content p {
+  margin-bottom: 1rem;
+}
+
+.terms-content ul {
+  list-style: disc;
+  margin: 1rem 0 1rem 2rem;
+}
+
+.terms-content li {
+  margin-bottom: 0.5rem;
+}
+
+.terms-content a {
+  color: #e63946;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.terms-content a:hover {
+  color: #d9273a;
+}
+
+/* CTA Section */
+.cta-section {
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #e63946 0%, #f06c76 50%, #ff9a8b 100%);
+  border-radius: 16px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: slideInSection 0.8s ease-out;
+}
+
+.cta-section h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, #fff, #f0f0f0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.cta-section .section-info {
+  font-size: 1.2rem;
+  font-weight: 300;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #fff, #f0f0f0);
+  color: #e63946;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cta-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark Theme */
+.dark-theme .terms-container {
+  background: linear-gradient(180deg, #1a1a1a, #2a2a2a);
+}
+
+.dark-theme .terms-hero {
+  background: linear-gradient(135deg, rgba(42, 42, 42, 0.9), rgba(60, 60, 60, 0.9)), url('{% static "images/hero-bg.jpg" %}') center/cover no-repeat;
+}
+
+.dark-theme .hero-content h1 {
+    color: #e63946;
+}
+
+.dark-theme .hero-content p {
+  color: #aaa;
+}
+
+.dark-theme .terms-content-section {
+  background: rgba(42, 42, 42, 0.9);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.dark-theme .terms-content-section h2 {
+  background: linear-gradient(90deg, #f06c76, #e63946);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.dark-theme .section-info {
+  color: #aaa;
+}
+
+.dark-theme .terms-content {
+  color: #ddd;
+}
+
+.dark-theme .terms-content h3 {
+  color: #ddd;
+}
+
+.dark-theme .terms-content a {
+  color: #f06c76;
+}
+
+.dark-theme .terms-content a:hover {
+  color: #e63946;
+}
+
+.dark-theme .cta-section {
+  background: linear-gradient(135deg, #d9273a, #e63946, #ff6b6b);
+}
+
+.dark-theme .cta-button {
+  background: linear-gradient(135deg, #f06c76, #e63946);
+  color: #fff;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .terms-hero {
+    padding: 4rem 1.5rem;
+  }
+  .hero-content h1 {
+    font-size: 2.8rem;
+  }
+  .hero-content p {
+    font-size: 1.2rem;
+  }
+  .terms-content-section {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .terms-hero {
+    padding: 3rem 1rem;
+  }
+  .hero-content h1 {
+    font-size: 2.2rem;
+  }
+  .hero-content p {
+    font-size: 1rem;
+  }
+  .terms-content-section h2, .cta-section h2 {
+    font-size: 2rem;
+  }
+  .terms-content h3 {
+    font-size: 1.4rem;
+  }
+  .terms-content {
+    font-size: 0.9rem;
+  }
+  .cta-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
+}
+</style>
+{% endblock %}

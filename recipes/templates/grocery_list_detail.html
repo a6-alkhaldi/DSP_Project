@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/grocery_list_detail.css' %}">
+<div class="grocery-detail-container">
+    <p>
+        <a href="{% url 'my_grocery_lists' %}" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to My Grocery Lists
+        </a>
+    </p>
+    <div class="grocery-header">
+        <h1>{{ grocery_list.title }}</h1>
+        <p class="section-info">Created: {{ grocery_list.created_at|date:"M d, Y, g:i A" }}</p>
+        {% if grocery_list.meal_plan %}
+            <p>From: <a href="{% url 'meal_plan_detail' grocery_list.meal_plan.id %}">{{ grocery_list.meal_plan.title }}</a></p>
+        {% elif grocery_list.recipe %}
+            <p>From: <a href="{% url 'recipe_detail' grocery_list.recipe.id %}">{{ grocery_list.recipe.title }}</a></p>
+        {% endif %}
+    </div>
+    <div class="progress-container">
+        <h3 class="progress-title">Completion Progress</h3>
+        <div class="progress-bar-wrapper">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <p class="progress-text" id="progress-text">0% Complete (0/0 items checked)</p>
+    </div>
+    <div class="grocery-controls">
+        <button class="action-btn select-all-btn"><i class="fas fa-check-double"></i> Select All</button>
+        <button class="action-btn deselect-all-btn"><i class="fas fa-times"></i> Deselect All</button>
+    </div>
+    <div class="grocery-detail-content">
+        {% for category, items in categorized_ingredients.items %}
+            <div class="ingredient-category">
+                <h2>{{ category }}</h2>
+                <ul class="grocery-list sortable">
+                    {% for item in items %}
+                        <li class="grocery-item" data-item="{{ item|escapejs }}">
+                            <label>
+                                <input type="checkbox" class="ingredient-checkbox">
+                                <span>{{ item }}</span>
+                            </label>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% empty %}
+            <p class="no-ingredients">No ingredients in this list.</p>
+        {% endfor %}
+    </div>
+    <div class="grocery-actions">
+        <form method="get" action="{% url 'grocery_list_detail' pk=grocery_list.id %}">
+            <input type="hidden" name="download_pdf" value="1">
+            <button type="submit" class="action-btn export-pdf-btn"><i class="fas fa-file-pdf"></i> Download PDF</button>
+        </form>
+        <form method="post" action="{% url 'grocery_list_detail' pk=grocery_list.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="email_list" value="1">
+            <button type="submit" class="action-btn export-email-btn"><i class="fas fa-envelope"></i> Email List</button>
+        </form>
+        <a href="{% url 'grocery_list_edit' grocery_list.id %}" class="action-btn"><i class="fas fa-edit"></i> Edit List</a>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const checkboxes = document.querySelectorAll('.ingredient-checkbox');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+
+    // Function to update progress
+    function updateProgress() {
+        const totalItems = checkboxes.length;
+        const checkedItems = Array.from(checkboxes).filter(cb => cb.checked).length;
+        const percentage = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
+
+        progressBar.style.width = `${percentage}%`;
+        progressText.textContent = `${percentage}% Complete (${checkedItems}/${totalItems} items checked)`;
+    }
+
+    // Checkbox Handling
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            const li = checkbox.closest('.grocery-item');
+            li.classList.toggle('checked', checkbox.checked);
+            localStorage.setItem(`grocery-list-${li.dataset.item}`, checkbox.checked);
+            updateProgress();
+        });
+        // Restore checkbox state
+        const isChecked = localStorage.getItem(`grocery-list-${checkbox.closest('.grocery-item').dataset.item}`) === 'true';
+        checkbox.checked = isChecked;
+        checkbox.closest('.grocery-item').classList.toggle('checked', isChecked);
+    });
+
+    // Initial progress update
+    updateProgress();
+
+    // Select/Deselect All
+    document.querySelector('.select-all-btn').addEventListener('click', () => {
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = true;
+            checkbox.closest('.grocery-item').classList.add('checked');
+            localStorage.setItem(`grocery-list-${checkbox.closest('.grocery-item').dataset.item}`, 'true');
+        });
+        updateProgress();
+    });
+
+    document.querySelector('.deselect-all-btn').addEventListener('click', () => {
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+            checkbox.closest('.grocery-item').classList.remove('checked');
+            localStorage.setItem(`grocery-list-${checkbox.closest('.grocery-item').dataset.item}`, 'false');
+        });
+        updateProgress();
+    });
+
+});
+</script>
+
+{% endblock content %}

@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/my_lists.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<div class="my-lists-container">
+    <!-- Header -->
+    <header class="my-lists-header sticky">
+        <a href="{% url 'profile' %}" class="back-button" aria-label="Back to My Profile">
+            <i class="fas fa-arrow-left"></i> My Profile
+
+        </a>
+        <h1 class="my-lists-title">
+            <span class="accent-text">My</span> Meal Plans
+            <div class="title-decoration"></div>
+        </h1>
+        <p class="my-lists-subtitle">Plan your week with delicious meals, effortlessly.</p>
+        <a href="{% url 'create_meal_plan' %}" class="create-plan-btn" aria-label="Create New Meal Plan">
+            <i class="fas fa-plus"></i> New Plan
+        </a>
+    </header>
+
+<!-- Meal Plan Grid -->
+<section class="meal-plan-grid">
+    {% for data in meal_plan_data %}
+    <article class="meal-plan-card" data-tilt>
+        <div class="meal-plan-card-content">
+            <h3 class="meal-plan-card-title">
+                <a href="{% url 'meal_plan_detail' data.meal_plan.pk %}" class="browse-title-link">
+                    {{ data.meal_plan.title }}
+                    <span class="browse-link-hover"></span>
+                </a>
+            </h3>
+            <div class="meal-plan-dates">
+                {% if data.meal_plan.start_date %}
+                    {{ data.meal_plan.start_date|date:"F j, Y" }}
+                    {% if data.meal_plan.end_date %}
+                        - {{ data.meal_plan.end_date|date:"F j, Y" }}
+                    {% endif %}
+                {% else %}
+                    No dates set
+                {% endif %}
+            </div>
+            <div class="meal-plan-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ data.progress_percentage }}%;"></div>
+                </div>
+                <span>{{ data.planned }} of {{ data.total_slots }} slots filled</span>
+            </div>
+            <div class="meal-plan-meta">
+                <span class="meal-plan-meta-item">
+                    <i class="fas fa-utensils"></i> {{ data.planned }} Recipes
+                </span>
+                <span class="meal-plan-meta-item">
+                    <i class="fas fa-calendar"></i> Created {{ data.meal_plan.created_at|date:"M j, Y" }}
+                </span>
+            </div>
+            <div class="meal-plan-actions">
+                <a href="{% url 'meal_plan_detail' data.meal_plan.pk %}" class="action-btn view-btn" title="View Details" aria-label="View Meal Plan Details">
+                    <i class="fas fa-eye"></i>
+                </a>
+                <a href="{% url 'edit_meal_plan' data.meal_plan.pk %}" class="action-btn edit-btn" title="Edit Plan" aria-label="Edit Meal Plan">
+                    <i class="fas fa-edit"></i>
+                </a>
+                <button class="action-btn delete-btn" data-plan-id="{{ data.meal_plan.pk }}" title="Delete Plan" aria-label="Delete Meal Plan">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </article>
+    {% empty %}
+    <div class="no-results">
+        <i class="fas fa-utensils"></i>
+        <p>No meal plans yet. Create one to start planning!</p>
+        <a href="{% url 'create_meal_plan' %}" class="create-plan-btn" aria-label="Create New Meal Plan">Create Meal Plan</a>
+    </div>
+    {% endfor %}
+</section>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination-nav">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a href="?page={{ page_obj.previous_page_number }}" class="page-link" aria-label="Previous">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-label="Next">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Delete Meal Plan
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            if (confirm('Are you sure you want to delete this meal plan?')) {
+                const planId = btn.dataset.planId;
+                try {
+                    const response = await fetch(`/meal-plans/${planId}/delete/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        }
+                    });
+                    const data = await response.json();
+                    if (data.success) {
+                        btn.closest('.meal-plan-card').remove();
+                        showToast('Meal plan deleted successfully!', 'success');
+                        if (!document.querySelector('.meal-plan-card')) {
+                            const grid = document.querySelector('.browse-recipe-grid');
+                            grid.innerHTML = `
+                                <div class="no-results">
+                                    <i class="fas fa-utensils"></i>
+                                    <p>No meal plans yet. Create one to start planning!</p>
+                                    <a href="{% url 'create_meal_plan' %}" class="create-plan-btn" aria-label="Create New Meal Plan">Create Meal Plan</a>
+                                </div>
+                            `;
+                        }
+                    } else {
+                        showToast('Failed to delete meal plan.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('An error occurred. Please try again.', 'error');
+                }
+            }
+        });
+    });
+
+    // Toast Notification
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => document.body.removeChild(toast), 300);
+        }, 3000);
+    }
+
+    // VanillaTilt for 3D effect (requires external library)
+    if (typeof VanillaTilt !== 'undefined') {
+        VanillaTilt.init(document.querySelectorAll('.meal-plan-card'), {
+            max: 15,
+            speed: 400,
+            glare: true,
+            'max-glare': 0.3,
+        });
+    }
+});
+</script>
+
+
+{% endblock content %}

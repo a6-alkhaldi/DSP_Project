@@ -1,0 +1,775 @@
+    /* Grocery Detail Page */
+    .grocery-detail-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 1.5rem;
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        position: relative;
+        transition: all 0.3s ease;
+    }
+    
+    .dark-theme .grocery-detail-container {
+        background: #2a2a2a;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Back Button */
+    .back-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        color: #fff;
+        background: #e63946;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        margin-bottom: 1rem;
+    }
+    
+    .back-button:hover {
+        background: #d9273a;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(230, 57, 70, 0.3);
+    }
+    
+    .back-button i {
+        font-size: 1.1rem;
+        transition: transform 0.3s ease;
+        color: #fff;
+    }
+    
+    .back-button:hover i {
+        transform: translateX(-3px);
+    }
+
+    
+    .dark-theme .back-button:hover {
+        background: #3a2a2a;
+        color: #e63946;
+    }
+    
+    /* Grocery Header */
+    .grocery-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #e63946, #f06c76);
+        border-radius: 12px;
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .grocery-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem;
+        text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    
+    .grocery-header .section-info {
+        font-size: 1rem;
+        opacity: 0.9;
+        color: #fff;
+    }
+    
+    .grocery-header p {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+    }
+    
+    .grocery-header a {
+        color: #ffd700;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .grocery-header a:hover {
+        color: #ffec80;
+        text-decoration: underline;
+    }
+    
+    .dark-theme .grocery-header {
+        background: linear-gradient(135deg, #d9273a, #e63946);
+    }
+    
+    .dark-theme .grocery-header .section-info,
+    .dark-theme .grocery-header p {
+        color: #ddd;
+    }
+    
+    .dark-theme .grocery-header a {
+        color: #f0c14b;
+    }
+    
+    .dark-theme .grocery-header a:hover {
+        color: #ffe082;
+    }
+    
+    /* Grocery Controls */
+    .grocery-controls {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .select-all-btn,
+    .deselect-all-btn {
+        background: #e63946;
+        color: #fff;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .select-all-btn:hover,
+    .deselect-all-btn:hover {
+        background: #d9273a;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(230, 57, 70, 0.3);
+    }
+    .select-all-btn i,
+    .deselect-all-btn i{
+        color: #fff;
+    }
+    .dark-theme .select-all-btn,
+    .dark-theme .deselect-all-btn {
+        background: #f06c76;
+    }
+    
+    .dark-theme .select-all-btn:hover,
+    .dark-theme .deselect-all-btn:hover {
+        background: #e63946;
+    }
+    
+    /* Grocery Detail Content */
+    .grocery-detail-content {
+        padding: 1.5rem;
+        background: #f9f9f9;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .dark-theme .grocery-detail-content {
+        background: #333;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Ingredient Category */
+    .ingredient-category {
+        margin-bottom: 2rem;
+    }
+    
+    .ingredient-category h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: #e63946;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid rgba(230, 57, 70, 0.2);
+    }
+    
+    .dark-theme .ingredient-category h2 {
+        color: #f06c76;
+        border-bottom-color: rgba(240, 108, 118, 0.2);
+    }
+    
+    /* Grocery List */
+    .grocery-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .grocery-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        background: #fff;
+        margin-bottom: 0.75rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    .grocery-item:hover {
+        background: #fef2f2;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .grocery-item.checked {
+        background: #e6f3e6;
+        text-decoration: line-through;
+        color: #666;
+    }
+    
+    .grocery-item label {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+        cursor: pointer;
+        font-size: 1.1rem;
+        color: #333;
+    }
+    
+    .grocery-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: #e63946;
+        cursor: pointer;
+    }
+    
+    .dark-theme .grocery-item {
+        background: #2a2a2a;
+        color: #ddd;
+    }
+    
+    .dark-theme .grocery-item:hover {
+        background: #3a2a2a;
+    }
+    
+    .dark-theme .grocery-item.checked {
+        background: #1a3c1a;
+        color: #999;
+    }
+    
+    .dark-theme .grocery-item label {
+        color: #ddd;
+    }
+    
+    .dark-theme .grocery-item input[type="checkbox"] {
+        accent-color: #f06c76;
+    }
+    
+    /* No Ingredients Message */
+    .no-ingredients {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #666;
+        padding: 2rem;
+        background: #f5f5f5;
+        border-radius: 10px;
+    }
+    
+    .dark-theme .no-ingredients {
+        color: #aaa;
+        background: #333;
+    }
+    
+    /* Grocery Actions */
+    .grocery-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+    
+    .grocery-actions .action-btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+        color: #fff;
+    }
+    
+    .grocery-actions .export-pdf-btn {
+        background: #3498db;
+    }
+    
+    .grocery-actions .export-pdf-btn:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(52, 152, 219, 0.3);
+    }
+    
+    .grocery-actions .export-email-btn {
+        background: #2ecc71;
+    }
+    
+    .grocery-actions .export-email-btn:hover {
+        background: #27ae60;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(46, 204, 113, 0.3);
+    }
+    
+    .grocery-actions a.action-btn {
+        background: #e63946;
+    }
+    .grocery-actions a.action-btn i {
+        background: #e63946;
+        color: #fff;
+    }
+    
+    .grocery-actions a.action-btn:hover {
+        background: #d9273a;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(230, 57, 70, 0.3);
+    }
+    
+    /* Progress Indicator */
+    .progress-container {
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background: #f9f9f9;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+    
+    .dark-theme .progress-container {
+        background: #333;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .progress-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #e63946;
+        margin-bottom: 0.75rem;
+    }
+    
+    .dark-theme .progress-title {
+        color: #f06c76;
+    }
+    
+    .progress-bar-wrapper {
+        background: #e0e0e0;
+        border-radius: 20px;
+        height: 20px;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .dark-theme .progress-bar-wrapper {
+        background: #444;
+    }
+    
+    .progress-bar {
+        background: linear-gradient(135deg, #e63946, #f06c76);
+        height: 100%;
+        width: 0;
+        border-radius: 20px;
+        transition: width 0.3s ease;
+    }
+    
+    .dark-theme .progress-bar {
+        background: linear-gradient(135deg, #f06c76, #e63946);
+    }
+    
+    .progress-text {
+        font-size: 1rem;
+        color: #333;
+        margin-top: 0.5rem;
+    }
+    
+    .dark-theme .progress-text {
+        color: #ddd;
+    }
+    
+    
+    .dark-theme .grocery-actions .export-pdf-btn {
+        background: #3498db;
+    }
+    
+    .dark-theme .grocery-actions .export-pdf-btn:hover {
+        background: #2980b9;
+    }
+    
+    .dark-theme .grocery-actions .export-email-btn {
+        background: #2ecc71;
+    }
+    
+    .dark-theme .grocery-actions .export-email-btn:hover {
+        background: #27ae60;
+    }
+    
+    .dark-theme .grocery-actions a.action-btn {
+        background: #f06c76;
+    }
+    
+    .dark-theme .grocery-actions a.action-btn:hover {
+        background: #e63946;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .grocery-detail-container {
+            margin: 1rem auto;
+            padding: 1rem;
+        }
+    
+        .grocery-header {
+            padding: 1rem;
+        }
+    
+        .grocery-header h1 {
+            font-size: 1.8rem;
+        }
+    
+        .grocery-controls {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+    
+        .grocery-detail-content {
+            padding: 1rem;
+        }
+    
+        .ingredient-category h2 {
+            font-size: 1.3rem;
+        }
+    
+        .grocery-item label {
+            font-size: 1rem;
+        }
+    
+        .grocery-actions .action-btn {
+            width: 100%;
+            justify-content: center;
+        }
+        .progress-container {
+            padding: 0.75rem;
+        }
+    
+        .progress-title {
+            font-size: 1.1rem;
+        }
+    
+        .progress-text {
+            font-size: 0.9rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .grocery-header h1 {
+            font-size: 1.5rem;
+        }
+    
+        .grocery-header .section-info,
+        .grocery-header p {
+            font-size: 0.9rem;
+        }
+    
+        .select-all-btn,
+        .deselect-all-btn {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+        }
+    
+        .grocery-item {
+            padding: 0.6rem;
+        }
+    
+        .grocery-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+    
+        .no-ingredients {
+            font-size: 1rem;
+            padding: 1.5rem;
+        }
+        .progress-container {
+            margin: 1rem 0;
+        }
+    
+        .progress-title {
+            font-size: 1rem;
+        }
+    
+        .progress-bar-wrapper {
+            height: 16px;
+        }
+    }
+
+/* -----------------------------------------
+   Grocery List Edit Page
+----------------------------------------- */
+
+/* Container */
+.grocery-edit-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    background: var(--background-light);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px var(--shadow-light);
+    position: relative;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Header */
+.grocery-edit-container h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+}
+
+/* Back Button */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    color: #fff;
+    margin-top: 10px;
+}
+
+.back-button:hover {
+    background: #fef2f2;
+    color: var(--primary-hover);
+    transform: translateX(-3px);
+}
+.back-button:hover i{
+    color: #e63946;
+}
+.back-button i {
+    font-size: 1.2rem;
+}
+
+/* Form */
+.grocery-edit-form {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: background 0.3s ease;
+}
+
+/* Form Inputs */
+.grocery-edit-form p {
+    margin-bottom: 1.5rem;
+}
+
+.grocery-edit-form label {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.grocery-edit-form input,
+.grocery-edit-form textarea {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 12px;
+    background: #f5f5f5;
+    font-size: 1rem;
+    color: var(--text-primary);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.grocery-edit-form input:focus,
+.grocery-edit-form textarea:focus {
+    background: #fff;
+    box-shadow: 0 0 15px rgba(230, 57, 70, 0.2);
+    outline: none;
+}
+
+.grocery-edit-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Error Messages */
+.grocery-edit-form .errorlist {
+    margin-bottom: 1rem;
+}
+
+/* Action Buttons */
+.grocery-edit-form .action-btn {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    margin: 0.5rem;
+}
+
+.grocery-edit-form .action-btn[type="submit"] {
+    background: var(--primary-color);
+    color: var(--text-light);
+}
+
+.grocery-edit-form .action-btn[type="submit"]:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3);
+}
+
+.grocery-edit-form .cancel-btn {
+    background: #f0f0f0;
+    color: #666;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.grocery-edit-form .cancel-btn:hover {
+    background: #e0e0e0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Button Container */
+.grocery-edit-form .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+}
+
+/* Dark Theme */
+.dark-theme .grocery-edit-container {
+    background: var(--section-background-dark);
+    box-shadow: 0 10px 40px var(--shadow-dark);
+}
+
+.dark-theme .grocery-edit-container h1 {
+    color: #f06c76;
+}
+
+
+
+.dark-theme .back-button:hover {
+    background: #3a2a2a;
+    color: #e63946;
+}
+
+.dark-theme .grocery-edit-form {
+    background: #2a2a2a;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.dark-theme .grocery-edit-form label {
+    color: var(--text-light);
+}
+
+.dark-theme .grocery-edit-form input,
+.dark-theme .grocery-edit-form textarea {
+    background: #333;
+    color: var(--text-light);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.dark-theme .grocery-edit-form input:focus,
+.dark-theme .grocery-edit-form textarea:focus {
+    background: #3a3a3a;
+    box-shadow: 0 0 15px rgba(240, 108, 118, 0.2);
+}
+
+.dark-theme .grocery-edit-form .action-btn[type="submit"] {
+    background: #f06c76;
+}
+
+.dark-theme .grocery-edit-form .action-btn[type="submit"]:hover {
+    background: #e63946;
+}
+
+.dark-theme .grocery-edit-form .cancel-btn {
+    background: #333;
+    color: #ccc;
+}
+
+.dark-theme .grocery-edit-form .cancel-btn:hover {
+    background: #444;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .grocery-edit-container {
+        margin: 1.5rem auto;
+        padding: 0 1rem;
+    }
+
+    .grocery-edit-container h1 {
+        font-size: 1.8rem;
+    }
+
+    .grocery-edit-form {
+        padding: 1.5rem;
+    }
+
+    .grocery-edit-form input,
+    .grocery-edit-form textarea {
+        padding: 0.8rem;
+    }
+
+    .grocery-edit-form .action-btn {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .grocery-edit-container {
+        margin: 1rem auto;
+        padding: 0 0.5rem;
+    }
+
+    .grocery-edit-container h1 {
+        font-size: 1.5rem;
+    }
+
+    .grocery-edit-form {
+        padding: 1rem;
+    }
+
+    .grocery-edit-form input,
+    .grocery-edit-form textarea {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    .grocery-edit-form .action-btn {
+        width: 100%;
+        padding: 0.7rem;
+        font-size: 0.9rem;
+    }
+
+    .back-button {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.8rem;
+    }
+}

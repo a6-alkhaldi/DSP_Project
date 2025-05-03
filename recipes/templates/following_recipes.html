@@ -1,0 +1,435 @@
+{% extends 'base.html' %}
+{% load static recipe_filters %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/browse_recipes.css' %}">
+<link rel="stylesheet" href="{% static 'css/following_recipes.css' %}">
+<div class="following-recipes-container">
+    <!-- Page Header -->
+    <header class="following-recipes-header">
+        <h1 class="following-recipes-title">
+            <span class="accent-text">Following</span> Recipes
+            <div class="title-decoration"></div>
+        </h1>
+        <p class="following-recipes-subtitle">Explore the latest recipes from chefs you follow</p>
+    </header>
+
+    <!-- Search and Filters Section -->
+    <section class="following-recipes-search-filters">
+        <form method="GET" class="following-recipes-filter-form">
+            <div class="following-recipes-search-bar">
+                <div class="following-recipes-search-input-group">
+                    <input type="text" name="q" placeholder="Search recipes..." 
+                           value="{{ request.GET.q }}" class="following-recipes-search-input">
+                    <button type="submit" class="following-recipes-search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="following-recipes-filter-section">
+                <div class="following-recipes-filter-group">
+                    <div class="following-recipes-filter-dropdown">
+                        <select name="sort" class="following-recipes-filter-select" onchange="this.form.submit()">
+                            <option value="newest" {% if request.GET.sort == 'newest' or not request.GET.sort %}selected{% endif %}>Newest First</option>
+                            <option value="highest_rating" {% if request.GET.sort == 'highest_rating' %}selected{% endif %}>Highest Rating</option>
+                            <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Most Popular</option>
+                            <option value="quickest" {% if request.GET.sort == 'quickest' %}selected{% endif %}>Quickest First</option>
+                        </select>
+                    </div>
+                    <div class="following-recipes-filter-dropdown">
+                        <select name="category" class="following-recipes-filter-select" onchange="this.form.submit()">
+                            <option value="">All Categories</option>
+                            {% for value, label in category_choices %}
+                            <option value="{{ value }}" {% if value == request.GET.category %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="following-recipes-filter-dropdown">
+                        <select name="dietary_tags" class="following-recipes-filter-select" onchange="this.form.submit()">
+                            <option value="">All Dietary Tags</option>
+                            {% for tag in dietary_tags %}
+                            <option value="{{ tag.id }}" {% if tag.id|stringformat:"s" == request.GET.dietary_tags %}selected{% endif %}>{{ tag.get_name_display }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Filters -->
+            <div class="following-recipes-active-filters">
+                {% if request.GET.q %}
+                <span class="following-recipes-active-filter">
+                    Search: {{ request.GET.q }}
+                    <a href="?{% param_replace request q=None %}" class="following-recipes-remove-filter" data-param="q">×</a>
+                </span>
+                {% endif %}
+                {% if request.GET.sort %}
+                <span class="following-recipes-active-filter">
+                    Sort: {{ request.GET.sort|title }}
+                    <a href="?{% param_replace request sort=None %}" class="following-recipes-remove-filter" data-param="sort">×</a>
+                </span>
+                {% endif %}
+                {% if request.GET.category %}
+                <span class="following-recipes-active-filter">
+                    {{ request.GET.category|get_category_label }}
+                    <a href="?{% param_replace request category=None %}" class="following-recipes-remove-filter" data-param="category">×</a>
+                </span>
+                {% endif %}
+                {% if request.GET.dietary_tags %}
+                {% with tag_id=request.GET.dietary_tags %}
+                {% with tag=tag_id|get_dietary_tag %}
+                {% if tag %}
+                <span class="following-recipes-active-filter">
+                    {{ tag.get_name_display }}
+                    <a href="?{% param_replace request dietary_tags=None %}" class="following-recipes-remove-filter" data-param="dietary_tags">×</a>
+                </span>
+                {% endif %}
+                {% endwith %}
+                {% endwith %}
+                {% endif %}
+            </div>
+
+            <div class="following-recipes-clear-controls">
+                <button type="button" class="following-recipes-clear-button" onclick="clearFollowingFilters()">
+                    Clear All <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </form>
+    </section>
+
+    <!-- Recipe Grid -->
+    <section class="browse-recipe-grid">
+        {% for recipe in recipes %}
+        <article class="browse-recipe-card">
+            <div class="browse-card-image">
+                {% if recipe.images.first %}
+                <img src="{{ recipe.images.first.image.url }}" alt="{{ recipe.title }}" loading="lazy">
+                {% else %}
+                <div class="browse-image-placeholder">
+                    <i class="fas fa-image"></i>
+                </div>
+                {% endif %}
+
+                <!-- Status Labels -->
+                <div class="browse-status-labels">
+                    {% if recipe.is_popular %}
+                        <span class="browse-label popular">
+                            <i class="fas fa-fire"></i>
+                            Popular Choice
+                        </span>
+                    {% endif %}
+                    {% if recipe.is_quick_meal %}
+                        <span class="browse-label quick">
+                            <i class="fas fa-clock"></i>
+                            Quick Meal
+                        </span>
+                    {% endif %}
+                    {% if recipe.is_new %}
+                        <span class="browse-label new">
+                            <i class="fas fa-certificate"></i>
+                            New Recipe
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="browse-card-overlay">
+                    <div class="browse-quick-actions">
+                        {% if request.user.is_authenticated %}
+                            <!-- Save -->
+                            <button
+                                class="browse-action-btn browse-save-btn"
+                                data-recipe-id="{{ recipe.pk }}"
+                                title="{% if recipe.pk in saved_recipe_ids %}Unsave Recipe{% else %}Save Recipe{% endif %}"
+                            >
+                                <i class="{% if recipe.pk in saved_recipe_ids %}fas fa-bookmark saved{% else %}far fa-bookmark{% endif %}"></i>
+                            </button>
+                        {% else %}
+                            <!-- Save (redirect to login) -->
+                            <button
+                                class="browse-action-btn"
+                                title="Log in to save recipes"
+                                onclick="window.location.href='{% url 'login' %}?next={{ request.get_full_path|urlencode }}'"
+                            >
+                                <i class="far fa-bookmark"></i>
+                            </button>
+                        {% endif %}
+                        <!-- Quick View -->
+                        <button
+                            class="browse-action-btn browse-quick-view-btn"
+                            data-recipe-id="{{ recipe.pk }}"
+                            title="Quick View"
+                        >
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="browse-card-content">
+                <h3 class="browse-card-title">
+                    <a href="{% url 'recipe-detail' recipe.pk %}" class="browse-title-link">
+                        {{ recipe.title }}
+                        <span class="browse-link-hover"></span>
+                    </a>
+                </h3>
+                <div class="browse-card-category">
+                    <span class="browse-category-label">
+                        {{ recipe.category|get_category_label }}
+                    </span>
+                </div>
+                <div class="browse-card-meta">
+                    <span class="browse-meta-item">
+                        <i class="fas fa-clock"></i>
+                        {{ recipe.cooking_time }} min
+                    </span>
+                    <span class="browse-meta-item">
+                        <i class="fas fa-fire"></i>
+                        {{ recipe.calories|default:"-" }} kcal
+                    </span>
+                </div>
+                <div class="browse-card-footer">
+                    <div class="browse-engagement">
+                        <div class="browse-rating-display">
+                            <i class="fas fa-star"></i>
+                            <span class="browse-rating-value">
+                                {% if recipe.average_rating %}{{ recipe.average_rating|floatformat:1 }}{% else %}--{% endif %}
+                            </span>
+                            <span class="browse-rating-count">({{ recipe.total_ratings }})</span>
+                        </div>
+                        <div class="browse-comments">
+                            <i class="fas fa-comment"></i>
+                            <span>{{ recipe.comments.count }}</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'public_profile' recipe.author.username %}" class="browse-author">
+                        <i class="fas fa-user"></i> {{ recipe.author.username }}
+                    </a>
+                </div>
+                {% if recipe.dietary_tags.exists %}
+                <div class="browse-card-tags">
+                    {% for tag in recipe.dietary_tags.all|slice:":3" %}
+                    <span class="browse-tag">{{ tag.get_name_display }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </article>
+        {% empty %}
+        <div class="browse-no-results">
+            <i class="fas fa-utensils"></i>
+            <p>No recipes found. Follow some chefs to see their creations!</p>
+        </div>
+        {% endfor %}
+    </section>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination-nav">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a href="?{% param_replace request page=page_obj.previous_page_number %}" class="page-link">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+    
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a href="?{% param_replace request page=num %}" class="page-link">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+    
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a href="?{% param_replace request page=page_obj.next_page_number %}" class="page-link">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    <!-- Quick View Modal -->
+    <div id="quick-view-drawer" class="browse-quick-view-drawer">
+        <div class="browse-drawer-content">
+            <div id="quick-view-loader" class="browse-skeleton-loader">
+                <div class="browse-skeleton-image"></div>
+                <div class="browse-skeleton-text"></div>
+                <div class="browse-skeleton-text"></div>
+            </div>
+            <div id="quick-view-content"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function clearFollowingFilters() {
+        window.location = window.location.pathname;
+    }
+    
+    document.addEventListener('DOMContentLoaded', () => {
+        // Real-time Search Handler
+        let searchTimeout;
+        const searchInput = document.querySelector('.following-recipes-search-input');
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(async () => {
+                const query = searchInput.value;
+                const form = document.querySelector('.following-recipes-filter-form');
+                const formData = new FormData(form);
+                formData.set('q', query);
+                formData.set('ajax', '1'); // Indicate AJAX request
+    
+                try {
+                    const response = await fetch('/following-recipes/?' + new URLSearchParams(formData).toString(), {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    const data = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(data, 'text/html');
+                    const newGrid = doc.querySelector('.browse-recipe-grid');
+                    document.querySelector('.browse-recipe-grid').innerHTML = newGrid.innerHTML;
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('Failed to load search results.', 'error');
+                }
+            }, 300); // Debounce for 300ms
+        });
+
+    // Quick View Handler
+    document.querySelectorAll('.browse-quick-view-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            const recipeId = btn.dataset.recipeId;
+            const drawer = document.getElementById('quick-view-drawer');
+            const loader = document.getElementById('quick-view-loader');
+            
+            loader.style.display = 'block';
+            drawer.classList.add('active');
+            
+            try {
+                const response = await fetch(`/recipes/${recipeId}/quick-view/`);
+                const content = await response.text();
+                document.getElementById('quick-view-content').innerHTML = content;
+            } catch (error) {
+                document.getElementById('quick-view-content').innerHTML = `
+                    <div class="error-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load recipe details</p>
+                    </div>
+                `;
+            } finally {
+                loader.style.display = 'none';
+            }
+        });
+    });
+
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('qv-close') || 
+           e.target.classList.contains('drawer-close')) {
+            document.getElementById('quick-view-drawer').classList.remove('active');
+        }
+    });
+
+    // Save to My Saved Recipes
+    document.querySelectorAll('.browse-save-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const recipeId = btn.dataset.recipeId;
+            try {
+                const response = await fetch(`/recipes/${recipeId}/save/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    const icon = btn.querySelector('i');
+                    if (data.action === 'saved') {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas', 'saved');
+                        btn.title = 'Unsave Recipe';
+                        showToast('Recipe saved!', 'success');
+                    } else {
+                        icon.classList.remove('fas', 'saved');
+                        icon.classList.add('far');
+                        btn.title = 'Save Recipe';
+                        showToast('Recipe removed from saved recipes.', 'info');
+                    }
+                } else {
+                    showToast('Failed to save recipe.', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('An error occurred. Please try again.', 'error');
+            }
+        });
+    })
+
+    // Modal Functions
+    function openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.add('active');
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('active');
+    }
+
+    document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', () => closeModal(btn.closest('.modal').id));
+    });
+
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal(modal.id);
+        });
+    });
+
+    // Toast Notification
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 300);
+        }, 3000);
+    }
+
+    // Handle Active Filter Removal
+    document.querySelectorAll('.following-recipes-active-filters .following-recipes-remove-filter').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = new URL(window.location.href);
+            const params = new URLSearchParams(url.search);
+            const param = this.dataset.param;
+            params.delete(param);
+            window.location.href = url.pathname + '?' + params.toString();
+        });
+    });
+});
+</script>
+
+{% endblock %}

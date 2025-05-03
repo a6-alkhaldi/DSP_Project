@@ -1,0 +1,3943 @@
+/* -----------------------------------------
+   PROFILE PAGE STYLES
+----------------------------------------- */
+
+/* Profile Container */
+.profile-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Profile Header */
+.profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-header h1 {
+    font-size: 2.5rem;
+    color: #e63946;
+    margin-bottom: 0.5rem;
+}
+
+.profile-header p {
+    font-size: 1rem;
+    color: #666;
+}
+.profile-tabs {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+    gap: 10px;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+}
+
+@media (min-width: 1024px)  {
+    .profile-tabs {
+        justify-content: center; /* Ensure centering on tablets */
+    }
+}
+
+.tablink {
+    padding: 0.6rem 1.2rem;
+    background: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 5px 5px 0 0;
+    transition: 0.3s;
+    flex-shrink: 0;
+}
+
+.tablink.active {
+    background: #e63946;
+    color: white;
+}
+
+.tabcontent {
+    display: none;
+}
+
+.tabcontent.active {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .tablink {
+        padding: 0.5rem;
+    }
+}
+
+/* Mobile Dropdown */
+.mobile-tabs {
+    display: none; /* Hidden by default, shown on mobile */
+    width: 100%;
+    padding: 0.75rem 1rem; /* Increased padding for better touch target */
+    border: 2px solid #e63946; /* Consistent red border */
+    border-radius: 8px; /* Modern rounded corners */
+    background-color: #fff; /* White background for contrast */
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333; /* Darker text for readability */
+    appearance: none; /* Remove default dropdown arrow */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23e63946' viewBox='0 0 16 16'%3E%3Cpath d='M8 12l-6-6h12l-6 6z'/%3E%3C/svg%3E"); /* Custom red arrow */
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Hover/Focus States */
+.mobile-tabs:hover,
+.mobile-tabs:focus {
+    border-color: #d9273a; /* Darker red on interaction */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
+    outline: none; /* Remove default outline */
+}
+
+/* Options Styling */
+.mobile-tabs option {
+    padding: 0.5rem; /* Spacing for touch */
+    background-color: #fff;
+    color: #333;
+    font-size: 1rem;
+}
+
+/* Show on Mobile */
+@media (max-width: 480px) {
+    .profile-tabs {
+        display: none; /* Hide desktop tabs */
+    }
+    .mobile-tabs {
+        display: block; /* Show dropdown */
+    }
+}
+
+/* Dark Mode */
+.dark-theme .mobile-tabs {
+    background-color: #333; /* Dark background */
+    color: #fff; /* White text */
+    border-color: #e63946;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23e63946' viewBox='0 0 16 16'%3E%3Cpath d='M8 12l-6-6h12l-6 6z'/%3E%3C/svg%3E"); /* Same red arrow */
+}
+
+.dark-theme .mobile-tabs option {
+    background-color: #333;
+    color: #fff;
+}
+
+.dark-theme .mobile-tabs:hover,
+.dark-theme .mobile-tabs:focus {
+    border-color: #d9273a;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Light shadow for dark mode */
+}
+
+/* Profile Sections */
+.profile-section {
+    margin-bottom: 2.5rem;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease;
+}
+
+.profile-section:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.profile-section h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+    border-bottom: 3px solid #e63946;
+    padding-bottom: 0.75rem;
+    font-weight: 600;
+}
+/* About Me Tab Specific Styling */
+#aboutMe .profile-section {
+    padding: 2rem;
+}
+
+.profile-section p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 0;
+}
+
+/* Profile Info Tab */
+#profileInfo .profile-section {
+    padding: 1.5rem; /* Reduced padding for mobile */
+    margin-bottom: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease;
+    width: 100%; /* Ensures full width */
+    max-width: 100%; /* Prevents overflow */
+    overflow-x: auto; /* Prevents horizontal scrolling */
+}
+
+#profileInfo .profile-section:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+#profileInfo .profile-section h2 {
+    font-size: 1.5rem; /* Smaller on mobile */
+    color: #333;
+    margin-bottom: 1.25rem;
+    border-bottom: 2px solid #e63946; 
+    padding-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+/* Mobile Tabs (Dropdown) */
+.mobile-tabs {
+    display: none;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e63946;
+    border-radius: 8px;
+    background-color: #fff;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23e63946' viewBox='0 0 16 16'%3E%3Cpath d='M8 12l-6-6h12l-6 6z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    margin-bottom: 1rem; /* Space below dropdown */
+}
+
+.mobile-tabs:hover,
+.mobile-tabs:focus {
+    border-color: #d9273a;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    outline: none;
+}
+
+.mobile-tabs option {
+    padding: 0.5rem;
+    background-color: #fff;
+    color: #333;
+    font-size: 1rem;
+}
+
+@media (max-width: 480px) {
+    .profile-tabs {
+        display: none;
+    }
+    .mobile-tabs {
+        display: block;
+    }
+}
+
+.dark-theme .mobile-tabs {
+    background-color: #333;
+    color: #fff;
+    border-color: #e63946;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23e63946' viewBox='0 0 16 16'%3E%3Cpath d='M8 12l-6-6h12l-6 6z'/%3E%3C/svg%3E");
+}
+
+.dark-theme .mobile-tabs option {
+    background-color: #333;
+    color: #fff;
+}
+
+.dark-theme .mobile-tabs:hover,
+.dark-theme .mobile-tabs:focus {
+    border-color: #d9273a;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+/* Profile Info Container */
+.profile-info-container {
+    display: flex;
+    gap: 1.5rem; /* Reduced gap for mobile */
+    align-items: flex-start;
+    flex-wrap: wrap;
+    width: 100%; /* Full width */
+    overflow-x: auto; /* Prevents horizontal scrolling */
+}
+
+/* Avatar Section */
+.avatar-section {
+    flex: 1;
+    min-width: 100%; /* Full width on mobile */
+    text-align: center;
+    max-width: 150px; /* Cap width for avatar on mobile */
+    margin: 0 auto; /* Center on mobile */
+}
+
+.avatar-section .avatar-clickable {
+    cursor: pointer;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.avatar-section .avatar-clickable:hover {
+    transform: scale(1.05);
+}
+
+.avatar-section .avatar-img {
+    width: 120px; /* Reduced for mobile, matching image */
+    height: 120px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #e63946;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-section p {
+    font-size: 0.9rem; /* Smaller on mobile */
+    color: #888;
+    font-style: italic;
+    margin: 0.75rem 0;
+}
+
+.avatar-section form {
+    margin-top: 0.75rem;
+}
+
+.avatar-section input[type="file"] {
+    display: block;
+    margin: 0.5rem auto;
+    padding: 0.5rem;
+    border: 2px solid #e63946;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background-color: #fff;
+    color: #333;
+    width: 100%;
+    max-width: 200px; /* Reduced for mobile */
+}
+
+/* Personal Info */
+.personal-info {
+    flex: 2;
+    min-width: 100%; /* Full width on mobile */
+    max-width: 100%; /* Prevents overflow */
+}
+
+.personal-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+}
+
+.personal-info ul li {
+    font-size: 1rem; /* Smaller on mobile */
+    color: #555;
+    margin-bottom: 0.5rem; /* Reduced spacing */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem; /* Reduced gap on mobile */
+}
+
+.personal-info ul li strong {
+    color: #333;
+    font-weight: 500;
+    min-width: 100px; /* Adjusted for mobile alignment, matching image */
+    white-space: nowrap; /* Prevents label wrapping */
+}
+
+/* Buttons */
+.button {
+    padding: 0.5rem 1rem; /* Smaller on mobile */
+    border-radius: 6px;
+    font-size: 0.9rem; /* Smaller on mobile */
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.button-danger {
+    background-color: #e63946;
+    color: #fff;
+}
+
+.button-danger:hover {
+    background-color: #d9273a;
+}
+
+.avatar-section .button {
+    background-color: #e63946;
+    color: #fff;
+    margin-top: 0.5rem;
+}
+
+.personal-info .button {
+    background-color: transparent;
+    color: #e63946;
+    border: 2px solid #e63946;
+}
+
+.personal-info .button:hover {
+    background-color: #e63946;
+    color: #fff;
+}
+
+/* Avatar Modal */
+.avatar-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar-modal-content {
+    max-width: 90%;
+    max-height: 90vh;
+    border-radius: 8px;
+    border: 3px solid #e63946;
+}
+
+.close-avatar-modal {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    color: #fff;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-avatar-modal:hover {
+    color: #e63946;
+}
+
+/* Dark Mode */
+.dark-theme #profileInfo .profile-section {
+    background-color: #2a2a2a;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme #profileInfo .profile-section h2 {
+    color: #fff;
+}
+
+.dark-theme .avatar-section .avatar-img {
+    border-color: #e63946;
+}
+
+.dark-theme .avatar-section p {
+    color: #999;
+}
+
+.dark-theme .avatar-section input[type="file"] {
+    background-color: #333;
+    color: #fff;
+    border-color: #e63946;
+}
+
+.dark-theme .personal-info ul li {
+    color: #ccc;
+}
+
+.dark-theme .personal-info ul li strong {
+    color: #fff;
+}
+
+/* Desktop Responsiveness */
+@media (min-width: 769px) {
+    #profileInfo .profile-section {
+        padding: 2rem;
+    }
+
+    #profileInfo .profile-section h2 {
+        font-size: 1.8rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 3px solid #e63946;
+    }
+
+    .profile-info-container {
+        padding: 5px;
+        gap: 2rem;
+    }
+
+    .avatar-section {
+        min-width: 200px;
+        max-width: none;
+    }
+
+    .avatar-section .avatar-img {
+        width: 150px;
+        height: 150px;
+    }
+
+    .avatar-section p {
+        font-size: 1rem;
+        margin: 1rem 0;
+    }
+
+    .avatar-section input[type="file"] {
+        max-width: 250px;
+    }
+
+    .personal-info {
+        min-width: 250px;
+        max-width: none;
+    }
+
+    .personal-info ul li {
+        font-size: 1.1rem;
+        margin-bottom: 0.75rem;
+        gap: 0.75rem;
+    }
+
+    .personal-info ul li strong {
+        min-width: 120px;
+    }
+
+    .button {
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        width: auto;
+    }
+}
+
+/* Bio Section */
+.bio-section {
+    margin-bottom: 2rem;
+}
+
+.bio-section h3 {
+    font-size: 1.4rem;
+    color: #333;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 500;
+}
+
+.bio-section #bioDisplay {
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.6;
+    word-wrap: break-word;
+    min-height: 50px;
+}
+
+.bio-section #bioDisplay .profile-bio {
+    margin: 0; /* Remove default paragraph margin */
+}
+
+.bio-section #bioDisplay .public-profile-placeholder {
+    color: #888;
+    font-style: italic;
+    margin: 0;
+}
+
+/* Edit Bio Button */
+.bio-section #editBioBtn.button-edit {
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    color: #e63946;
+    border: 2px solid #e63946;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.bio-section #editBioBtn.button-edit:hover {
+    background-color: #e63946;
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Bio Form */
+.bio-section #bioForm {
+    display: none;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.bio-section #bioForm p {
+    margin: 0 0 1rem; /* Consistent spacing for form elements */
+}
+
+.bio-section #bioForm textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 0.75rem;
+    border: 2px solid #e63946;
+    border-radius: 6px;
+    font-size: 1rem;
+    line-height: 1.6;
+    resize: vertical;
+    background-color: #fff;
+    color: #333;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.bio-section #bioForm textarea:focus {
+    border-color: #d9273a;
+    box-shadow: 0 0 8px rgba(230, 57, 70, 0.2);
+    outline: none;
+}
+
+/* Dietary Restrictions Section */
+.dietary-restrictions {
+    margin-bottom: 2rem;
+}
+
+.dietary-restrictions h3 {
+    font-size: 1.4rem;
+    color: #333;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: 500;
+}
+
+.dietary-restrictions #dietDisplay {
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.6;
+}
+
+.dietary-restrictions #dietDisplay ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dietary-restrictions #dietDisplay ul li {
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.dietary-restrictions #dietDisplay ul li:before {
+    content: "\f058"; /* Font Awesome check-circle */
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: #e63946;
+    position: absolute;
+    left: 0;
+    top: 2px;
+    font-size: 1rem;
+}
+
+.dietary-restrictions #dietDisplay p {
+    color: #888;
+    font-style: italic;
+    margin: 0;
+}
+
+/* Edit Diet Button */
+.dietary-restrictions #editDietBtn.button-edit {
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    color: #e63946;
+    border: 2px solid #e63946;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dietary-restrictions #editDietBtn.button-edit:hover {
+    background-color: #e63946;
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Diet Form */
+.dietary-restrictions #dietForm {
+    display: none;
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.dietary-restrictions #dietForm p {
+    margin: 0 0 0.75rem; /* Spacing for checkboxes */
+}
+
+.dietary-restrictions #dietForm label {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.dietary-restrictions #dietForm input[type="checkbox"] {
+    margin-right: 0.5rem;
+    accent-color: #e63946; /* Red checkbox */
+}
+
+/* Buttons (Save & Cancel) */
+.bio-section #bioForm button,
+.dietary-restrictions #dietForm button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.75rem;
+    margin-right: 0.5rem;
+}
+
+.bio-section #bioForm button[type="submit"],
+.dietary-restrictions #dietForm button[type="submit"] {
+    background-color: #e63946;
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bio-section #bioForm button[type="submit"]:hover,
+.dietary-restrictions #dietForm button[type="submit"]:hover {
+    background-color: #d9273a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.bio-section #bioForm button.button-cancel,
+.dietary-restrictions #dietForm button.button-cancel {
+    background-color: #666;
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bio-section #bioForm button.button-cancel:hover,
+.dietary-restrictions #dietForm button.button-cancel:hover {
+    background-color: #555;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark Mode */
+.dark-theme .profile-section {
+    background-color: #2a2a2a;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme .profile-section h2 {
+    color: #fff;
+}
+
+.dark-theme .bio-section h3,
+.dark-theme .dietary-restrictions h3 {
+    color: #fff;
+}
+
+.dark-theme .bio-section #bioDisplay,
+.dark-theme .dietary-restrictions #dietDisplay {
+    background-color: #333;
+    color: #ccc;
+    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme .bio-section #bioDisplay .public-profile-placeholder,
+.dark-theme .dietary-restrictions #dietDisplay p {
+    color: #999;
+}
+
+.dark-theme .bio-section #bioForm,
+.dark-theme .dietary-restrictions #dietForm {
+    background-color: #333;
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme .bio-section #bioForm textarea {
+    background-color: #333;
+    color: #fff;
+    border-color: #e63946;
+}
+
+.dark-theme .bio-section #bioForm textarea:focus {
+    border-color: #d9273a;
+}
+
+.dark-theme .dietary-restrictions #dietForm label {
+    color: #ccc;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .profile-section {
+        padding: 1.5rem;
+    }
+
+    .bio-section h3,
+    .dietary-restrictions h3 {
+        font-size: 1.3rem;
+    }
+
+    .bio-section #bioDisplay,
+    .dietary-restrictions #dietDisplay {
+        font-size: 1rem;
+        padding: 0.75rem;
+    }
+
+    .bio-section #bioForm textarea,
+    .dietary-restrictions #dietForm label {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .bio-section h3,
+    .dietary-restrictions h3 {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .bio-section #editBioBtn.button-edit,
+    .dietary-restrictions #editDietBtn.button-edit {
+        margin-top: 0.5rem;
+    }
+
+    .bio-section #bioForm button,
+    .dietary-restrictions #dietForm button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Social Links Tab */
+#social .profile-section {
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); /* Subtle gradient */
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Softer, modern shadow */
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+#social .profile-section:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+#social .profile-section h2 {
+    font-size: 2rem; /* Larger, bolder heading */
+    color: #333;
+    margin-bottom: 1.75rem;
+    border-bottom: 4px solid #e63946; /* Thicker, bold red underline */
+    padding-bottom: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Edit Social Button (Match other edit buttons) */
+#social .button.button-edit {
+    padding: 0.5rem 1rem;
+    background-color: transparent;
+    color: #e63946;
+    border: 2px solid #e63946;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 1rem; /* Space from heading */
+}
+
+#social .button.button-edit:hover {
+    background-color: #e63946;
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Social Links Display */
+#social #socialDisplay {
+    padding: 1.5rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.3s ease;
+    overflow-x: auto;
+}
+
+#social #socialDisplay:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+#social #socialDisplay ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#social #socialDisplay ul li {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+#social #socialDisplay ul li strong {
+    color: #333;
+    font-weight: 500;
+    min-width: 100px; /* Align labels */
+}
+
+#social #socialDisplay ul li a {
+    color: #e63946;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#social #socialDisplay ul li a:hover {
+    color: #d9273a;
+    transform: translateX(2px); /* Slight slide on hover */
+}
+
+#social #socialDisplay ul li a i {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+#social #socialDisplay ul li a:hover i {
+    transform: scale(1.1); /* Slight icon zoom on hover */
+}
+
+
+#social #socialDisplay p {
+    color: #888;
+    font-style: italic;
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* Social Links Form */
+#social #socialForm {
+    display: none;
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: linear-gradient(145deg, #fff 0%, #f5f5f5 100%); /* Subtle gradient */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: box-shadow 0.3s ease;
+}
+
+#social #socialForm:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+#social #socialForm p {
+    margin: 0 0 1rem; /* Consistent spacing for form fields */
+}
+
+#social #socialForm label {
+    display: block;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+#social #socialForm input[type="text"],
+#social #socialForm input[type="url"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #e63946;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #fff;
+    color: #333;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    margin-bottom: 1rem;
+}
+
+#social #socialForm input[type="text"]:focus,
+#social #socialForm input[type="url"]:focus {
+    border-color: #d9273a;
+    box-shadow: 0 0 8px rgba(230, 57, 70, 0.2);
+    outline: none;
+}
+
+/* Form Buttons (Scoped to #social) */
+#social #socialForm .button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 0.75rem;
+    margin-right: 0.5rem;
+}
+
+#social #socialForm .button[type="submit"] {
+    background-color: #e63946;
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#social #socialForm .button[type="submit"]:hover {
+    background-color: #d9273a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+#social #socialForm .button.button-cancel {
+    background-color: #666;
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#social #socialForm .button.button-cancel:hover {
+    background-color: #555;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Dark Mode */
+.dark-theme #social .profile-section {
+    background: linear-gradient(135deg, #2a2a2a 0%, #333 100%);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme #social .profile-section h2 {
+    color: #fff;
+}
+
+.dark-theme #social #socialDisplay {
+    background-color: #333;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.06);
+}
+
+.dark-theme #social #socialDisplay ul li {
+    color: #ccc;
+}
+
+.dark-theme #social #socialDisplay ul li strong {
+    color: #fff;
+}
+
+.dark-theme #social #socialDisplay ul li a {
+    color: #e63946;
+}
+
+.dark-theme #social #socialDisplay ul li a:hover {
+    color: #d9273a;
+}
+
+.dark-theme #social #socialDisplay p {
+    color: #999;
+}
+
+.dark-theme #social #socialForm {
+    background: linear-gradient(145deg, #2d2d2d 0%, #3a3a3a 100%);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.06);
+}
+
+.dark-theme #social #socialForm label {
+    color: #fff;
+}
+
+.dark-theme #social #socialForm input[type="text"],
+.dark-theme #social #socialForm input[type="url"] {
+    background-color: #333;
+    color: #fff;
+    border-color: #e63946;
+}
+
+.dark-theme #social #socialForm input[type="text"]:focus,
+.dark-theme #social #socialForm input[type="url"]:focus {
+    border-color: #d9273a;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    #social .profile-section {
+        padding: 1.5rem;
+    }
+
+    #social .profile-section h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e63946;
+    }
+
+    #social #socialDisplay {
+        padding: 1rem;
+    }
+
+    #social #socialDisplay ul li {
+        font-size: 1rem;
+        margin-bottom: 0.75rem;
+    }
+
+    #social #socialForm {
+        padding: 1rem;
+        margin-top: 1rem;
+    }
+
+    #social #socialForm input[type="text"],
+    #social #socialForm input[type="url"] {
+        padding: 0.6rem;
+        font-size: 0.95rem;
+    }
+
+    #social .button.button-edit {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+    }
+
+    #social #socialForm .button {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #social #socialDisplay ul li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    #social #socialDisplay ul li strong {
+        min-width: auto; /* Remove fixed width on very small screens */
+    }
+
+    #social #socialForm .button {
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Features Tab */
+#features .profile-section {
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); /* Subtle gradient */
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Softer, modern shadow */
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+#features .profile-section:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+#features .profile-section h2 {
+    font-size: 2rem; /* Larger, bolder heading */
+    color: #333;
+    margin-bottom: 1.75rem;
+    border-bottom: 4px solid #e63946; /* Thicker, bold red underline */
+    padding-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+/* Features List */
+.features-section {
+    display: grid;
+    gap: 2rem; /* Increased spacing for a premium feel */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Wider cards */
+    padding: 1rem 0; /* Slight padding for spacing */
+}
+
+.feature-card {
+    padding: 1.75rem;
+    background: linear-gradient(145deg, #ffffff 0%, #f5f5f5 100%); /* Subtle card gradient */
+    border-radius: 12px; /* Larger radius for modernity */
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06); /* Softer shadow */
+    transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s ease;
+    position: relative;
+    overflow: auto;
+}
+
+.feature-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-4px); /* More pronounced lift */
+    background: linear-gradient(145deg, #ffffff 20%, #f0f0f0 100%); /* Slightly darker on hover */
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: #e63946;
+    transition: left 0.5s ease;
+}
+
+.feature-card:hover::before {
+    left: 0; /* Red underline animation on hover */
+}
+
+/* Feature Title and Icon */
+.feature-card h3 {
+    font-size: 1.6rem; /* Larger, more impactful */
+    color: #222;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.feature-card .fa {
+    color: #e63946;
+    font-size: 1.8rem; /* Larger, striking icons */
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover .fa {
+    transform: scale(1.1); /* Slight icon zoom on hover */
+}
+
+.feature-card .fa-arrow-right{
+    color: #fff;
+}
+
+/* Feature Description */
+.feature-card p {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.8; /* Improved readability */
+    margin: 0;
+    opacity: 0.9;
+    transition: opacity 0.3s ease;
+}
+
+.feature-card:hover p {
+    opacity: 1; /* Full opacity on hover for emphasis */
+}
+
+/* Feature Button */
+.feature-card .button {
+    padding: 0.75rem 1.5rem; /* Larger, more premium button */
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    background: linear-gradient(45deg, #e63946 0%, #d9273a 100%); /* Gradient button */
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3); /* Enhanced shadow */
+    margin-top: 1.25rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.feature-card .button:hover {
+    background: linear-gradient(45deg, #d9273a 0%, #c81f35 100%); /* Darker gradient on hover */
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(230, 57, 70, 0.4);
+}
+
+.feature-card .button i {
+    margin-left: 0.5rem; /* Space for arrow icon */
+    transition: transform 0.3s ease;
+}
+
+.feature-card .button:hover i {
+    transform: translateX(4px); /* Arrow slides right on hover */
+}
+
+/* Dark Mode */
+.dark-theme #features .profile-section {
+    background: linear-gradient(135deg, #2a2a2a 0%, #333 100%);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme #features .profile-section h2 {
+    color: #fff;
+}
+
+.dark-theme .feature-card {
+    background: linear-gradient(145deg, #2d2d2d 0%, #3a3a3a 100%);
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.06);
+}
+
+.dark-theme .feature-card h3 {
+    color: #fff;
+}
+
+.dark-theme .feature-card p {
+    color: #ccc;
+}
+
+.dark-theme .feature-card .button {
+    background: linear-gradient(45deg, #e63946 0%, #d9273a 100%);
+    box-shadow: 0 4px 12px rgba(230, 57, 70, 0.4);
+}
+
+.dark-theme .feature-card .button:hover {
+    background: linear-gradient(45deg, #d9273a 0%, #c81f35 100%);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    #features .profile-section {
+        padding: 1.5rem;
+    }
+
+    #features .profile-section h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e63946;
+    }
+
+    .features-section {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Smaller cards */
+        gap: 1.5rem;
+    }
+
+    .feature-card {
+        padding: 1.25rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.4rem;
+    }
+
+    .feature-card p {
+        font-size: 1rem;
+    }
+
+    .feature-card .fa {
+        font-size: 1.5rem;
+    }
+
+    .feature-card .button {
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+        margin-top: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .features-section {
+        grid-template-columns: 1fr; /* Stack vertically on very small screens */
+        gap: 1rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .feature-card p {
+        font-size: 0.9rem;
+    }
+
+    .feature-card .button {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+
+/* Followers/Following List Modal */
+.followers-following-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent overlay */
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease;
+}
+
+.followers-following-modal-content {
+    background: linear-gradient(145deg, #fff 0%, #f5f5f5 100%); /* Subtle gradient */
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    width: 90%;
+    max-width: 400px; /* Max width for mobile/tablet */
+    max-height: 80vh; /* Limit height for scrolling */
+    overflow-y: auto; /* Scrollable list */
+    padding: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.followers-following-modal-content:hover {
+    transform: translateY(-2px); /* Slight lift on hover */
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+}
+
+.followers-following-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    color: #e63946;
+    cursor: pointer;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.followers-following-modal-close:hover {
+    color: #d9273a;
+    transform: scale(1.1); /* Slight zoom on hover */
+}
+
+.followers-following-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.followers-following-list li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #e0e0e0; /* Light divider */
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+
+.followers-following-list li:hover {
+    background: #f8f9fa; /* Subtle highlight on hover */
+    transform: translateX(2px); /* Slight slide on hover */
+}
+
+.followers-following-list li:last-child {
+    border-bottom: none; /* Remove divider from last item */
+}
+
+.follower-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #f0f0f0; /* Fallback background */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.follower-avatar:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+}
+
+.follower-avatar-fallback {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+    color: #e63946;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-radius: 50%;
+}
+
+.follower-username {
+    flex-grow: 1;
+    font-size: 1rem;
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.follower-username:hover {
+    color: #e63946;
+}
+
+.follow-action {
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.follow-action.follow-btn {
+    background: linear-gradient(45deg, #e63946 0%, #d9273a 100%);
+    color: #fff;
+}
+
+.follow-action.follow-btn:hover {
+    background: linear-gradient(45deg, #d9273a 0%, #c81f35 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(230, 57, 70, 0.3);
+}
+
+.follow-action.unfollow-btn {
+    background-color: #666; /* Muted gray for unfollow */
+    color: #fff;
+}
+
+.follow-action.unfollow-btn:hover {
+    background-color: #444; /* Darker gray on hover */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(102, 102, 102, 0.3);
+}
+
+/* Dark Mode for Modal */
+.dark-theme .followers-following-modal-content {
+    background: linear-gradient(145deg, #2d2d2d 0%, #3a3a3a 100%);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+    border: 1px solid #444;
+}
+
+.dark-theme .followers-following-modal-close {
+    color: #e63946;
+}
+
+.dark-theme .followers-following-modal-close:hover {
+    color: #d9273a;
+}
+
+.dark-theme .followers-following-list li {
+    border-bottom-color: #444;
+    background: #333;
+}
+
+.dark-theme .followers-following-list li:hover {
+    background: #2a2a2a;
+}
+
+.dark-theme .follower-username {
+    color: #ddd;
+}
+
+.dark-theme .follower-username:hover {
+    color: #e63946;
+}
+
+.dark-theme .follower-avatar {
+    background: #333;
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
+}
+
+.dark-theme .follower-avatar-fallback {
+    background: linear-gradient(135deg, #2a2a2a 0%, #333 100%);
+    color: #e63946;
+}
+
+/* Mobile Responsiveness for Modal */
+@media (max-width: 768px) {
+    .followers-following-modal-content {
+        width: 95%;
+        max-width: 350px;
+        padding: 1rem;
+        border-radius: 10px;
+    }
+
+    .followers-following-modal-close {
+        top: 0.75rem;
+        right: 0.75rem;
+        font-size: 1.3rem;
+    }
+
+    .followers-following-list li {
+        padding: 0.5rem 0;
+        gap: 0.75rem;
+    }
+
+    .follower-avatar {
+        width: 35px;
+        height: 35px;
+    }
+
+    .follower-username {
+        font-size: 0.9rem;
+    }
+
+    .follow-action {
+        padding: 0.25rem 0.6rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .followers-following-modal-content {
+        width: 90%;
+        max-width: 300px;
+        padding: 0.8rem;
+        border-radius: 8px;
+    }
+
+    .followers-following-modal-close {
+        top: 0.5rem;
+        right: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .followers-following-list li {
+        padding: 0.4rem 0;
+        gap: 0.5rem;
+    }
+
+    .follower-avatar {
+        width: 30px;
+        height: 30px;
+    }
+
+    .follower-username {
+        font-size: 0.8rem;
+    }
+
+    .follow-action {
+        padding: 0.2rem 0.5rem;
+        font-size: 0.7rem;
+    }
+}
+
+/* Private List Message */
+.private-list-message {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease;
+    margin: 1rem 0;
+}
+
+.private-list-message:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.private-list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.private-icon {
+    font-size: 2.5rem;
+    color: #e63946;
+    animation: subtlePulse 2s infinite;
+}
+
+.private-list-message p {
+    font-size: 1.2rem;
+    color: #555;
+    margin: 0;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* Subtle Pulse Animation for Lock Icon */
+@keyframes subtlePulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
+/* Dark Mode */
+.dark-theme .private-list-message {
+    background: linear-gradient(135deg, #2a2a2a 0%, #333 100%);
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme .private-list-message p {
+    color: #ccc;
+}
+
+.dark-theme .private-icon {
+    color: #e63946;
+}
+/* Appearance Tab */
+#appearance .profile-section {
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto; /* Removed scroll, as it’s not needed here */
+}
+
+#appearance .profile-section:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+#appearance .profile-section h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 1.5rem;
+    border-bottom: 3px solid #e63946;
+    padding-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+/* Dark Mode Toggle Button */
+#toggleDarkMode {
+    padding: 0.75rem 1.5rem;
+    background-color: #e63946;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex; /* Use flex to center icon and text */
+    align-items: center;
+    justify-content: center; /* Center horizontally */
+    gap: 0.5rem; /* Space between icon and text */
+    margin: 1rem auto 0; /* Center the button with margin-top */
+    width: fit-content; /* Adjust width to content, ensuring centering */
+}
+
+#toggleDarkMode i {
+    font-size: 1.2rem; /* Icon size */
+    transition: transform 0.3s ease;
+    color: #fff;
+}
+
+#toggleDarkMode:hover {
+    background-color: #d9273a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+#toggleDarkMode:hover i {
+    transform: rotate(360deg); /* Rotate icon on hover for interactivity */
+}
+
+/* Dynamic Icon Based on Theme */
+#toggleDarkMode[data-theme="dark"] i::before {
+    content: "\f185"; /* Font Awesome sun (fa-sun) for light mode */
+}
+
+#toggleDarkMode[data-theme="light"] i::before {
+    content: "\f186"; /* Font Awesome moon (fa-moon) for dark mode */
+}
+
+/* Dark Mode */
+.dark-theme #appearance .profile-section {
+    background-color: #2a2a2a;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme #appearance .profile-section h2 {
+    color: #fff;
+}
+
+.dark-theme #toggleDarkMode {
+    background-color: #e63946;
+    color: #fff;
+}
+
+.dark-theme #toggleDarkMode:hover {
+    background-color: #d9273a;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    #appearance .profile-section {
+        padding: 1.5rem;
+    }
+
+    #appearance .profile-section h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e63946;
+    }
+
+    #toggleDarkMode {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+        gap: 0.4rem; /* Reduced gap on mobile */
+    }
+
+    #toggleDarkMode i {
+        font-size: 1rem; /* Smaller icon on mobile */
+    }
+}
+
+@media (max-width: 480px) {
+    #toggleDarkMode {
+        width: 100%; /* Full width on very small screens */
+        text-align: center;
+        margin: 0.75rem auto 0; /* Adjust margin for mobile */
+    }
+}
+
+/* Account Actions Tab */
+#actions .profile-section {
+    padding: 2rem;
+    margin-bottom: 2.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); /* Subtle gradient */
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Softer, modern shadow */
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto; 
+}
+
+#actions .profile-section:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+#actions .profile-section h2 {
+    font-size: 2rem; /* Larger, bolder heading */
+    color: #333;
+    margin-bottom: 1.75rem;
+    border-bottom: 4px solid #e63946; /* Thicker, bold red underline */
+    padding-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+/* Action Buttons Container (Scoped to #actions) */
+#actions .action-buttons {
+    display: flex;
+    flex-wrap: nowrap; /* Prevent wrapping, allow scrolling on small screens */
+    gap: 1.5rem; /* Increased spacing for premium feel */
+    justify-content: center; /* Center on larger screens */
+    padding: 1rem 0; /* Slight padding for spacing */
+    width: 100%; /* Full width */
+    max-width: 100%; /* Prevent overflow */
+}
+
+/* Allow horizontal scrolling only on very small screens (≤480px) */
+@media (max-width: 480px) {
+    #actions .action-buttons {
+        overflow-x: auto; /* Enable horizontal scrolling */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+        padding: 0.5rem 0; /* Reduced padding for tighter fit */
+        justify-content: flex-start; /* Align to start for scrolling */
+        scroll-behavior: smooth; /* Smooth scroll behavior */
+    }
+
+    /* Ensure buttons don’t shrink */
+    #actions .action-button {
+        flex-shrink: 0; /* Prevent buttons from shrinking */
+        min-width: 200px; /* Minimum width to ensure readability */
+    }
+}
+
+/* Action Buttons (Scoped to #actions) */
+#actions .action-button {
+    padding: 0.75rem 1.5rem; /* Larger, more premium button */
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex; /* Use flex for icon alignment */
+    align-items: center;
+    gap: 0.5rem; /* Space between icon and text */
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    width: auto; /* Default width */
+    text-align: center;
+}
+
+#actions .action-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: #fff;
+    transition: left 0.5s ease;
+}
+
+
+/* First Two Buttons (Privacy Settings, My Public Profile) - Match "Edit Personal Details" */
+#actions .action-button:not(.action-button-danger) {
+    background-color: transparent; /* Transparent background like "Edit Personal Details" */
+    color: #e63946;
+    border: 2px solid #e63946; /* Red border like "Edit Personal Details" */
+}
+
+#actions .action-button:not(.action-button-danger):hover {
+    background-color: #e63946; /* Fill with red on hover */
+    color: #fff;
+    border-color: #d9273a; /* Darker red on hover */
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3);
+}
+
+/* Unique Logout Button (Danger Style) */
+#actions .action-button.action-button-danger {
+    background: linear-gradient(45deg, #ff4d4d 0%, #e63946 100%); /* Distinct bold red gradient */
+    color: #fff;
+    padding: 0.9rem 1.8rem; /* Slightly larger for emphasis */
+    font-size: 1.2rem; /* Larger text for prominence */
+    border-radius: 10px; /* Slightly larger radius for uniqueness */
+    position: relative;
+    overflow: hidden;
+}
+
+#actions .action-button.action-button-danger::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1); /* Subtle white overlay for animation */
+    transition: width 0.5s ease;
+}
+
+#actions .action-button.action-button-danger:hover::after {
+    width: 100%; /* Fill effect on hover for uniqueness */
+    background: rgba(255, 255, 255, 0.2); /* Slightly stronger overlay */
+}
+
+#actions .action-button.action-button-danger:hover {
+    background: linear-gradient(45deg, #e63946 0%, #c81f35 100%); /* Darker, unique gradient */
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(255, 77, 77, 0.4);
+}
+
+/* Icons in Buttons */
+#actions .action-button i {
+    font-size: 1.2rem; /* Larger icon size */
+    transition: transform 0.3s ease;
+}
+
+#actions .action-button:hover i {
+    transform: translateX(2px); /* Icon slides right on hover */
+    color: #fff;
+}
+
+#actions .fa-sign-out-alt {
+    color: #fff;
+}
+
+
+.button-danger {
+    background-color: #e63946;
+    color: #fff;
+}
+
+.button-danger:hover {
+    background-color: #d9273a;
+}
+
+/* Dark Mode */
+.dark-theme #actions .profile-section {
+    background: linear-gradient(135deg, #2a2a2a 0%, #333 100%);
+    box-shadow: 0 4px 20px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme #actions .profile-section h2 {
+    color: #fff;
+}
+
+.dark-theme #actions .action-button:not(.action-button-danger) {
+    background-color: transparent;
+    color: #e63946;
+    border-color: #e63946;
+}
+
+.dark-theme #actions .action-button:not(.action-button-danger):hover {
+    background-color: #e63946;
+    color: #fff;
+    border-color: #d9273a;
+}
+
+.dark-theme #actions .action-button.action-button-danger {
+    background: linear-gradient(45deg, #ff4d4d 0%, #e63946 100%);
+}
+
+.dark-theme #actions .action-button.action-button-danger:hover {
+    background: linear-gradient(45deg, #e63946 0%, #c81f35 100%);
+}
+
+/* Desktop/Larger Screens (≥481px) */
+@media (min-width: 481px) {
+    #actions .action-buttons {
+        flex-wrap: wrap; /* Allow wrapping on larger screens */
+        justify-content: center; /* Center buttons */
+    }
+}
+
+/* Mobile Responsiveness (Above 480px already handled by default styles) */
+@media (max-width: 768px) {
+    #actions .profile-section {
+        padding: 1.5rem;
+    }
+
+    #actions .profile-section h2 {
+        font-size: 1.6rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e63946;
+    }
+
+    #actions .action-button {
+        padding: 0.6rem 1.2rem;
+        font-size: 1rem;
+    }
+
+    #actions .action-button.action-button-danger {
+        padding: 0.7rem 1.4rem;
+        font-size: 1.1rem;
+    }
+}
+
+/* Dark Theme Overrides */
+.dark-theme .profile-container {
+    background-color: #1e1e1e;
+    color: #fff;
+}
+
+.dark-theme .profile-section {
+    background-color: #2a2a2a;
+    color: #fff;
+}
+
+.dark-theme .profile-section h2 {
+    color: #fff;
+    border-bottom-color: #e63946;
+}
+
+.dark-theme .personal-info ul li strong {
+    color: #fff;
+}
+
+.dark-theme .personal-info ul li {
+    color: #ccc;
+}
+
+.dark-theme .avatar-section p {
+    color: #ccc;
+}
+
+.dark-theme .avatar-section form label {
+    color: #ccc;
+}
+
+.dark-theme .avatar-section form input[type="file"] {
+    background-color: #333;
+    border-color: #555;
+    color: #ccc;
+}
+
+.dark-theme .dietary-restrictions ul li {
+    color: #ccc;
+}
+
+.dark-theme .dietary-restrictions form label {
+    color: #ccc;
+}
+.dark-theme .dietary-restrictions form p {
+    color: #fff;
+}
+.dark-theme .social-links p {
+    color: #ccc;
+}
+.dark-theme .bio-section p {
+    color: #ccc;
+}
+
+.dark-theme .dietary-restrictions form input[type="checkbox"] {
+    accent-color: #e63946;
+}
+
+.dark-theme .social-links ul li {
+    color: #ccc;
+}
+
+.dark-theme .social-links form label {
+    color: #ccc;
+}
+
+.dark-theme .social-links form input[type="text"],
+.dark-theme .social-links form input[type="url"] {
+    background-color: #333;
+    border-color: #555;
+    color: #ccc;
+}
+
+.dark-theme .feature-section p {
+    color: #ccc;
+}
+
+.dark-theme .button-arrow {
+    border-color: #e63946;
+    color: #e63946;
+}
+
+.dark-theme .button-arrow:hover {
+    background-color: #e63946;
+    color: #fff;
+}
+
+/* -----------------------------------------
+   PROFILE PAGE STYLES (MOBILE & TABLET)
+----------------------------------------- */
+
+
+/* Mobile Styles */
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 1rem;
+    }
+
+    .profile-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .profile-header p {
+        font-size: 0.9rem;
+    }
+
+    .profile-section {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+    }
+
+    .profile-section h2 {
+        font-size: 1.5rem;
+    }
+
+    .profile-section p {
+        font-size: 0.9rem;
+    }
+
+    .avatar-section img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .icon-arrow-button {
+        width: 35px;
+        height: 35px;
+    }
+
+    .icon-arrow-button i {
+        font-size: 1rem;
+    }
+
+    .feature-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .action-buttons a {
+        margin-bottom: 0.5rem;
+    }
+}
+
+/* Tablet Styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .profile-container {
+        padding: 1.5rem;
+    }
+
+    .profile-header h1 {
+        font-size: 2rem;
+    }
+
+    .profile-header p {
+        font-size: 1rem;
+    }
+
+    .profile-section {
+        margin-bottom: 1.75rem;
+        padding: 1.25rem;
+    }
+
+    .profile-section h2 {
+        font-size: 1.6rem;
+    }
+
+    .profile-section p {
+        font-size: 0.95rem;
+    }
+
+    .avatar-section img {
+        width: 120px;
+        height: 120px;
+    }
+
+    .icon-arrow-button {
+        width: 40px;
+        height: 40px;
+    }
+
+    .icon-arrow-button i {
+        font-size: 1.2rem;
+    }
+
+    .feature-header {
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+    }
+}
+
+
+/* -----------------------------------------
+   ACCOUNT SETTINGS STYLES
+----------------------------------------- */
+
+
+
+/* Account Settings Container */
+.account-settings {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Styling */
+.account-settings form {
+    margin-bottom: 2rem;
+}
+
+.account-settings h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #e63946;
+    padding-bottom: 0.5rem;
+}
+
+.account-settings label {
+    display: block;
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+}
+
+.account-settings input[type="text"],
+.account-settings input[type="email"],
+.account-settings input[type="password"],
+.account-settings input[type="file"] {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.account-settings input[type="text"]:focus,
+.account-settings input[type="email"]:focus,
+.account-settings input[type="password"]:focus,
+.account-settings input[type="file"]:focus {
+    border-color: #e63946;
+    box-shadow: 0 0 8px rgba(230, 57, 70, 0.2);
+}
+
+.account-settings button[type="submit"] {
+    padding: 0.75rem 1.5rem;
+    background-color: #e63946;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.account-settings button[type="submit"]:hover {
+    background-color: #d9273a;
+    transform: translateY(-2px);
+}
+
+/* Modal Styling */
+.account-settings .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.account-settings .modal-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+}
+
+.account-settings .modal h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.account-settings .modal p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+}
+
+.account-settings .modal .close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    color: #333;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.account-settings .modal .close:hover {
+    color: #e63946;
+}
+
+/* Error Messages */
+.account-settings .error-message {
+    color: #e63946;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* Dark Mode Overrides */
+.dark-theme .account-settings {
+    background-color: #2a2a2a;
+    color: #fff;
+}
+
+.dark-theme .account-settings h2 {
+    color: #fff;
+    border-bottom-color: #e63946;
+}
+
+.dark-theme .account-settings label {
+    color: #ccc;
+}
+
+.dark-theme .account-settings input[type="text"],
+.dark-theme .account-settings input[type="email"],
+.dark-theme .account-settings input[type="password"],
+.dark-theme .account-settings input[type="file"] {
+    background-color: #333;
+    border-color: #555;
+    color: #fff;
+}
+
+.dark-theme .account-settings input[type="text"]:focus,
+.dark-theme .account-settings input[type="email"]:focus,
+.dark-theme .account-settings input[type="password"]:focus,
+.dark-theme .account-settings input[type="file"]:focus {
+    border-color: #e63946;
+    box-shadow: 0 0 8px rgba(230, 57, 70, 0.2);
+}
+
+.dark-theme .account-settings .modal-content {
+    background-color: #2a2a2a;
+    color: #fff;
+}
+
+.dark-theme .account-settings .modal h2 {
+    color: #fff;
+}
+
+.dark-theme .account-settings .modal p {
+    color: #ccc;
+}
+
+.dark-theme .account-settings .modal .close {
+    color: #fff;
+}
+
+.dark-theme .account-settings .modal .close:hover {
+    color: #e63946;
+}
+/* -----------------------------------------
+   CHANGE PASSWORD BUTTON STYLES
+----------------------------------------- */
+
+.button-change-password {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: #e63946;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.button-change-password:hover {
+    background-color: #d9273a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.button-change-password i {
+    font-size: 1rem;
+    color: #fff;
+}
+
+/* Dark Mode Overrides */
+.dark-theme .button-change-password {
+    background-color: #e63946;
+    color: #fff;
+}
+
+.dark-theme .button-change-password:hover {
+    background-color: #d9273a;
+}
+
+/* -----------------------------------------
+   ACCOUNT SETTINGS RESPONSIVE STYLES
+----------------------------------------- */
+
+/* General Responsive Adjustments */
+@media (max-width: 768px) {
+    /* Account Settings Container */
+    .account-settings {
+        padding: 1.5rem;
+        margin: 1rem auto;
+    }
+
+    /* Form Styling */
+    .account-settings form {
+        margin-bottom: 1.5rem;
+    }
+
+    .account-settings h2 {
+        font-size: 1.5rem;
+    }
+
+    .account-settings input[type="text"],
+    .account-settings input[type="email"],
+    .account-settings input[type="password"],
+    .account-settings input[type="file"] {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .account-settings button[type="submit"] {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Change Password Button */
+    .button-change-password {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Modal Styling */
+    .account-settings .modal-content {
+        padding: 1.5rem;
+    }
+
+    .account-settings .modal h2 {
+        font-size: 1.5rem;
+    }
+
+    .account-settings .modal p {
+        font-size: 0.9rem;
+    }
+
+    .account-settings .modal .close {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Account Settings Container */
+    .account-settings {
+        padding: 1rem;
+        margin: 0.5rem auto;
+    }
+
+    /* Form Styling */
+    .account-settings h2 {
+        font-size: 1.25rem;
+    }
+
+    .account-settings input[type="text"],
+    .account-settings input[type="email"],
+    .account-settings input[type="password"],
+    .account-settings input[type="file"] {
+        padding: 0.4rem;
+        font-size: 0.8rem;
+    }
+
+    .account-settings button[type="submit"] {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    /* Change Password Button */
+    .button-change-password {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    /* Modal Styling */
+    .account-settings .modal-content {
+        padding: 1rem;
+    }
+
+    .account-settings .modal h2 {
+        font-size: 1.25rem;
+    }
+
+    .account-settings .modal p {
+        font-size: 0.8rem;
+    }
+
+    .account-settings .modal .close {
+        font-size: 1rem;
+    }
+}
+/* Modal Responsive Styles */
+@media (max-width: 768px) {
+    .account-settings .modal-content {
+        width: 90%;
+        max-width: 400px;
+    }
+}
+
+@media (max-width: 480px) {
+    .account-settings .modal-content {
+        width: 95%;
+        max-width: 300px;
+    }
+}
+/* Form Field Responsiveness */
+@media (max-width: 480px) {
+    .account-settings form p {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .account-settings form label {
+        margin-bottom: 0.25rem;
+    }
+
+    .account-settings form input[type="text"],
+    .account-settings form input[type="email"],
+    .account-settings form input[type="password"],
+    .account-settings form input[type="file"] {
+        width: 100%;
+    }
+}
+
+
+  /* -----------------------------------------
+   PRIVACY SETTINGS STYLES
+----------------------------------------- */
+
+.privacy-settings {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.privacy-settings h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.privacy-description {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 2rem;
+}
+
+/* Toggle Switch Group */
+.toggle-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.toggle-label {
+    font-size: 1rem;
+    color: #333;
+    margin-left: 1rem;
+}
+
+/* Save Button */
+.save-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #e63946;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.save-button:hover {
+    background-color: #d9273a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Toggle Switch Styles */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    margin-right: 8px;
+}
+
+.switch input[type="checkbox"] {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: 0.4s;
+    border-radius: 28px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #fff;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input[type="checkbox"]:checked + .slider {
+    background-color: #e63946; /* Red color for consistency */
+}
+
+input[type="checkbox"]:checked + .slider:before {
+    transform: translateX(22px);
+}
+
+.slider.round {
+    border-radius: 28px;
+}
+
+/* Dark Mode Overrides */
+.dark-theme .privacy-settings {
+    background-color: #2a2a2a;
+    color: #fff;
+}
+
+.dark-theme .privacy-settings h1 {
+    color: #fff;
+}
+
+.dark-theme .privacy-description {
+    color: #ccc;
+}
+
+.dark-theme .toggle-label {
+    color: #ccc;
+}
+
+.dark-theme .save-button {
+    background-color: #e63946;
+    color: #fff;
+}
+
+.dark-theme .save-button:hover {
+    background-color: #d9273a;
+}
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .privacy-settings {
+        padding: 1.5rem;
+        margin: 1rem auto;
+    }
+
+    .privacy-settings h1 {
+        font-size: 1.75rem;
+    }
+
+    .privacy-description {
+        font-size: 0.9rem;
+    }
+
+    .toggle-label {
+        font-size: 0.9rem;
+    }
+
+    .save-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .privacy-settings {
+        padding: 1rem;
+        margin: 0.5rem auto;
+    }
+
+    .privacy-settings h1 {
+        font-size: 1.5rem;
+    }
+
+    .privacy-description {
+        font-size: 0.8rem;
+    }
+
+    .toggle-label {
+        font-size: 0.8rem;
+    }
+
+    .save-button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}
+
+/* -----------------------------------------
+   Public Profile STYLES
+----------------------------------------- */
+
+
+/* Public Profile Wrapper */
+.public-profile-wrapper {
+    width: 90%;
+    max-width: 1200px;
+    margin: 2rem auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 0 1rem; /* Slight padding for spacing */
+}
+
+/* Back Button (for owner viewing their profile) */
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.7rem;
+    background-color: transparent;
+    color: #e63946;
+    border: 2px solid #e63946;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 0 0 1rem 0; 
+    display: block; 
+    max-width: 200px; 
+    text-align: center; 
+}
+
+.back-button:hover {
+    background-color: #e63946;
+    color: #fff;
+    box-shadow: 0 4px 8px rgba(230, 57, 70, 0.2);
+}
+
+.back-button i {
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.back-button:hover i {
+    transform: translateX(-2px);
+    color: #fff;
+}
+
+/* Hero Section (Modern Hero) */
+.public-profile-hero.modern-hero {
+    position: relative;
+    width: 100%;
+    min-height: 240px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); /* Subtle gradient */
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    padding: 2rem 1rem;
+    transition: box-shadow 0.3s ease;
+}
+
+.public-profile-hero.modern-hero:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+}
+
+.public-profile-hero.modern-hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(to right, #e63946, #d9273a); /* Red gradient accent */
+    border-radius: 16px 16px 0 0;
+    transition: opacity 0.3s ease;
+}
+
+.public-profile-hero.modern-hero:hover::before {
+    opacity: 0.8; /* Subtle highlight on hover */
+}
+
+/* Hero Content */
+.public-profile-hero .hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+    width: 100%;
+    padding: 0 1rem;
+}
+
+/* Avatar Container */
+.public-profile-avatar-container {
+    width: 120px; /* Slightly larger for premium look */
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #e63946; /* Thicker border for modernity */
+    background-color: #fff;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    margin-bottom: 1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.public-profile-avatar-container:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.public-profile-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.public-profile-avatar-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e63946;
+    color: #fff;
+    font-size: 2.5rem;
+    font-weight: 700;
+    border-radius: 50%;
+    transition: background 0.3s ease;
+}
+
+.public-profile-avatar-fallback:hover {
+    background-color: #d93442;
+}
+
+/* Name & Username */
+.public-profile-fullname {
+    font-size: 1.8rem; /* Larger, bolder */
+    font-weight: 600;
+    margin: 0;
+    color: #e63946;
+    text-transform: capitalize; /* Cleaner look */
+    transition: color 0.3s ease;
+}
+
+.public-profile-fullname:hover {
+    color: #d9273a; /* Darker red on hover */
+}
+
+.public-profile-username {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.public-profile-username.large {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #e63946;
+}
+
+.public-profile-username:hover {
+    color: #d9273a;
+}
+
+/* Follow/Unfollow Buttons */
+.public-profile-follow-btn form button {
+    padding: 0.75rem 1.5rem; /* Larger, premium button */
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin: 1rem;
+    position: relative;
+    overflow: hidden;
+    width: fit-content; /* Adjust width to content */
+    display: inline-flex; /* Use flex for icon alignment */
+    align-items: center;
+    gap: 0.5rem; /* Space between icon and text */
+}
+
+/* Follow Button (Default) */
+.public-profile-follow-btn form button:not(.unfollow-btn) {
+    background: linear-gradient(45deg, #e63946 0%, #d9273a 100%); /* Red gradient for Follow */
+    color: #fff;
+}
+
+.public-profile-follow-btn form button:not(.unfollow-btn):hover {
+    background: linear-gradient(45deg, #d9273a 0%, #c81f35 100%); /* Darker red gradient */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(230, 57, 70, 0.4);
+}
+
+/* Unfollow Button (Unique Gray Style) */
+.public-profile-follow-btn form button.unfollow-btn {
+    background-color: #666; /* Muted gray for Unfollow */
+    color: #fff;
+}
+
+.public-profile-follow-btn form button.unfollow-btn:hover {
+    background-color: #444; /* Darker gray on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(102, 102, 102, 0.4); /* Matching shadow */
+}
+
+.public-profile-follow-btn i {
+    color: #fff;
+    font-size: 1rem; /* Default icon size */
+    transition: transform 0.3s ease;
+}
+
+.public-profile-follow-btn form button:hover i {
+    transform: translateX(4px); /* Icon slides right on hover */
+}
+
+/* Stats */
+.hero-stats {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1rem;
+    justify-content: center;
+    flex-wrap: wrap; /* Allow wrapping on mobile */
+}
+
+.hero-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #e63946;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%); /* Subtle card gradient */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+}
+
+.hero-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.hero-stat strong {
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.hero-stat span {
+    font-weight: 600;
+    font-size: 1.4rem; /* Larger, bolder stats */
+    transition: color 0.3s ease;
+}
+
+.hero-stat:hover span {
+    color: #d9273a; /* Darker red on hover */
+}
+
+/* Profile Cards (Social Links, Dietary, Recipes) */
+.public-profile-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden; /* Ensure content stays within bounds */
+}
+
+.public-profile-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.public-profile-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #e63946, #d9273a);
+    transition: left 0.5s ease;
+}
+
+.public-profile-card:hover::before {
+    left: 0; /* Red gradient underline on hover */
+}
+
+/* Card Title */
+.public-profile-card-title {
+    font-size: 1.5rem; /* Larger, more impactful */
+    color: #e63946;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: color 0.3s ease;
+}
+
+.public-profile-card-title:hover {
+    color: #d9273a;
+}
+
+.public-profile-card-title i {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+.public-profile-card-title:hover i {
+    transform: scale(1.1); /* Slight icon zoom on hover */
+}
+
+/* Placeholder Text */
+.public-profile-placeholder {
+    color: #999;
+    font-style: italic;
+    margin: 0.5rem 0;
+    font-size: 1rem;
+}
+
+/* Social Links */
+.public-profile-social-links {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+    overflow-x: auto; 
+}
+
+.public-profile-social-links li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: transform 0.3s ease;
+}
+
+.public-profile-social-links li:hover {
+    transform: translateX(2px); /* Slight slide on hover */
+}
+
+.public-profile-social-links li i {
+    color: #e63946;
+    min-width: 20px;
+    text-align: center;
+    font-size: 1.2rem;
+    transition: color 0.3s ease;
+}
+
+.public-profile-social-links li:hover i {
+    color: #d9273a;
+}
+
+.public-profile-social-links li a {
+    color: #333;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.3s ease, transform 0.3s ease;
+    flex-grow: 1; /* Allow text to grow within li */
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden; /* Hide overflow */
+    text-overflow: ellipsis; /* Show ellipsis for long URLs */
+}
+
+.public-profile-social-links li a:hover {
+    color: #e63946;
+    transform: translateX(3px);
+}
+
+/* Dietary Restrictions */
+.public-profile-dietary-list {
+    list-style: none;
+    padding-left: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin-top: 0.5rem;
+}
+
+.public-profile-dietary-list li {
+    background: linear-gradient(135deg, #fef2f2 0%, #fbd5d5 100%); /* Subtle gradient */
+    border: 1px solid #fbd5d5;
+    color: #e63946;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.public-profile-dietary-list li:hover {
+    transform: scale(1.05); /* Slight zoom on hover */
+    box-shadow: 0 2px 8px rgba(230, 57, 70, 0.2);
+}
+
+/* Recipes Section */
+.recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.recipe-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.recipe-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Image */
+.card-image {
+    position: relative;
+    height: 200px;
+    background: #f5f5f5;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #ccc;
+    font-size: 2.5rem;
+}
+
+.image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60%;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+}
+
+/* Card Content */
+.card-content {
+    padding: 1.2rem;
+}
+
+.recipe-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 0.5rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.recipe-meta {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.category {
+    background: #e63946;
+    color: white;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.visibility-label {
+    background: rgba(255, 255, 255, 0.9);
+    color: #666;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    border: 1px solid #eee;
+}
+
+.stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.stats i {
+    margin-right: 0.3rem;
+    color: #e63946;
+}
+
+/* Dark Mode */
+.dark-theme .recipe-card {
+    background: #2a2a2a;
+}
+
+.dark-theme .recipe-title {
+    color: #fff;
+}
+
+.dark-theme .category {
+    background: #d9273a;
+}
+
+.dark-theme .stats {
+    color: #ccc;
+}
+
+.dark-theme .visibility-label {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ccc;
+    border-color: #444;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .recipe-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-image {
+        height: 180px;
+    }
+    
+    .card-content {
+        padding: 1rem;
+    }
+    
+    .recipe-title {
+        font-size: 1rem;
+    }
+    
+    .stats {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+/* Avatar Modal */
+.public-profile-avatar-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.8);
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s ease;
+}
+
+.public-profile-avatar-modal-content {
+    max-width: 90%;
+    max-height: 80%;
+    border-radius: 50%;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.public-profile-avatar-modal:hover .public-profile-avatar-modal-content {
+    transform: scale(1.05); /* Slight zoom on hover */
+}
+
+.public-profile-avatar-modal-close {
+    position: absolute;
+    top: 1rem;
+    right: 2rem;
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.public-profile-avatar-modal-close:hover {
+    color: #e63946;
+    transform: scale(1.1); /* Slight zoom on hover */
+}
+
+/* Dark Mode */
+.dark-theme .public-profile-wrapper {
+    background-color: #1e1e1e;
+    color: #fff;
+}
+
+.dark-theme .public-profile-hero.modern-hero {
+    background: linear-gradient(135deg, #2a2a2a 0%, #333 100%);
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme .public-profile-hero.modern-hero::before {
+    background: linear-gradient(to right, #e63946, #d9273a);
+}
+
+.dark-theme .public-profile-card {
+    background: linear-gradient(145deg, #2d2d2d 0%, #3a3a3a 100%);
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme .public-profile-card-title {
+    color: #e63946;
+}
+
+.dark-theme .public-profile-placeholder {
+    color: #888;
+}
+
+.dark-theme .public-profile-social-links li a {
+    color: #ddd;
+}
+
+.dark-theme .public-profile-social-links li a:hover {
+    color: #e63946;
+}
+
+.dark-theme .public-profile-dietary-list li {
+    background: linear-gradient(135deg, #3a1f1f 0%, #4a2a2a 100%);
+    border-color: #4a2a2a;
+    color: #e63946;
+}
+
+.dark-theme .public-profile-recipe-list li {
+    background: linear-gradient(145deg, #2a2a2a 0%, #3a3a3a 100%);
+    box-shadow: 0 4px 16px rgba(255, 255, 255, 0.05);
+}
+
+.dark-theme .recipe-title {
+    color: #ddd;
+}
+
+.dark-theme .recipe-title:hover {
+    color: #e63946;
+}
+
+.dark-theme .recipe-meta {
+    color: #aaa;
+}
+
+.dark-theme .recipe-meta:hover {
+    color: #d9273a;
+}
+
+.dark-theme .recipe-link {
+    color: #e63946;
+}
+
+.dark-theme .recipe-link:hover {
+    color: #d9273a;
+}
+
+.dark-theme .public-profile-avatar-container {
+    border-color: #2a2a2a;
+}
+
+.dark-theme .public-profile-fullname {
+    color: #e63946;
+}
+
+.dark-theme .public-profile-fullname:hover {
+    color: #d9273a;
+}
+
+.dark-theme .public-profile-username {
+    color: #aaa;
+}
+
+.dark-theme .public-profile-username:hover {
+    color: #d9273a;
+}
+
+.dark-theme .public-profile-username.large {
+    color: #e63946;
+}
+
+.dark-theme .hero-stat {
+    background: linear-gradient(135deg, #2d2d2d 0%, #3a3a3a 100%);
+    box-shadow: 0 2px 8px rgba(255, 255, 255, 0.06);
+}
+
+.dark-theme .hero-stat strong {
+    color: #fff;
+}
+
+.dark-theme .hero-stat:hover span {
+    color: #d9273a;
+}
+
+.dark-theme .public-profile-follow-btn form button {
+    background: linear-gradient(45deg, #e63946 0%, #d9273a 100%);
+}
+
+.dark-theme .public-profile-follow-btn form button:hover {
+    background: linear-gradient(45deg, #d9273a 0%, #c81f35 100%);
+}
+
+.dark-theme .public-profile-avatar-modal {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.dark-theme .public-profile-avatar-modal-close {
+    color: #fff;
+}
+
+.dark-theme .public-profile-avatar-modal-close:hover {
+    color: #e63946;
+}
+
+/* Public Profile Wrapper (Mobile) */
+@media (max-width: 768px) {
+    .public-profile-wrapper {
+        padding: 0 1rem;
+        width: 100%; /* Full width on mobile */
+        margin: 1rem auto; /* Reduced margin for tighter fit */
+    }
+
+    .back-button {
+        max-width: 180px; /* Slightly narrower on mobile for touch friendliness */
+        padding: 0.5rem 1rem; /* Reduced padding for mobile */
+        font-size: 0.9rem; /* Smaller text for mobile */
+        margin: 0 0 0.75rem 0; /* Align to left with reduced margin for mobile spacing */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); /* Softer shadow on mobile */
+    }
+
+    .back-button:hover {
+        box-shadow: 0 4px 8px rgba(230, 57, 70, 0.15); /* Softer hover shadow */
+    }
+
+    .back-button i {
+        font-size: 0.9rem; /* Smaller icon on mobile */
+    }
+    /* Hero Section (Modern Hero) */
+    .public-profile-hero.modern-hero {
+        min-height: 200px;
+        padding: 1.5rem 1rem;
+        border-radius: 12px; /* Slightly smaller radius for mobile */
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06); /* Softer shadow on mobile */
+    }
+
+    .public-profile-hero .hero-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.75rem; /* Reduced gap for tighter layout */
+        padding: 0;
+    }
+
+    .public-profile-hero.modern-hero::before {
+        height: 6px; /* Thinner accent on mobile */
+        border-radius: 12px 12px 0 0;
+    }
+
+    /* Avatar Container */
+    .public-profile-avatar-container {
+        margin: 0 auto 1rem;
+        width: 100px; /* Smaller on mobile */
+        height: 100px;
+        border-width: 3px; /* Thinner border on mobile */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Softer shadow */
+    }
+
+    .public-profile-avatar-container:hover {
+        transform: scale(1.03); /* Reduced zoom for touch friendliness */
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    /* Name & Username */
+    .public-profile-fullname {
+        font-size: 1.4rem; /* Smaller, readable font */
+        line-height: 1.2;
+        word-break: break-word; /* Allow breaking for long names */
+    }
+
+    .public-profile-username {
+        font-size: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .public-profile-username.large {
+        font-size: 1.4rem;
+    }
+
+    /* Follow/Unfollow Button */
+    .public-profile-follow-btn form button {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+        max-width: 200px;
+        margin-top: 0.75rem;
+        box-shadow: 0 4px 8px rgba(230, 57, 70, 0.2); /* Softer shadow */
+    }
+
+    .public-profile-follow-btn form button:hover {
+        transform: translateY(-1px); /* Reduced lift for touch */
+        box-shadow: 0 6px 12px rgba(230, 57, 70, 0.3);
+    }
+
+    .public-profile-follow-btn i {
+        font-size: 1rem; /* Smaller icon on mobile */
+    }
+
+    /* Stats */
+    .hero-stats {
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 1rem;
+
+    }
+
+    .hero-stat {
+        padding: 0.4rem 0.8rem;
+        width: 100%; /* Full width on mobile */
+        border-radius: 6px; /* Smaller radius */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); /* Softer shadow */
+    }
+
+    .hero-stat:hover {
+        transform: translateY(-1px); /* Reduced lift for touch */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .hero-stat strong {
+        font-size: 0.9rem;
+    }
+
+    .hero-stat span {
+        font-size: 1.2rem;
+    }
+
+    /* Profile Cards */
+    .public-profile-card {
+        margin: 1rem 0;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06); /* Softer shadow */
+    }
+
+    .public-profile-card:hover {
+        transform: translateY(-1px); /* Reduced lift for touch */
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .public-profile-card-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .public-profile-card-title i {
+        font-size: 1.3rem;
+    }
+
+    /* Social Links */
+    .public-profile-social-links {
+        gap: 0.5rem;
+        overflow-x: auto; /* Allow horizontal scrolling for long URLs */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+        padding: 0.5rem 0;
+    }
+
+    .public-profile-social-links li {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+        padding: 0.5rem 0;
+        min-width: 200px; /* Ensure readability */
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    .public-profile-social-links li:hover {
+        transform: translateX(1px); /* Reduced slide for touch */
+    }
+
+    .public-profile-social-links li i {
+        font-size: 1.1rem;
+    }
+
+    .public-profile-social-links li a {
+        font-size: 1rem;
+        white-space: normal; /* Allow wrapping on mobile */
+        overflow: visible; /* Show full text */
+        text-overflow: clip; /* No ellipsis on mobile */
+        max-width: 100%; /* Ensure text fits */
+    }
+
+    /* Dietary Restrictions */
+    .public-profile-dietary-list {
+        gap: 0.5rem 0.75rem;
+    }
+
+    .public-profile-dietary-list li {
+        font-size: 0.9rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .public-profile-dietary-list li:hover {
+        transform: scale(1.03); /* Reduced zoom for touch */
+    }
+
+    /* Recipes Section */
+    .public-profile-recipe-list {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Smaller cards on mobile */
+        gap: 1rem;
+    }
+
+    .public-profile-recipe-list li {
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); /* Softer shadow */
+    }
+
+    .public-profile-recipe-list li:hover {
+        transform: translateY(-1px); /* Reduced lift for touch */
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .recipe-thumb {
+        height: 140px; /* Slightly smaller on mobile */
+        border-radius: 8px 8px 0 0;
+    }
+
+    .recipe-title {
+        font-size: 1rem;
+    }
+
+    .recipe-meta {
+        font-size: 0.8rem;
+    }
+
+    .recipe-link {
+        font-size: 0.9rem;
+    }
+
+    .visibility-label {
+        font-size: 0.7rem;
+        padding: 1px 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .public-profile-wrapper {
+        padding: 0 0.5rem;
+        margin: 0.5rem auto; /* Tighter margin for very small screens */
+    }
+
+    .back-button {
+        max-width: 160px; /* Even narrower for very small screens */
+        padding: 0.4rem 0.8rem; /* Reduced padding for mobile */
+        font-size: 0.8rem; /* Smaller text for very small screens */
+        margin: 0 0 0.5rem 0; /* Align to left with tighter spacing */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06); /* Softer shadow */
+    }
+
+    .back-button:hover {
+        box-shadow: 0 4px 8px rgba(230, 57, 70, 0.12); /* Softer hover shadow */
+    }
+
+    .back-button i {
+        font-size: 0.8rem; /* Smaller icon on very small screens */
+    }
+
+    .public-profile-hero.modern-hero {
+        padding: 1rem 0.5rem;
+        min-height: 180px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04); /* Even softer shadow */
+    }
+
+    .public-profile-avatar-container {
+        width: 80px; /* Smaller on very small screens */
+        height: 80px;
+        border-width: 2px; /* Thinner border */
+        margin-bottom: 0.75rem;
+    }
+
+    .public-profile-fullname {
+        font-size: 1.2rem; /* Smaller, readable font */
+        line-height: 1.1;
+    }
+
+    .public-profile-username.large {
+        font-size: 1.2rem;
+    }
+
+    .public-profile-username {
+        font-size: 0.9rem;
+    }
+
+    .public-profile-follow-btn form button {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .hero-stats {
+        gap: 0.75rem;
+    }
+
+    .hero-stat {
+        padding: 0.3rem 0.6rem;
+        border-radius: 5px;
+        width: 100%;
+    }
+
+    .hero-stat strong {
+        font-size: 0.8rem;
+    }
+
+    .hero-stat span {
+        font-size: 1rem;
+    }
+
+    .public-profile-card {
+        padding: 0.8rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .public-profile-card-title {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .public-profile-card-title i {
+        font-size: 1.1rem;
+    }
+
+    .public-profile-social-links {
+        gap: 0.25rem;
+        padding: 0.25rem 0;
+    }
+
+    .public-profile-social-links li {
+        min-width: 180px; /* Slightly smaller for very small screens */
+        padding: 0.25rem 0;
+    }
+
+    .public-profile-social-links li i {
+        font-size: 1rem;
+    }
+
+    .public-profile-social-links li a {
+        font-size: 0.9rem;
+    }
+
+    .public-profile-dietary-list {
+        gap: 0.3rem 0.5rem;
+    }
+
+    .public-profile-dietary-list li {
+        font-size: 0.8rem;
+        padding: 0.2rem 0.5rem;
+    }
+
+    .public-profile-recipe-list {
+        grid-template-columns: 1fr; /* Stack vertically on very small screens */
+        gap: 0.75rem;
+    }
+
+    .recipe-thumb {
+        height: 120px; /* Smaller on very small screens */
+        border-radius: 6px 6px 0 0;
+    }
+
+    .recipe-title {
+        font-size: 0.9rem;
+    }
+
+    .recipe-meta {
+        font-size: 0.7rem;
+    }
+
+    .recipe-link {
+        font-size: 0.8rem;
+    }
+
+    .visibility-label {
+        font-size: 0.6rem;
+        padding: 1px 3px;
+    }
+}
+
+
+/* Tablet Adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .public-profile-wrapper {
+        padding: 0 2rem;
+    }
+
+    .public-profile-recipe-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .hero-stats {
+        gap: 2rem;
+    }
+
+    .public-profile-card-title {
+        font-size: 1.4rem;
+    }
+
+    .public-profile-card-title i {
+        font-size: 1.4rem;
+    }
+}
+
+

@@ -1,0 +1,502 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartMeal</title>
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:400,500,600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+  <div class="wrapper">
+
+    <!-- HEADER -->
+    <header class="site-header">
+      <div class="header-container">
+
+        <!-- LOGO -->
+        <div class="site-logo">
+          <img src="{% static 'images/web_logo.png' %}"
+               alt="SmartMeal Logo"
+               class="logo-img" />
+          <h1>
+            <a href="{% url 'home' %}">
+              SmartMeal<span style="white-space:nowrap;"></span>
+            </a>
+          </h1>
+        </div>
+
+        <!-- HAMBURGER (always visible on mobile) -->
+        <div class="hamburger" id="hamburgerBtn">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <form id="logout-form" action="{% url 'logout' %}" method="POST" style="display: none;">
+          {% csrf_token %}
+        </form>
+<!-- DESKTOP NAV -->
+<nav class="main-nav desktop-only">
+  <ul class="nav-list">
+
+    <!-- PRIMARY LINKS (Left side) -->
+    <li>
+      <a href="{% url 'home' %}">
+        <i class="fa fa-home"></i> Home
+      </a>
+    </li>
+
+    <li class="has-dropdown">
+      <a href="#">
+        <i class="fa fa-utensils"></i> Recipes
+        <span class="desktop-arrow"><i class="fa fa-chevron-down"></i></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a href="{% url 'browse-recipes' %}"><i class="fa-solid fa-compass"></i> Browse Recipes</a></li>
+        {% if not user.is_authenticated %}
+          <li><a href="{% url 'following_recipes' %}"><i class="fa-solid fa-user-group"></i> Followed Recipes</a></li>
+        {% endif %}
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'recommendations' %}"><i class="fa fa-star"></i> Recommendations</a></li>
+        {% endif %}
+        <li><a href="{% url 'add_recipe' %}"><i class="fa fa-plus"></i> Add New Recipe</a></li>
+        <li><a href="{% url 'my_recipes' %}"><i class="fa fa-book-open"></i> My Recipes</a></li>
+        <li><a href="{% url 'my_saved_recipes' %}"><i class="fa fa-bookmark"></i> My Saved Recipes</a></li>
+        <li><a href="{% url 'browse-recipes' %}?popular=1"><i class="fa fa-fire"></i> Popular Recipes</a></li>
+      </ul>
+    </li>
+
+    <li class="has-dropdown">
+      <a href="#">
+        <i class="fa fa-clipboard-list"></i> Meal Plans
+        <span class="desktop-arrow"><i class="fa fa-chevron-down"></i></span>
+      </a>
+      <ul class="dropdown-menu">
+        <li><a href="{% url 'create_meal_plan' %}"><i class="fa fa-calendar-plus"></i> Create Meal Plan</a></li>
+        <li><a href="{% url 'my_meal_plans' %}"><i class="fa fa-calendar-week"></i> My Meal Plans</a></li>
+      </ul>
+    </li>
+
+    {% if user.is_authenticated %}
+      <li>
+        <a href="{% url 'following_recipes' %}">
+          <i class="fa-solid fa-user-group"></i> Followed Recipes
+        </a>
+      </li>
+    {% endif %}
+
+    <!-- "optional-link" items that we’ll hide at mid-widths -->
+    <li class="optional-link">
+      <a href="{% url 'about' %}" aria-label="About" title="About">
+        About <i class="fa fa-info-circle"></i>
+      </a>
+    </li>
+    <li class="optional-link">
+      <a href="{% url 'contact' %}" aria-label="Contact" title="Contact">
+        Contact <i class="fa fa-paper-plane"></i>
+      </a>
+    </li>
+
+        <!-- "More" menu for mid widths (duplicates optional links) -->
+        <li class="more-dropdown has-dropdown" style="display:none;">
+          <a href="#">
+            More <span class="desktop-arrow"><i class="fa fa-chevron-down"></i></span>
+          </a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'about' %}"><i class="fa fa-info-circle"></i> About</a></li>
+            <li><a href="{% url 'contact' %}"><i class="fa fa-paper-plane"></i> Contact</a></li>
+          </ul>
+        </li>
+        
+    <!-- SPACER to push the account stuff to the right -->
+    <li class="spacer" style="margin-left: auto;"></li>
+
+    {% if user.is_authenticated %}
+    <li class="nav-profile">
+      <!-- Profile Toggle (Avatar with subtle indicator) -->
+      <div class="profile-toggle" onclick="document.querySelector('.nav-profile').classList.toggle('open');">
+        <div class="avatar-container">
+          {% if user.profile.avatar %}
+            <img src="{{ user.profile.avatar.url }}" alt="Profile" class="header-avatar">
+          {% else %}
+            <div class="avatar-fallback">
+              {{ user.username|first|upper }}
+            </div>
+          {% endif %}
+          <div class="avatar-indicator"></div>
+        </div>
+      </div>
+    
+      <!-- Modern Profile Card -->
+      <div class="profile-card">
+        <!-- Header with Large Avatar -->
+        <div class="card-header">
+          <div class="avatar-container lg">
+            {% if user.profile.avatar %}
+              <img src="{{ user.profile.avatar.url }}" alt="Profile" class="header-avatar">
+            {% else %}
+              <div class="avatar-fallback lg">
+                {{ user.username|first|upper }}
+              </div>
+            {% endif %}
+    
+          </div>
+          <div class="profile-info">
+            <h4>{{ user.get_full_name|default:user.username }}</h4>
+            <p>{{ user.email }}</p>
+          </div>
+        </div>
+    
+        <!-- Column-Based Actions -->
+        <div class="card-actions">
+          <a href="{% url 'profile' %}" class="action-item">
+            <i class="fa-regular fa-user"></i>
+            <span>My Profile</span>
+          </a>
+          <a href="{% url 'account_settings' %}" class="action-item">
+            <i class="fa-solid fa-gear"></i>
+            <span>Account Settings</span>
+          </a>
+          <div class="divider"></div>
+          <a href="{% url 'logout' %}" class="action-item text-danger" 
+             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <i class="fa fa-sign-out-alt"></i>
+            <span>Log Out</span>
+          </a>
+        </div>
+      </div>
+    </li>
+
+    
+
+    <!-- IF USER NOT AUTHENTICATED: Show Login + Sign Up links -->
+    {% else %}
+      <li>
+        <a href="{% url 'login' %}" aria-label="Login" title="Login">
+          Login <i class="fa fa-sign-in-alt"></i>
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'signup' %}" aria-label="Sign Up" title="Sign Up">
+          Sign Up <i class="fa fa-user-plus"></i>
+        </a>
+      </li>
+    {% endif %}
+
+
+  </ul>
+</nav>
+
+      </div>
+    </header>
+
+    <!-- OVERLAY for background dimming -->
+    <div id="overlay" class="overlay"></div>
+
+    <nav id="offCanvasMenu" class="off-canvas-menu">
+
+      <!-- Modern Close Button -->
+<div class="close-btn" id="closeNavBtn">
+  <i class="fa-solid fa-xmark"></i> <!-- or "fa fa-times" if you prefer -->
+</div>
+
+    
+      {% if user.is_authenticated %}
+      <!-- Modern Mobile Profile -->
+      <div class="mobile-profile">
+        <div class="mobile-profile-header">
+          <div class="avatar-container mobile-lg">
+            {% if user.profile.avatar %}
+              <img src="{{ user.profile.avatar.url }}" alt="Profile" class="header-avatar" />
+            {% else %}
+              <div class="avatar-fallback mobile-lg">
+                {{ user.username|first|upper }}
+              </div>
+            {% endif %}
+            <div class="avatar-indicator"></div>
+          </div>
+          <div class="mobile-profile-info">
+            <h4>{{ user.get_full_name|default:user.username }}</h4>
+            <p>{{ user.email }}</p>
+          </div>
+        </div>
+  
+        <div class="mobile-profile-actions">
+          <a href="{% url 'profile' %}" class="action-item">
+            <i class="fa-regular fa-user"></i>
+            <span>My Profile</span>
+          </a>
+          <a href="{% url 'account_settings' %}" class="action-item">
+            <i class="fa-solid fa-gear"></i>
+            <span>Account Settings</span>
+          </a>
+          <div class="divider"></div>
+          <a href="{% url 'logout' %}" class="action-item text-danger"
+             onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <i class="fa fa-sign-out-alt"></i>
+            <span>Log Out</span>
+          </a>
+        </div>
+      </div>
+    {% endif %}
+    
+      
+
+      <ul class="mobile-nav-list">
+        <!-- HOME -->
+        <li>
+          <a href="{% url 'home' %}">
+            <i class="fa fa-home"></i>
+            Home
+          </a>
+        </li>
+
+        <!-- Recipes Submenu -->
+        <li class="has-submenu">
+          <a href="#">
+            <i class="fa fa-utensils"></i>
+            Recipes
+            <span class="submenu-arrow"><i class="fa fa-chevron-down"></i></span>
+          </a>
+          <ul class="submenu">
+            <li><a href="{% url 'browse-recipes' %}"><i class="fa-solid fa-compass"></i> Browse Recipes</a></li>
+            {% if not user.is_authenticated %}
+              <li><a href="{% url 'following_recipes' %}"><i class="fa-solid fa-user-group"></i> Followed Recipes</a></li>
+            {% endif %}
+            {% if user.is_authenticated %}
+              <li><a href="{% url 'recommendations' %}"><i class="fa fa-star"></i> Recommendations</a></li>
+            {% endif %}
+            <li><a href="{% url 'add_recipe' %}"><i class="fa fa-plus"></i> Add New Recipe</a></li>
+            <li><a href="{% url 'my_recipes' %}"><i class="fa fa-book-open"></i> My Recipes</a></li>
+            <li><a href="{% url 'my_saved_recipes' %}"><i class="fa fa-bookmark"></i> My Saved Recipes</a></li>
+            <li><a href="{% url 'browse-recipes' %}?popular=1"><i class="fa fa-fire"></i> Popular Recipes</a></li>
+          </ul>
+        </li>
+
+        <!-- Meal Plans Submenu -->
+        <li class="has-submenu">
+          <a href="#">
+            <i class="fa fa-clipboard-list"></i>
+            Meal Plans
+            <span class="submenu-arrow"><i class="fa fa-chevron-down"></i></span>
+          </a>
+          <ul class="submenu">
+            <li><a href="{% url 'create_meal_plan' %}"><i class="fa fa-calendar-plus"></i> Create Meal Plan</a></li>
+            <li><a href="{% url 'my_meal_plans' %}"><i class="fa fa-calendar-week"></i> My Meal Plans</a></li>
+          </ul>
+        </li>
+
+        <!-- Followed Recipes (for logged-in users) -->
+        {% if user.is_authenticated %}
+          <li>
+            <a href="{% url 'following_recipes' %}">
+              <i class="fa-solid fa-user-group"></i>
+              Followed Recipes
+            </a>
+          </li>
+        {% endif %}
+
+        <li><a href="{% url 'about' %}"><i class="fa fa-info-circle"></i> About</a></li>
+        <li><a href="{% url 'contact' %}"><i class="fa-regular fa-paper-plane"></i> Contact</a></li>
+        <li><a href="{% url 'terms' %}"><i class="fas fa-file-contract"></i> Terms & Conditions</a></li>
+        <li><a href="{% url 'privacy' %}"><i class="fas fa-shield-alt"></i> Privacy Policy</a></li>
+
+        {% if not user.is_authenticated %}
+          <li>
+            <a href="{% url 'login' %}">
+              <i class="fa fa-sign-in-alt"></i> Login
+            </a>
+          </li>
+          <li>
+            <a href="{% url 'signup' %}">
+              <i class="fa fa-user-plus"></i> Sign Up
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main>
+      {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+            <div class="message {{ message.tags }}">
+              <span>{{ message }}</span>
+              <span class="close-message" onclick="this.parentElement.style.display='none';">×</span>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    
+      {% block content %}{% endblock %}
+    </main>
+    
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="footer-container">
+
+        <div class="footer-mission">
+          <p>
+            Empowering home cooks to share and discover delicious recipes worldwide.
+          </p>
+        </div>
+
+        <ul class="footer-links">
+          <li><a href="{% url 'about' %}">About</a></li>
+          <li><a href="{% url 'contact' %}">Contact</a></li>
+          <li><a href="{% url 'terms' %}">Terms & Conditions</a></li>
+          <li><a href="{% url 'privacy' %}">Privacy Policy</a></li>
+        </ul>
+
+        <div class="footer-social">
+          <a href="https://www.facebook.com/recipeplanner" target="_blank" class="social-icon">Facebook</a>
+          <a href="https://www.instagram.com/recipeplanner" target="_blank" class="social-icon">Instagram</a>
+          <a href="https://www.twitter.com/recipeplanner" target="_blank" class="social-icon">Twitter</a>
+        </div>
+
+        <div class="footer-disclaimer">
+          <p>
+            Nutritional data is provided as a courtesy and is an estimate only.
+            Please consult a qualified professional for dietary advice.
+          </p>
+        </div>
+
+        <p class="footer-copyright">
+          © 2025 SmartMeal. All rights reserved.
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- SCROLL TO TOP BUTTON -->
+  <button class="scroll-to-top" id="scrollToTopBtn">↑</button>
+
+  <!-- JS -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const bodyEl = document.body;
+      const toggleDarkBtn = document.getElementById('toggleDarkMode');
+      const hamburgerBtn = document.getElementById('hamburgerBtn');
+      const offCanvasMenu = document.getElementById('offCanvasMenu');
+      const overlay = document.getElementById('overlay');
+      const scrollBtn = document.getElementById('scrollToTopBtn');
+      const closeNavBtn = document.getElementById('closeNavBtn');
+
+      const storedTheme = localStorage.getItem('theme');
+      if (storedTheme === 'dark') {
+        bodyEl.classList.add('dark-theme');
+      }
+      if (toggleDarkBtn) {
+        toggleDarkBtn.addEventListener('click', () => {
+          bodyEl.classList.toggle('dark-theme');
+          if (bodyEl.classList.contains('dark-theme')) {
+            localStorage.setItem('theme', 'dark');
+          } else {
+            localStorage.setItem('theme', 'light');
+          }
+        });
+      }
+
+      // Scroll-to-top logic (unchanged from your original)
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+          scrollBtn.classList.add('show');
+        } else {
+          scrollBtn.classList.remove('show');
+        }
+      });
+      scrollBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+
+      // Show the off-canvas menu & overlay
+      hamburgerBtn.addEventListener('click', () => {
+        offCanvasMenu.classList.add('open');
+        overlay.classList.add('show');
+        hamburgerBtn.classList.toggle('active');
+      });
+
+      closeNavBtn.addEventListener('click', () => {
+        offCanvasMenu.classList.remove('open');
+        overlay.classList.remove('show');
+        hamburgerBtn.classList.remove('active');
+      });
+
+
+      // Click outside (on overlay) to close
+      overlay.addEventListener('click', () => {
+        offCanvasMenu.classList.remove('open');
+        overlay.classList.remove('show');
+        hamburgerBtn.classList.remove('active');
+      });
+
+      // Submenu toggles on mobile nav
+      const submenuParents = document.querySelectorAll('.has-submenu > a');
+      submenuParents.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault(); // prevent navigation
+          link.parentElement.classList.toggle('open');
+        });
+      });
+
+      // Swipe-to-close logic for a mobile-app-like feel
+      let startX = 0;
+      offCanvasMenu.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+      });
+      offCanvasMenu.addEventListener('touchmove', (e) => {
+        const currentX = e.touches[0].clientX;
+        const diffX = startX - currentX;
+        
+        // Disable swipe if screen width is less than 360px
+        if (window.innerWidth >= 360) {
+          // If user swipes left by more than 50px, close the menu
+          if (diffX < -50) {
+            offCanvasMenu.classList.remove('open');
+            overlay.classList.remove('show');
+            hamburgerBtn.classList.remove('active');
+          }
+        }
+      });
+
+      // Auto-dismiss messages
+      const messages = document.querySelectorAll('.messages .message');
+      messages.forEach((message) => {
+        setTimeout(() => {
+          message.style.opacity = '0';
+          setTimeout(() => message.remove(), 300); // Remove after fade-out
+        }, 5000); // Dismiss after 5 seconds
+      });
+
+      // Hide/reveal header on scroll
+      let lastScroll = 0;
+      const header = document.querySelector('.site-header');
+      window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        if (currentScroll > lastScroll && currentScroll > header.offsetHeight) {
+          header.style.top = `-${header.offsetHeight}px`;
+        } else {
+          header.style.top = '0';
+        }
+        lastScroll = Math.max(currentScroll, 0);
+      });
+
+    });
+
+      // Close profile dropdown if clicking outside of it
+  document.addEventListener('click', function(event) {
+    const profile = document.querySelector('.nav-profile');
+    if (profile && !profile.contains(event.target)) {
+      profile.classList.remove('open');
+    }
+  });
+  </script>
+</body>
+</html>

@@ -1,0 +1,414 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/recipes.css' %}">
+
+<div class="recipe-create-container">
+    <header class="recipe-create-header">
+        <h1 class="recipe-create-title">Craft Your Recipe</h1>
+        <p class="recipe-create-intro">Let’s create something delicious together—step by step!</p>
+    </header>
+
+    <form method="post" enctype="multipart/form-data" class="recipe-create-form" id="recipeForm">
+        {% csrf_token %}
+        <input type="hidden" name="active_step" id="active_step" value="1">
+
+        <!-- Step 1: Basics -->
+        <section class="recipe-step active" data-step="1">
+            <h2 class="recipe-step-title">The Basics</h2>
+            <div class="recipe-input-group">
+                <label for="{{ form.title.id_for_label }}" class="recipe-input-label">Recipe Name <span class="required-asterisk">*</span></label>
+                {{ form.title }}
+                <span class="recipe-help-text">{{ form.title.help_text }}</span>
+                <div id="title-error" class="recipe-error"></div>
+                {% if form.title.errors %}
+                    <div class="recipe-error">{{ form.title.errors.as_text }}</div>
+                {% endif %}
+            </div>
+            <div class="recipe-input-group">
+                <label for="{{ form.description.id_for_label }}" class="recipe-input-label">Quick Description <span class="required-asterisk">*</span></label>
+                {{ form.description }}
+                <span class="recipe-help-text">{{ form.description.help_text }}</span>
+                <div id="description-error" class="recipe-error"></div>
+                {% if form.description.errors %}
+                    <div class="recipe-error">{{ form.description.errors.as_text }}</div>
+                {% endif %}
+            </div>
+            <button type="button" class="recipe-next-btn" data-next="2">Next: Details</button>
+        </section>
+
+        <!-- Step 2: Ingredients & Instructions -->
+        <section class="recipe-step" data-step="2">
+            <h2 class="recipe-step-title">The Details</h2>
+            <div class="recipe-input-group">
+                <label for="{{ form.ingredients.id_for_label }}" class="recipe-input-label">Ingredients <span class="required-asterisk">*</span></label>
+                {{ form.ingredients }}
+                <div id="ingredients-error" class="recipe-error"></div>
+                {% if form.ingredients.errors %}
+                    <div class="recipe-error">{{ form.ingredients.errors.as_text }}</div>
+                {% endif %}
+            </div>
+            <div class="recipe-input-group">
+                <label for="{{ form.instructions.id_for_label }}" class="recipe-input-label">Instructions <span class="required-asterisk">*</span></label>
+                {{ form.instructions }}
+                <div id="instructions-error" class="recipe-error"></div>
+                {% if form.instructions.errors %}
+                    <div class="recipe-error">{{ form.instructions.errors.as_text }}</div>
+                {% endif %}
+            </div>
+            <div class="recipe-step-nav">
+                <button type="button" class="recipe-prev-btn" data-prev="1">Back</button>
+                <button type="button" class="recipe-next-btn" data-next="3">Next: Fine-Tune</button>
+            </div>
+        </section>
+
+        <!-- Step 3: Fine-Tune -->
+        <section class="recipe-step" data-step="3">
+            <h2 class="recipe-step-title">Fine-Tune It</h2>
+            <div class="recipe-input-grid">
+                <div class="recipe-input-group">
+                    <label for="{{ form.category.id_for_label }}" class="recipe-input-label">Category <span class="required-asterisk">*</span></label>
+                    <select name="{{ form.category.name }}" id="{{ form.category.id_for_label }}" class="recipe-input-select" required>
+                        <option value="" disabled selected>Select a category</option>
+                        {% for value, label in form.category.field.choices %}
+                            {% if value %}
+                                <option value="{{ value }}" {% if form.category.value == value %}selected{% endif %}>{{ label }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <span class="recipe-help-text">{{ form.category.help_text }}</span>
+                    <div id="category-error" class="recipe-error"></div>
+                    {% if form.category.errors %}
+                        <div class="recipe-error">{{ form.category.errors.as_text }}</div>
+                    {% endif %}
+                </div>
+                <div class="recipe-input-group">
+                    <label for="{{ form.cooking_time.id_for_label }}" class="recipe-input-label">Cooking Time (min) <span class="required-asterisk">*</span></label>
+                    {{ form.cooking_time }}
+                    <div id="cooking_time-error" class="recipe-error"></div>
+                    {% if form.cooking_time.errors %}
+                        <div class="recipe-error">{{ form.cooking_time.errors.as_text }}</div>
+                    {% endif %}
+                </div>
+                <div class="recipe-input-group">
+                    <label for="{{ form.calories.id_for_label }}" class="recipe-input-label">Calories</label>
+                    {{ form.calories }}
+                    <div id="calories-error" class="recipe-error"></div>
+                    {% if form.calories.errors %}
+                        <div class="recipe-error">{{ form.calories.errors.as_text }}</div>
+                    {% endif %}
+                </div>
+                <div class="recipe-input-group">
+                    <label for="{{ form.proteins.id_for_label }}" class="recipe-input-label">Proteins (g)</label>
+                    {{ form.proteins }}
+                    <div id="proteins-error" class="recipe-error"></div>
+                    {% if form.proteins.errors %}
+                        <div class="recipe-error">{{ form.proteins.errors.as_text }}</div>
+                    {% endif %}
+                </div>
+                <div class="recipe-input-group">
+                    <label for="{{ form.carbs.id_for_label }}" class="recipe-input-label">Carbs (g)</label>
+                    {{ form.carbs }}
+                    <div id="carbs-error" class="recipe-error"></div>
+                    {% if form.carbs.errors %}
+                        <div class="recipe-error">{{ form.carbs.errors.as_text }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="recipe-input-group">
+                <label class="recipe-input-label">Dietary Tags</label>
+                <div class="recipe-toggle-group">
+                    {% for checkbox in form.dietary_tags %}
+                        <label class="recipe-toggle-btn">
+                            {{ checkbox.tag }}
+                            <span class="recipe-toggle-label">{{ checkbox.choice_label }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                <div id="dietary_tags-error" class="recipe-error"></div>
+                {% if form.dietary_tags.errors %}
+                    <div class="recipe-error">{{ form.dietary_tags.errors.as_text }}</div>
+                {% endif %}
+            </div>
+            <div class="recipe-step-nav">
+                <button type="button" class="recipe-prev-btn" data-prev="2">Back</button>
+                <button type="button" class="recipe-next-btn" data-next="4">Next: Final Touches</button>
+            </div>
+        </section>
+
+        <!-- Step 4: Images & Visibility -->
+        <section class="recipe-step" data-step="4">
+            <h2 class="recipe-step-title">Final Touches</h2>
+            <div class="recipe-input-group">
+                <label for="{{ form.images.id_for_label }}" class="recipe-input-label">Add Photos <span class="required-asterisk">*</span></label>
+                {{ form.images }}
+                <span class="recipe-help-text">{{ form.images.help_text }}</span>
+                <div id="images-error" class="recipe-error"></div>
+                {% if form.images.errors %}
+                    <div class="recipe-error">{{ form.images.errors.as_text }}</div>
+                {% endif %}
+                <div id="recipe-photo-preview" class="recipe-photo-preview-container"></div>
+                <div id="photo-modal" class="photo-modal">
+                    <span class="modal-close">&times;</span>
+                    <img id="modal-image" class="modal-image" src="" alt="Full-size preview">
+                </div>
+            </div>
+            <div class="recipe-input-group">
+                <label for="{{ form.visibility.id_for_label }}" class="recipe-input-label">Visibility <span class="required-asterisk">*</span></label>
+                {{ form.visibility }}
+                <span class="recipe-help-text">{{ form.visibility.help_text }}</span>
+                <div id="visibility-error" class="recipe-error"></div>
+                {% if form.visibility.errors %}
+                    <div class="recipe-error">{{ form.visibility.errors.as_text }}</div>
+                {% endif %}
+            </div>
+            <div class="recipe-step-nav">
+                <button type="button" class="recipe-prev-btn" data-prev="3">Back</button>
+                <button type="submit" class="recipe-submit-btn">Share Your Recipe</button>
+            </div>
+        </section>
+    </form>
+
+    <!-- Progress Indicator -->
+    <div class="recipe-progress">
+        <span class="recipe-progress-dot active" data-step="1"></span>
+        <span class="recipe-progress-dot" data-step="2"></span>
+        <span class="recipe-progress-dot" data-step="3"></span>
+        <span class="recipe-progress-dot" data-step="4"></span>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const steps = document.querySelectorAll('.recipe-step');
+        const nextBtns = document.querySelectorAll('.recipe-next-btn');
+        const prevBtns = document.querySelectorAll('.recipe-prev-btn');
+        const progressDots = document.querySelectorAll('.recipe-progress-dot');
+        const form = document.getElementById('recipeForm');
+        const imageInput = document.querySelector('input[name="images"]');
+        const photoPreview = document.getElementById('recipe-photo-preview');
+        const modal = document.getElementById('photo-modal');
+        const modalImage = document.getElementById('modal-image');
+        const modalClose = document.querySelector('.modal-close');
+        const activeStepInput = document.getElementById('active_step');
+        let uploadedFiles = [];
+
+        // Restore the active step from hidden field or default to 1
+        let initialStep = activeStepInput.value || '1';
+        updateStep(initialStep);
+
+        function updateStep(nextStep) {
+            steps.forEach(step => step.classList.remove('active'));
+            progressDots.forEach(dot => dot.classList.remove('active'));
+            const targetStep = document.querySelector(`.recipe-step[data-step="${nextStep}"]`);
+            const targetDot = document.querySelector(`.recipe-progress-dot[data-step="${nextStep}"]`);
+            if (targetStep && targetDot) {
+                targetStep.classList.add('active');
+                targetDot.classList.add('active');
+                activeStepInput.value = nextStep; // Update hidden field
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function clearErrors(step) {
+            step.querySelectorAll('.recipe-error').forEach(error => error.textContent = '');
+        }
+
+        function displayError(fieldId, message) {
+            const errorDiv = document.getElementById(`${fieldId}-error`);
+            if (errorDiv) {
+                errorDiv.textContent = message;
+            }
+        }
+
+        nextBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const nextStep = btn.getAttribute('data-next');
+                const currentStep = btn.closest('.recipe-step');
+                const inputs = currentStep.querySelectorAll('input:not([type="checkbox"]), textarea, select');
+                let isValid = true;
+
+                clearErrors(currentStep);
+
+                inputs.forEach(input => {
+                    const value = input.value.trim();
+                    const fieldId = input.id.replace('id_', '');
+
+                    if (input.hasAttribute('required') && !value) {
+                        isValid = false;
+                        displayError(fieldId, "This field is required.");
+                    } else if (input.id.includes('id_title') && value.length < 5) {
+                        isValid = false;
+                        displayError(fieldId, "Recipe Name must be at least 5 characters long.");
+                    } else if (input.id.includes('id_description') && value.length < 10) {
+                        isValid = false;
+                        displayError(fieldId, "Quick Description must be at least 10 characters long.");
+                    } else if (input.id.includes('id_ingredients') && value.length < 15) {
+                        isValid = false;
+                        displayError(fieldId, "Ingredients must be at least 15 characters long (e.g., multiple items).");
+                    } else if (input.id.includes('id_instructions') && value.length < 20) {
+                        isValid = false;
+                        displayError(fieldId, "Instructions must be at least 20 characters long to provide enough detail.");
+                    } else if (input.id.includes('id_cooking_time') && value && isNaN(value)) {
+                        isValid = false;
+                        displayError(fieldId, "Cooking Time must be a number.");
+                    } else if (input.id.includes('id_images') && uploadedFiles.length === 0) {
+                        isValid = false;
+                        displayError(fieldId, "Please upload at least one photo.");
+                    }
+                });
+
+                if (isValid) {
+                    updateStep(nextStep);
+                } else {
+                    const firstInvalid = currentStep.querySelector('input:invalid, textarea:invalid, select:invalid');
+                    if (firstInvalid) firstInvalid.focus();
+                }
+            });
+        });
+
+        prevBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const prevStep = btn.getAttribute('data-prev');
+                updateStep(prevStep);
+            });
+        });
+
+// Image Preview and Management
+imageInput.addEventListener('change', function() {
+    const newlySelectedFiles = Array.from(this.files);
+    const allowedImageTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+  
+    // Create a DataTransfer to hold *all* valid files (old + new)
+    const dataTransfer = new DataTransfer();
+  
+    // Add the previously accumulated files to dataTransfer
+    uploadedFiles.forEach(file => dataTransfer.items.add(file));
+  
+    // Validate and add only image files from newly selected files
+    newlySelectedFiles.forEach(file => {
+      if (!allowedImageTypes.includes(file.type)) {
+        displayError('images', `Invalid file type for ${file.name}. Only JPG, PNG, GIF, or WebP files are allowed.`);
+        return;
+      }
+  
+      dataTransfer.items.add(file);
+    });
+  
+    // Update `uploadedFiles` and `imageInput.files` to the merged set
+    uploadedFiles = Array.from(dataTransfer.files);
+    imageInput.files = dataTransfer.files;
+  
+    // Preview each new valid image file
+    newlySelectedFiles.forEach(file => {
+      if (!allowedImageTypes.includes(file.type)) {
+        return; // Skip non-image files
+      }
+  
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const previewItem = document.createElement('div');
+        previewItem.classList.add('recipe-photo-preview-item');
+  
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.addEventListener('click', () => {
+          modalImage.src = e.target.result;
+          modal.classList.add('active');
+        });
+  
+        const removeBtn = document.createElement('button');
+        removeBtn.classList.add('remove-btn');
+        removeBtn.textContent = '×';
+        removeBtn.onclick = () => {
+          previewItem.remove();
+          uploadedFiles = uploadedFiles.filter(f => f !== file);
+          const dt = new DataTransfer();
+          uploadedFiles.forEach(f => dt.items.add(f));
+          imageInput.files = dt.files;
+        };
+  
+        previewItem.appendChild(img);
+        previewItem.appendChild(removeBtn);
+        photoPreview.appendChild(previewItem);
+      };
+      reader.readAsDataURL(file);
+    });
+  
+    // Clear any previous image-related errors if valid files were added
+    if (newlySelectedFiles.some(file => allowedImageTypes.includes(file.type))) {
+      displayError('images', '');
+    }
+  });
+
+
+        // Modal Close Functionality
+        modalClose.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', (e) => {
+            const allSteps = document.querySelectorAll('.recipe-step');
+            let isValid = true;
+
+            // Client-side validation before submission
+            steps.forEach(step => {
+                const inputs = step.querySelectorAll('input:not([type="checkbox"]), textarea, select');
+                inputs.forEach(input => {
+                    const value = input.value.trim();
+                    const fieldId = input.id.replace('id_', '');
+
+                    if (input.hasAttribute('required') && !value) {
+                        isValid = false;
+                        displayError(fieldId, "This field is required.");
+                    } else if (input.id.includes('id_title') && value.length < 5) {
+                        isValid = false;
+                        displayError(fieldId, "Recipe Name must be at least 5 characters long.");
+                    } else if (input.id.includes('id_description') && value.length < 10) {
+                        isValid = false;
+                        displayError(fieldId, "Quick Description must be at least 10 characters long.");
+                    } else if (input.id.includes('id_ingredients') && value.length < 15) {
+                        isValid = false;
+                        displayError(fieldId, "Ingredients must be at least 15 characters long (e.g., multiple items).");
+                    } else if (input.id.includes('id_instructions') && value.length < 20) {
+                        isValid = false;
+                        displayError(fieldId, "Instructions must be at least 20 characters long to provide enough detail.");
+                    } else if (input.id.includes('id_cooking_time') && value && isNaN(value)) {
+                        isValid = false;
+                        displayError(fieldId, "Cooking Time must be a number.");
+                    } else if (input.id.includes('id_images') && uploadedFiles.length === 0) {
+                        isValid = false;
+                        displayError(fieldId, "Please upload at least one photo.");
+                    }
+                });
+            });
+
+            if (!isValid) {
+                e.preventDefault();
+                // Find the first step with an error and activate it
+                const firstErrorStep = Array.from(steps).find(step => 
+                    step.querySelector('.recipe-error') && step.querySelector('.recipe-error').textContent
+                );
+                if (firstErrorStep) {
+                    const stepNum = firstErrorStep.getAttribute('data-step');
+                    updateStep(stepNum);
+                }
+            } else {
+                allSteps.forEach(step => {
+                    step.style.display = 'block';
+                    step.style.opacity = '0';
+                });
+            }
+        });
+    });
+</script>
+
+{% endblock content %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="error-container">
+    <div class="error-content">
+        <h1 class="error-code">400</h1>
+        <h2 class="error-title">Invalid Request</h2>
+        <p class="error-message">
+            The server couldn't understand your request. Please check your input and try again.
+        </p>
+        <div class="error-actions">
+            <a href="javascript:history.back()" class="button-lg">
+                <i class="fas fa-arrow-left"></i> Go Back
+            </a>
+            <a href="{% url 'home' %}" class="button-lg outline">
+                <i class="fas fa-home"></i> Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

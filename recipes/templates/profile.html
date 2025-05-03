@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<div class="profile-container">
+    <div class="profile-header">
+        <h1>My Profile</h1>
+        <!-- Display last login & member since -->
+        <p><strong>Last login:</strong> {{ profile_user.last_login|default:"Never" }}</p>
+        <p><strong>Member since:</strong> {{ profile_user.date_joined|date:"d M Y" }}</p>
+    </div>
+
+<!-- Profile Tabs Navigation -->
+    <!-- 🔹 Tabs for Desktop & Tablet -->
+    <div class="profile-tabs-container">
+        <div class="profile-tabs">
+            <button class="tablink active" onclick="openTab(event, 'profileInfo')">Profile Info</button>
+            <button class="tablink" onclick="openTab(event, 'aboutMe')">About Me</button>
+            <button class="tablink" onclick="openTab(event, 'social')">Social Links</button>
+            <button class="tablink" onclick="openTab(event, 'features')">My Content</button>
+            <button class="tablink" onclick="openTab(event, 'appearance')">Appearance</button>
+            <button class="tablink" onclick="openTab(event, 'actions')">Settings & Privacy</button>
+        </div>
+    </div>
+
+    <!-- 🔹 Dropdown for Mobile -->
+    <select id="profileTabDropdown" class="mobile-tabs" onchange="openTabDropdown(this.value)">
+        <option value="profileInfo">Profile Info</option>
+        <option value="aboutMe">About Me</option>
+        <option value="social">Social Links</option>
+        <option value="features">My Content</option>
+        <option value="appearance">Appearance</option>
+        <option value="actions">Settings & Privacy</option>
+    </select>
+
+
+<!-- Personal Info Tab -->
+<div id="profileInfo" class="tabcontent active">
+    <section class="profile-section">
+        <h2>Profile Info</h2>
+        <div class="profile-info-container">
+            <!-- Avatar -->
+            <div class="avatar-section">
+                {% if profile_obj.avatar %}
+                <div class="avatar-clickable" onclick="openAvatarModal('{{ profile_obj.avatar.url }}')">
+                    <img src="{{ profile_obj.avatar.url }}" alt="Profile Avatar" class="avatar-img">
+                </div>
+        
+                    <!-- Remove Avatar Form -->
+                    <form method="post" action="{% url 'remove_avatar' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="button button-danger" onclick="return confirm('Are you sure you want to remove your avatar?')">
+                            Remove Avatar
+                        </button>
+                    </form>
+                {% else %}
+                    <!-- If user has NO avatar, show an upload form -->
+                    <p>No avatar uploaded.</p>
+                    <form method="post" action="{% url 'upload_avatar' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label for="id_avatar">Upload New Avatar:</label>
+                        <input type="file" name="avatar" id="id_avatar" accept="image/*">
+                        <button type="submit" class="button">Upload</button>
+                    </form>
+                {% endif %}
+            </div>
+            <!-- Personal Info -->
+            <div class="personal-info">
+                <ul>
+                    <li><strong>Username:</strong> {{ profile_user.username }}</li>
+                    <li><strong>Email:</strong> {{ profile_user.email }}</li>
+                    <li><strong>First name:</strong> {{ profile_user.first_name }}</li>
+                    <li><strong>Last name:</strong> {{ profile_user.last_name }}</li>
+                </ul>
+                <a href="{% url 'account_settings' %}" class="button">Edit Personal Details</a>
+            </div>
+        </div>
+    </section>
+</div>
+<div id="avatarModal" class="avatar-modal">
+    <span class="close-avatar-modal">&times;</span>
+    <img class="avatar-modal-content" id="expandedAvatar">
+  </div>
+
+  
+
+<!-- About Me Tab -->
+<div id="aboutMe" class="tabcontent">
+    <section class="profile-section">
+        <h2>About Me</h2>
+
+        <!-- Bio Section -->
+        <div class="bio-section">
+            <h3>Bio
+                <button id="editBioBtn" class="button button-edit" onclick="toggleBioForm()">
+                    {% if profile_obj.bio %}Edit{% else %}Add{% endif %}
+                </button>
+            </h3>
+
+            <div id="bioDisplay">
+                {% if profile_obj.bio %}
+                    <p class="profile-bio">{{ profile_obj.bio }}</p>
+                {% else %}
+                    <p class="public-profile-placeholder">No bio provided.</p>
+                {% endif %}
+            </div>
+
+            <!-- Inline Edit Form (hidden by default) -->
+            <form id="bioForm" method="post" class="bio-form">
+                {% csrf_token %}
+                <input type="hidden" name="bio_form_submitted" value="1">
+                {{ bio_form.as_p }}
+                <button type="submit" class="button">Save</button>
+                <button type="button" class="button button-cancel" onclick="cancelBioForm()">Cancel</button>
+            </form>
+        </div>
+
+        <!-- Dietary Restrictions Section -->
+        <div class="dietary-restrictions">
+            <h3>Dietary Restrictions
+                <button id="editDietBtn" class="button button-edit" onclick="toggleDietForm()">
+                    {% if profile_obj.dietary_restrictions.exists %}Edit{% else %}Add{% endif %}
+                </button>
+            </h3>
+
+            <div id="dietDisplay">
+                {% if profile_obj.dietary_restrictions.all %}
+                    <ul>
+                        {% for restriction in profile_obj.dietary_restrictions.all %}
+                            <li>{{ restriction }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No dietary restrictions specified.</p>
+                {% endif %}
+            </div>
+
+            <!-- Inline Edit Form (hidden by default) -->
+            <form id="dietForm" method="post" class="diet-form">
+                {% csrf_token %}
+                <input type="hidden" name="diet_form_submitted" value="1">
+
+                <!-- Store the original state of the checkboxes -->
+                {% for restriction in profile_obj.dietary_restrictions.all %}
+                    <input type="hidden" name="original_dietary_restrictions" value="{{ restriction.id }}">
+                {% endfor %}
+
+                {{ diet_form.as_p }}
+                <button type="submit" class="button">Save</button>
+                <button type="button" class="button button-cancel" onclick="cancelDietForm()">Cancel</button>
+            </form>
+        </div>
+    </section>
+</div>
+
+
+<!-- Social Links Tab -->
+<div id="social" class="tabcontent">
+    <section class="profile-section social-links">
+        <h2>Social Links 
+            <button id="editSocialBtn" class="button button-edit" onclick="toggleSocialForm()">
+                {% if profile_obj.twitter_url or profile_obj.instagram_url or profile_obj.personal_website %}Edit{% else %}Add{% endif %}
+            </button>
+        </h2>
+
+        <div id="socialDisplay">
+            {% if profile_obj.twitter_url or profile_obj.instagram_url or profile_obj.personal_website %}
+                <ul>
+                    {% if profile_obj.twitter_url %}
+                        <li><strong>Twitter:</strong> 
+                            <a href="{{ profile_obj.twitter_url }}" target="_blank">
+                                <i class="fab fa-twitter"></i> {{ profile_obj.twitter_url }}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if profile_obj.instagram_url %}
+                        <li><strong>Instagram:</strong> 
+                            <a href="{{ profile_obj.instagram_url }}" target="_blank">
+                                <i class="fab fa-instagram"></i> {{ profile_obj.instagram_url }}
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% if profile_obj.personal_website %}
+                        <li><strong>Website:</strong> 
+                            <a href="{{ profile_obj.personal_website }}" target="_blank">
+                                <i class="fas fa-globe"></i> {{ profile_obj.personal_website }}
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            {% else %}
+                <p>No social links provided.</p>
+            {% endif %}
+        </div>
+
+        <!-- Inline Edit Form (hidden by default) -->
+        <form id="socialForm" method="post" class="social-form">
+            {% csrf_token %}
+            <!-- Hidden input to identify which form was submitted -->
+            <input type="hidden" name="social_form_submitted" value="1">
+            {{ social_form.as_p }}
+            <button type="submit" class="button">Save</button>
+            <button type="button" class="button button-cancel" onclick="cancelSocialForm()">Cancel</button>
+        </form>
+    </section>
+</div>
+
+<div id="features" class="tabcontent">
+    <section class="profile-section">
+        <h2>My Content</h2>
+        <div class="features-section">
+            <div class="feature-card">
+                <h3><i class="fas fa-utensils"></i> My Recipes</h3>
+                <p>All the recipes you’ve shared in one place.</p>
+                <a href="{% url 'my_recipes' %}" class="button">View Recipes <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <div class="feature-card">
+                <h3><i class="fas fa-bookmark"></i> My Saved Recipes</h3>
+                <p>Browse your favorite recipes and Manage them.</p>
+                <a href="{% url 'my_saved_recipes' %}" class="button">View Saved Recipes <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <div class="feature-card">
+                <h3><i class="fas fa-calendar-alt"></i> My Meal Plans</h3>
+                <p>Track and manage your meal plans.</p>
+                <a href="{% url 'my_meal_plans' %}" class="button">View Meal Plans <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <div class="feature-card">
+                <h3><i class="fas fa-shopping-cart"></i> My Grocery Lists</h3>
+                <p>Manage your saved smart grocery lists.</p>
+                <a href="{% url 'my_grocery_lists' %}" class="button">View Grocery Lists <i class="fas fa-arrow-right"></i></a>
+            </div>
+
+            <div class="feature-card">
+                <h3><i class="fas fa-comment"></i> My Comments</h3>
+                <p>See your posted comments on other recipes.</p>
+                <a href="{% url 'my_comments' %}" class="button">View Comments <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div id="appearance" class="tabcontent">
+    <section class="profile-section">
+        <h2>Appearance</h2>
+        <button id="toggleDarkMode" class="button" data-theme="light">
+            <i class="fas"></i> Toggle Dark Mode
+        </button>
+    </section>
+</div>
+
+<!-- Account Actions Tab -->
+<div id="actions" class="tabcontent">
+    <section class="profile-section">
+        <h2>Account Actions</h2>
+        <div class="action-buttons">
+            <a href="{% url 'privacy_settings' %}" class="action-button">
+                <i class="fas fa-lock"></i> Privacy Settings
+            </a>
+            <a href="{% url 'public_profile' profile_user.username %}" class="action-button">
+                <i class="fas fa-user"></i> My Public Profile
+            </a>
+            <a href="{% url 'logout' %}" class="action-button action-button-danger" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </section>
+</div>
+
+
+    <form id="logout-form" action="{% url 'logout' %}" method="post" style="display: none;">
+        {% csrf_token %}
+    </form>
+</div>
+
+
+<script>
+    // Function to set the active tab and save to localStorage
+    function openTab(evt, tabName) {
+        // Remove active class from all tabs and links
+        document.querySelectorAll(".tabcontent").forEach(tab => tab.classList.remove("active"));
+        document.querySelectorAll(".tablink").forEach(link => link.classList.remove("active"));
+
+        // Add active class to the selected tab and link
+        document.getElementById(tabName).classList.add("active");
+        if (evt) evt.currentTarget.classList.add("active");
+
+        // Save the active tab to localStorage
+        localStorage.setItem('activeTab', tabName);
+    }
+
+    // Function for mobile dropdown
+    function openTabDropdown(tabName) {
+        document.querySelectorAll(".tabcontent").forEach(tab => tab.classList.remove("active"));
+        document.getElementById(tabName).classList.add("active");
+
+        // Save the active tab to localStorage
+        localStorage.setItem('activeTab', tabName);
+    }
+
+
+    function toggleDietForm() {
+        const displayDiv = document.getElementById('dietDisplay');
+        const form = document.getElementById('dietForm');
+        const editButton = document.getElementById('editDietBtn');
+
+        if (form.style.display === 'none' || form.style.display === '') {
+            form.style.display = 'block';
+            displayDiv.style.display = 'none';
+            editButton.style.display = 'none';
+        } else {
+            form.style.display = 'none';
+            displayDiv.style.display = 'block';
+            editButton.style.display = 'inline-block';
+        }
+    }
+
+    function cancelDietForm() {
+        const originalRestrictions = document.querySelectorAll('input[name="original_dietary_restrictions"]');
+        const checkboxes = document.querySelectorAll('input[name="dietary_restrictions"]');
+
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+
+        originalRestrictions.forEach(restriction => {
+            const checkbox = document.querySelector(`input[name="dietary_restrictions"][value="${restriction.value}"]`);
+            if (checkbox) checkbox.checked = true;
+        });
+
+        toggleDietForm();
+    }
+
+    function toggleSocialForm() {
+        const displayDiv = document.getElementById('socialDisplay');
+        const form = document.getElementById('socialForm');
+        const editButton = document.getElementById('editSocialBtn');
+
+        if (form.style.display === 'none' || form.style.display === '') {
+            form.style.display = 'block';
+            displayDiv.style.display = 'none';
+            editButton.style.display = 'none';
+        } else {
+            form.style.display = 'none';
+            displayDiv.style.display = 'block';
+            editButton.style.display = 'inline-block';
+        }
+    }
+
+    function cancelSocialForm() {
+        toggleSocialForm();
+    }
+
+    function openAvatarModal(avatarUrl) {
+        const modal = document.getElementById('avatarModal');
+        const modalImg = document.getElementById('expandedAvatar');
+        modal.style.display = "flex";
+        modalImg.src = avatarUrl;
+    }
+
+    document.querySelector('.close-avatar-modal').onclick = function() {
+        document.getElementById('avatarModal').style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        const modal = document.getElementById('avatarModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    function toggleBioForm() {
+        const displayDiv = document.getElementById('bioDisplay');
+        const form = document.getElementById('bioForm');
+        const editButton = document.getElementById('editBioBtn');
+
+        if (form.style.display === 'none' || form.style.display === '') {
+            form.style.display = 'block';
+            displayDiv.style.display = 'none';
+            editButton.style.display = 'none';
+        } else {
+            form.style.display = 'none';
+            displayDiv.style.display = 'block';
+            editButton.style.display = 'inline-block';
+        }
+    }
+
+    function cancelBioForm() {
+        toggleBioForm();
+        document.getElementById('bioForm').reset();
+    }
+</script>
+
+{% endblock content %}

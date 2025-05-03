@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/signup.css' %}">
+<div class="signup-container">
+    <h1 class="signup-title">Sign Up</h1>
+    <form method="post" class="signup-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_username">Username:</label>
+            {{ form.username }}
+            {% if form.username.errors %}
+                <div class="error">{{ form.username.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="id_first_name">First Name:</label>
+            {{ form.first_name }}
+            {% if form.first_name.errors %}
+                <div class="error">{{ form.first_name.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="id_last_name">Last Name:</label>
+            {{ form.last_name }}
+            {% if form.last_name.errors %}
+                <div class="error">{{ form.last_name.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="id_email">Email:</label>
+            {{ form.email }}
+            {% if form.email.errors %}
+                <div class="error">{{ form.email.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="id_password1">Password:</label>
+            {{ form.password1 }}
+            {% if form.password1.errors %}
+                <div class="error">{{ form.password1.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group">
+            <label for="id_password2">Confirm Password:</label>
+            {{ form.password2 }}
+            {% if form.password2.errors %}
+                <div class="error">{{ form.password2.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group checkbox-group">
+            <label class="custom-checkbox">
+                I agree to the <a href="{% url 'terms' %}" target="_blank">terms and conditions</a>
+                <input type="checkbox" id="id_agree_to_terms" name="agree_to_terms" required>
+                <span class="checkmark"></span>
+            </label>
+            {% if form.agree_to_terms.errors %}
+                <div class="error">{{ form.agree_to_terms.errors }}</div>
+            {% endif %}
+        </div>
+        <div class="form-group captcha">
+            <label for="id_captcha">CAPTCHA:</label>
+            {{ form.captcha }}
+            <small class="form-text text-muted">
+                Enter the text shown in the image above. Can't read it? <a href="#" onclick="refreshCaptcha(); return false;">Refresh</a>.
+            </small>
+            {% if form.captcha.errors %}
+                <div class="error">{{ form.captcha.errors }}</div>
+            {% endif %}
+        </div>
+        <button type="submit" class="signup-button">Sign Up</button>
+    </form>
+    <p class="login-link">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+</div>
+
+<script>
+    function refreshCaptcha() {
+        fetch('/refresh-captcha/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.image_url) {
+                    const captchaImage = document.querySelector('.captcha img');
+                    if (captchaImage) {
+                        captchaImage.src = data.image_url; // Update the image URL
+                    }
+                    // Update the hidden input with the new key
+                    const hiddenInput = document.querySelector('input[name="captcha_0"]');
+                    if (hiddenInput) {
+                        hiddenInput.value = data.key;
+                    }
+                }
+            })
+            .catch(error => console.error('Error refreshing CAPTCHA:', error));
+    }
+</script>
+{% endblock %}

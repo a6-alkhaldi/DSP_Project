@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/grocery_list_detail.css' %}">
+<div class="grocery-edit-container">
+    <p>
+        <a href="{% url 'grocery_list_detail' grocery_list.id %}" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back to Grocery List
+        </a>
+    </p>
+    <h1>Edit Grocery List: {{ grocery_list.title }}</h1>
+    <form method="post" class="grocery-edit-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="button-container">
+            <button type="submit" class="action-btn">Save Changes</button>
+            <a href="{% url 'my_grocery_lists' %}" class="action-btn cancel-btn">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock content %}

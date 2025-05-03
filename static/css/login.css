@@ -1,0 +1,508 @@
+/* -----------------------------------------
+   LOGIN PAGE STYLES (MODERN DESIGN)
+----------------------------------------- */
+
+/* Container for the login form */
+.login-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2.5rem;
+    background: rgba(250, 250, 250, 0.9); /* Semi-transparent white */
+    border-radius: 20px;
+    backdrop-filter: blur(10px); /* Glassmorphism effect */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.18); /* Subtle border */
+    transition: all 0.3s ease;
+}
+
+.login-container:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px); /* Slight lift on hover */
+}
+
+/* Title of the login page */
+.login-title {
+    font-size: 2.5rem;
+    color: #e63946;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+    font-family: 'Poppins', sans-serif;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Form styling */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Form group styling */
+.login-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.login-form-group label {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+}
+
+.login-form-group input {
+    padding: 0.75rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+.login-form-group input:focus {
+    border-color: #e63946;
+    box-shadow: 0 0 12px rgba(230, 57, 70, 0.3);
+    outline: none;
+    background: rgba(255, 255, 255, 1);
+}
+
+/* Forgot password link */
+.login-forgot-password {
+    color: #e63946;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.login-forgot-password:hover {
+    color: #d9273a;
+    transform: translateX(5px); /* Slight movement on hover */
+}
+
+/* Login button styling */
+.login-button {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #e63946, #d9273a);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(230, 57, 70, 0.2);
+}
+
+.login-button:hover {
+    background: linear-gradient(135deg, #d9273a, #e63946);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(230, 57, 70, 0.3);
+}
+
+/* Signup link styling */
+.login-signup-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #555;
+    font-family: 'Poppins', sans-serif;
+}
+
+.login-signup-link a {
+    color: #e63946;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.login-signup-link a:hover {
+    color: #d9273a;
+    transform: translateX(5px); /* Slight movement on hover */
+}
+
+/* Messages styling */
+.login-messages {
+    margin-bottom: 1.5rem;
+}
+
+.login-message {
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.login-message.success {
+    background-color: #d1fae5;
+    color: #065f46;
+    border: 1px solid #34d399;
+}
+
+.login-message.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #f87171;
+}
+
+.login-message.warning {
+    background-color: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fbbf24;
+}
+
+.login-message.info {
+    background-color: #dbeafe;
+    color: #1e40af;
+    border: 1px solid #60a5fa;
+}
+
+/* Close button for messages */
+.login-message .close-message {
+    margin-left: auto;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: inherit;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.login-message .close-message:hover {
+    opacity: 1;
+}
+
+/* -----------------------------------------
+   DARK MODE STYLES (MODERN DESIGN)
+----------------------------------------- */
+
+/* Dark mode container */
+.dark-theme .login-container {
+    background: rgba(42, 42, 42, 0.9); /* Semi-transparent dark */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Dark mode title */
+.dark-theme .login-title {
+    color: #e63946;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark mode form labels */
+.dark-theme .login-form-group label {
+    color: #ccc;
+}
+
+/* Dark mode form inputs */
+.dark-theme .login-form-group input {
+    background: rgba(51, 51, 51, 0.8);
+    border-color: rgba(85, 85, 85, 0.5);
+    color: #fff;
+}
+
+.dark-theme .login-form-group input:focus {
+    background: rgba(51, 51, 51, 1);
+    border-color: #e63946;
+    box-shadow: 0 0 12px rgba(230, 57, 70, 0.3);
+}
+
+/* Dark mode forgot password link */
+.dark-theme .login-forgot-password {
+    color: #e63946;
+}
+
+.dark-theme .login-forgot-password:hover {
+    color: #d9273a;
+}
+
+/* Dark mode signup link */
+.dark-theme .login-signup-link {
+    color: #ccc;
+}
+
+.dark-theme .login-signup-link a {
+    color: #e63946;
+}
+
+.dark-theme .login-signup-link a:hover {
+    color: #d9273a;
+}
+
+/* Dark mode messages */
+.dark-theme .login-message.success {
+    background-color: #064e3b;
+    color: #6ee7b7;
+    border-color: #10b981;
+}
+
+.dark-theme .login-message.error {
+    background-color: #7f1d1d;
+    color: #fca5a5;
+    border-color: #ef4444;
+}
+
+.dark-theme .login-message.warning {
+    background-color: #78350f;
+    color: #fcd34d;
+    border-color: #f59e0b;
+}
+
+.dark-theme .login-message.info {
+    background-color: #1e3a8a;
+    color: #93c5fd;
+    border-color: #3b82f6;
+}
+
+/* -----------------------------------------
+   RESPONSIVE DESIGN
+----------------------------------------- */
+
+@media (max-width: 768px) {
+    .login-container {
+        padding: 1.5rem;
+        margin: 1rem auto;
+    }
+
+    .login-title {
+        font-size: 2rem;
+    }
+
+    .login-form-group input {
+        padding: 0.5rem 1rem;
+    }
+
+    .login-button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .login-forgot-password {
+        font-size: 0.8rem;
+    }
+
+    .login-signup-link {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 1rem;
+        margin: 0.5rem auto;
+    }
+
+    .login-title {
+        font-size: 1.75rem;
+    }
+
+    .login-form-group input {
+        padding: 0.4rem 1rem;
+    }
+
+    .login-button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .login-forgot-password {
+        font-size: 0.75rem;
+    }
+
+    .login-signup-link {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .login-container {
+        padding: 0.75rem;
+        margin: 0.25rem auto;
+    }
+
+    .login-title {
+        font-size: 1.5rem;
+    }
+
+    .login-form-group input {
+        padding: 0.3rem 1rem;
+    }
+
+    .login-button {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .login-forgot-password {
+        font-size: 0.7rem;
+    }
+
+    .login-signup-link {
+        font-size: 0.7rem;
+    }
+}
+
+/* -----------------------------------------
+   RESET PASSWORD PAGES STYLES
+----------------------------------------- */
+
+.reset-password-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--background-light);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.reset-password-container:hover {
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+}
+
+.reset-password-title {
+    font-size: 2rem;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.reset-password-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.reset-password-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.reset-password-form .form-group label {
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.reset-password-form .form-group input {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reset-password-form .form-group input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px rgba(230, 57, 70, 0.2);
+    outline: none;
+}
+
+.reset-password-form button {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.reset-password-form button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+}
+
+.reset-password-message {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+.reset-password-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.reset-password-link:hover {
+    color: var(--primary-hover);
+}
+
+/* Dark Mode Overrides */
+.dark-theme .reset-password-container {
+    background-color: var(--section-background-dark);
+    color: var(--text-light);
+}
+
+.dark-theme .reset-password-title {
+    color: var(--primary-color);
+}
+
+.dark-theme .reset-password-form .form-group label {
+    color: var(--text-light);
+}
+
+.dark-theme .reset-password-form .form-group input {
+    background-color: var(--section-background-dark);
+    border-color: var(--accent-color);
+    color: var(--text-light);
+}
+
+.dark-theme .reset-password-form .form-group input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px rgba(230, 57, 70, 0.2);
+}
+
+.dark-theme .reset-password-message {
+    color: var(--text-muted);
+}
+
+@media (max-width: 768px) {
+    .reset-password-container {
+        padding: 1.5rem;
+        margin: 1rem auto;
+    }
+
+    .reset-password-title {
+        font-size: 1.8rem;
+    }
+
+    .reset-password-form .form-group input {
+        padding: 0.5rem;
+    }
+
+    .reset-password-form button {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .reset-password-container {
+        padding: 1rem;
+        margin: 0.5rem auto;
+    }
+
+    .reset-password-title {
+        font-size: 1.5rem;
+    }
+
+    .reset-password-form .form-group input {
+        padding: 0.4rem;
+    }
+
+    .reset-password-form button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+}

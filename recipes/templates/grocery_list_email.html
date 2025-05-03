@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        h1 { color: #e63946; }
+        h2 { color: #e63946; margin-top: 20px; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin-bottom: 10px; }
+        .footer { margin-top: 20px; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ grocery_list.title }}</h1>
+        <p>Created: {{ grocery_list.created_at|date:"M d, Y, g:i A" }}</p>
+        {% for category, items in categorized_ingredients.items %}
+            <h2>{{ category }}</h2>
+            <ul>
+                {% for item in items %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+        <div class="footer">
+            <p>Sent from Recipe Planner</p>
+        </div>
+    </div>
+</body>
+</html>

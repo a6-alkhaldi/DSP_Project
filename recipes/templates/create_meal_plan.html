@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% load static recipe_filters %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/create_meal_plan.css' %}">
+<div class="create-meal-plan-container">
+    <header class="create-meal-plan-header">
+        <h1>Create Your Meal Plan</h1>
+        <p>Plan your meals for the week ahead and simplify your cooking!</p>
+    </header>
+
+    <form method="post" class="meal-plan-form" id="mealPlanForm">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="{{ form.title.id_for_label }}">Title <span class="required">*</span></label>
+            {{ form.title }}
+            {% if form.title.errors %}
+                <div class="error">{{ form.title.errors.as_text }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.start_date.id_for_label }}">Start Date <span class="required">*</span></label>
+            <div class="date-input-wrapper">
+                {{ form.start_date }}
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            {% if form.start_date.errors %}
+                <div class="error">{{ form.title.errors.as_text }}</div>
+            {% endif %}
+            <div class="error date-error" id="start-date-error"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.end_date.id_for_label }}">End Date</label>
+            <div class="date-input-wrapper">
+                {{ form.end_date }}
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            {% if form.end_date.errors %}
+                <div class="error">{{ form.end_date.errors.as_text }}</div>
+            {% endif %}
+            <div class="error date-error" id="end-date-error"></div>
+        </div>
+
+        <div class="preset-durations">
+            <button type="button" class="preset-btn" data-days="7">1 Week</button>
+            <button type="button" class="preset-btn" data-days="14">2 Weeks</button>
+            <button type="button" class="preset-btn" data-days="30">1 Month</button>
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.description.id_for_label }}">Description (Optional)</label>
+            {{ form.description }}
+            {% if form.description.errors %}
+                <div class="error">{{ form.description.errors.as_text }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Recipe Suggestions Section -->
+        {% if suggestions %}
+            <div class="recipe-suggestions">
+                <h2>Recipe Suggestions</h2>
+                <p>Click a recipe to select it and choose its day and meal type.</p>
+                <div class="selection-counter">Selected: <span id="selection-count">0</span> recipes</div>
+                <div class="suggested-recipes-grid">
+                    {% for recipe in suggestions %}
+                        <div class="suggested-recipe-card" data-recipe-id="{{ recipe.pk }}" role="button" tabindex="0" aria-label="Select {{ recipe.title }}">
+                            <div class="suggested-card-image">
+                                {% if recipe.images.first %}
+                                    <img src="{{ recipe.images.first.image.url }}" alt="{{ recipe.title }}" loading="lazy">
+                                {% else %}
+                                    <div class="image-placeholder"><i class="fas fa-image"></i></div>
+                                {% endif %}
+                                <div class="selection-indicator"><i class="fas fa-check-circle"></i></div>
+                                <div class="suggested-status-labels">
+                                    {% if recipe.is_popular %}
+                                        <span class="suggested-label popular"><i class="fas fa-fire"></i> Popular</span>
+                                    {% endif %}
+                                    {% if recipe.is_quick_meal %}
+                                        <span class="suggested-label quick"><i class="fas fa-clock"></i> Quick</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="suggested-card-content">
+                                <h3 class="suggested-card-title">{{ recipe.title }}</h3>
+                                <div class="suggested-card-category">
+                                    <span class="suggested-category-label">{{ recipe.category|get_category_label }}</span>
+                                </div>
+                                <div class="suggested-card-meta">
+                                    <span><i class="fas fa-clock"></i> {{ recipe.cooking_time }} min</span>
+                                    <span><i class="fas fa-fire"></i> {{ recipe.calories|default:"-" }} kcal</span>
+                                </div>
+                                <div class="recipe-assignment">
+                                    <label class="recipe-assignment-label">Day</label>
+                                    <select name="recipe_{{ recipe.pk }}_day" class="recipe-day-select" disabled>
+                                        {% for day in date_range %}
+                                            <option value="{{ day|date:'Y-m-d' }}">{{ day|date:"F j, Y" }}</option>
+                                        {% empty %}
+                                            <option value="{{ form.start_date.value|date:'Y-m-d' }}">{{ form.start_date.value|date:"F j, Y" }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <label class="recipe-assignment-label">Meal Type</label>
+                                    <select name="recipe_{{ recipe.pk }}_meal_type" class="recipe-meal-type-select" disabled>
+                                        <option value="dinner">Dinner</option>
+                                        <option value="breakfast">Breakfast</option>
+                                        <option value="lunch">Lunch</option>
+                                        <option value="snack">Snack</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <input type="hidden" name="selected_recipes" value="{{ recipe.pk }}" disabled>
+                        </div>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="selected_recipe_ids" id="selected_recipe_ids">
+            </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="submit-btn">Create Meal Plan</button>
+            <a href="{% url 'my_meal_plans' %}" class="cancel-btn">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('mealPlanForm');
+    const startDateInput = document.getElementById('id_start_date');
+    const endDateInput   = document.getElementById('id_end_date');
+    const presetButtons  = document.querySelectorAll('.preset-btn');
+    const recipeCards    = document.querySelectorAll('.suggested-recipe-card');
+    const selectionCount = document.getElementById('selection-count');
+    const selectedRecipeIdsInput = document.getElementById('selected_recipe_ids');
+    const startDateError = document.getElementById('start-date-error');
+    const endDateError   = document.getElementById('end-date-error');
+
+    // Compute today’s date at midnight
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayISO = today.toISOString().split('T')[0];
+
+    // ─── FIX: default both inputs to today ───
+    startDateInput.value = todayISO;
+    endDateInput.value   = todayISO;
+
+    // Set min attribute to today
+    startDateInput.setAttribute('min', todayISO);
+    endDateInput.setAttribute('min', todayISO);
+
+    // Preset duration buttons
+    presetButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            presetButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            const days = parseInt(button.dataset.days, 10);
+            startDateInput.value = todayISO;
+
+            const endDate = new Date(today);
+            endDate.setDate(endDate.getDate() + days - 1);
+            endDateInput.value = endDate.toISOString().split('T')[0];
+
+            updateDayDropdowns();
+            startDateError.style.display = 'none';
+            endDateError.style.display   = 'none';
+            startDateInput.classList.remove('invalid');
+            endDateInput.classList.remove('invalid');
+        });
+
+        button.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            button.click();
+        }, { passive: false });
+    });
+
+    // Update day dropdowns
+    function updateDayDropdowns() {
+        const startDate = new Date(startDateInput.value);
+        const endDate   = endDateInput.value
+                          ? new Date(endDateInput.value)
+                          : startDate;
+        const daySelects = document.querySelectorAll('.recipe-day-select');
+
+        daySelects.forEach(select => {
+            select.innerHTML = '';
+            let currentDate = new Date(startDate);
+            while (currentDate <= endDate) {
+                const option = document.createElement('option');
+                const dateStr = currentDate.toISOString().split('T')[0];
+                option.value = dateStr;
+                option.text  = currentDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+                select.appendChild(option);
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            if (!select.value) {
+                select.value = todayISO;
+            }
+        });
+    }
+
+    // Real-time validation
+    startDateInput.addEventListener('change', () => { validateDates(); updateDayDropdowns(); });
+    endDateInput.addEventListener('change', () => { validateDates(); updateDayDropdowns(); });
+
+    function validateDates() {
+        const startDate = new Date(startDateInput.value);
+        const endDate   = endDateInput.value ? new Date(endDateInput.value) : null;
+        let isValid = true;
+
+        startDateError.style.display = 'none';
+        endDateError.style.display   = 'none';
+        startDateInput.classList.remove('invalid');
+        endDateInput.classList.remove('invalid');
+        presetButtons.forEach(btn => btn.classList.remove('active'));
+
+        if (startDate < today) {
+            startDateError.textContent = 'Start date cannot be in the past.';
+            startDateError.style.display = 'block';
+            startDateInput.classList.add('invalid');
+            isValid = false;
+        }
+
+        if (endDate && endDate < startDate) {
+            endDateError.textContent = 'End date cannot be before start date.';
+            endDateError.style.display = 'block';
+            endDateInput.classList.add('invalid');
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    // Recipe selection handlers
+    recipeCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (e.target.matches('.recipe-day-select, .recipe-meal-type-select')) return;
+            card.classList.toggle('selected');
+            const input = card.querySelector('input[name="selected_recipes"]');
+            const daySelect = card.querySelector('.recipe-day-select');
+            const mealTypeSelect = card.querySelector('.recipe-meal-type-select');
+            input.disabled = !card.classList.contains('selected');
+            daySelect.disabled = !card.classList.contains('selected');
+            mealTypeSelect.disabled = !card.classList.contains('selected');
+            updateSelectionCount();
+        });
+        card.addEventListener('keydown', (e) => { if (['Enter',' '].includes(e.key)) { e.preventDefault(); card.click(); } });
+        card.addEventListener('touchstart', (e) => { if (!e.target.matches('.recipe-day-select, .recipe-meal-type-select')) { e.preventDefault(); card.click(); } }, { passive: false });
+    });
+
+    document.querySelectorAll('.recipe-day-select, .recipe-meal-type-select').forEach(select => {
+        select.addEventListener('click', e => e.stopPropagation());
+        select.addEventListener('touchstart', e => e.stopPropagation(), { passive: false });
+    });
+
+    function updateSelectionCount() {
+        const count = document.querySelectorAll('.suggested-recipe-card.selected').length;
+        selectionCount.textContent = count;
+    }
+
+    // Form submission
+    form.addEventListener('submit', (e) => {
+        const title = document.getElementById('id_title').value.trim();
+        if (!title) { e.preventDefault(); alert('Please enter a title.'); return; }
+        if (!startDateInput.value) { e.preventDefault(); alert('Please select a start date.'); return; }
+        if (!validateDates()) { e.preventDefault(); alert('Please correct the date errors.'); return; }
+
+        const selected = Array.from(document.querySelectorAll('.suggested-recipe-card.selected')).map(card => ({
+            id: card.dataset.recipeId,
+            day: card.querySelector('.recipe-day-select').value,
+            meal_type: card.querySelector('.recipe-meal-type-select').value
+        }));
+        selectedRecipeIdsInput.value = selected.map(r => r.id).join(',');
+        const dataInput = document.createElement('input');
+        dataInput.type = 'hidden'; dataInput.name = 'selected_recipes_data';
+        dataInput.value = JSON.stringify(selected);
+        form.appendChild(dataInput);
+    });
+
+    // Initialize
+    updateDayDropdowns();
+});
+</script>
+{% endblock %}

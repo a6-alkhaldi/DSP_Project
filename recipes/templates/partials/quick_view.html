@@ -1,0 +1,65 @@
+<div class="quick-view-container">
+    <button class="qv-close">&times;</button>
+    
+    <!-- Recipe Header Section -->
+    <div class="qv-header">
+        <h2 class="qv-title">{{ recipe.title }}</h2>
+        <a href="{% url 'public_profile' recipe.author.username %}" class="qv-author">
+            <i class="fas fa-user"></i> {{ recipe.author.username }}
+        </a>
+    </div>
+
+    <!-- Image and Basic Info Grid -->
+    <div class="qv-grid">
+        {% if recipe.images.first %}
+        <div class="qv-image">
+            <img src="{{ recipe.images.first.image.url }}" alt="{{ recipe.title }}" loading="lazy">
+        </div>
+        {% endif %}
+
+        <div class="qv-meta">
+            <div class="qv-meta-item">
+                <i class="fas fa-clock"></i>
+                <span>{{ recipe.cooking_time }} mins</span>
+            </div>
+            <div class="qv-meta-item">
+                <i class="fas fa-fire"></i>
+                <span>{{ recipe.calories|default:"-" }} kcal</span>
+            </div>
+            <div class="qv-meta-item">
+                <i class="fas fa-dumbbell"></i>
+                <span>{{ recipe.proteins|default:"-" }}g protein</span>
+            </div>
+            <div class="qv-category">
+                {{ recipe.get_category_display }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Dietary Tags -->
+    {% if recipe.dietary_tags.exists %}
+    <div class="qv-tags">
+        {% for tag in recipe.dietary_tags.all %}
+        <span class="qv-tag">{{ tag.get_name_display }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Ingredients -->
+    <div class="qv-section">
+        <h3 class="qv-section-title"><i class="fas fa-carrot"></i> Ingredients</h3>
+        <ul class="qv-ingredients">
+            {% for ingredient in ingredients_list %}
+            <li>{{ ingredient }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Actions -->
+    <div class="qv-actions">
+        <a href="{% url 'recipe-detail' recipe.pk %}" class="qv-full-link">
+            View Full Recipe <i class="fas fa-arrow-right"></i>
+        </a>
+    </div>
+</div>
+

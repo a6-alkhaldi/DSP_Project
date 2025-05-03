@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static recipe_filters %}
+
+{% block content %}
+<div class="home-page-container">
+  <!-- Hero Section -->
+  <section class="home-hero-section">
+    <div class="home-hero-overlay"></div>
+    <div class="home-hero-content">
+      <h1 class="home-hero-title">Welcome to <span class="home-accent-text">SmartMeal</span></h1>
+      <p class="home-hero-subtitle">Discover, plan, and cook with ease—your culinary journey starts here.</p>
+      {% if user.is_authenticated %}
+        <a href="{% url 'browse-recipes' %}" class="home-button-lg">Explore Recipes</a>
+      {% else %}
+        <a href="{% url 'signup' %}" class="home-button-lg">Join Now</a>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- Popular Recipes -->
+  <section class="home-popular-recipes-section">
+    <h2>Popular Recipes</h2>
+    <div class="home-title-decoration"></div>
+    <p class="home-section-info">Savor the crowd-favorites, crafted with love and flavor.</p>
+    <div class="home-recipe-card-grid">
+      {% for recipe in popular_recipes %}
+      <div class="home-recipe-card">
+        <div class="home-recipe-card-image">
+          {% if recipe.images.first %}
+            <img src="{{ recipe.images.first.image.url }}" alt="{{ recipe.title }}" class="home-recipe-image" loading="lazy">
+          {% else %}
+            <div class="home-image-placeholder"><i class="fas fa-image"></i></div>
+          {% endif %}
+        </div>
+        <div class="home-recipe-card-content">
+          <h3 class="home-recipe-card-title">
+            <a href="{% url 'recipe-detail' recipe.pk %}" class="home-title-link">{{ recipe.title }}</a>
+            <span class="home-link-hover"></span>
+          </h3>
+          <p>{{ recipe.description|truncatewords:12 }}</p>
+          <div class="home-recipe-meta">
+            <span class="home-meta-item"><i class="fas fa-clock"></i> {{ recipe.cooking_time }} min</span>
+            <span class="home-meta-item"><i class="fas fa-star"></i> {{ recipe.average_rating|floatformat:1 }}</span>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="home-no-results">
+        <i class="fas fa-utensils"></i>
+        <p>No popular recipes yet. Check back soon!</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Newest Recipes -->
+  <section class="home-newest-recipes-section">
+    <h2>Newest Recipes</h2>
+    <div class="home-title-decoration"></div>
+    <p class="home-section-info">Freshly added recipes to inspire your next meal.</p>
+    <div class="home-recipe-card-grid">
+      {% for recipe in newest_recipes %}
+      <div class="home-recipe-card">
+        <div class="home-recipe-card-image">
+          {% if recipe.images.first %}
+            <img src="{{ recipe.images.first.image.url }}" alt="{{ recipe.title }}" class="home-recipe-image" loading="lazy">
+          {% else %}
+            <div class="home-image-placeholder"><i class="fas fa-image"></i></div>
+          {% endif %}
+        </div>
+        <div class="home-recipe-card-content">
+          <h3 class="home-recipe-card-title">
+            <a href="{% url 'recipe-detail' recipe.pk %}" class="home-title-link">{{ recipe.title }}</a>
+            <span class="home-link-hover"></span>
+          </h3>
+          <p>{{ recipe.description|truncatewords:12 }}</p>
+          <div class="home-recipe-meta">
+            <span class="home-meta-item"><i class="fas fa-clock"></i> {{ recipe.cooking_time }} min</span>
+            <span class="home-meta-item"><i class="fas fa-star"></i> {{ recipe.average_rating|floatformat:1 }}</span>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="home-no-results">
+        <i class="fas fa-utensils"></i>
+        <p>No new recipes yet. Check back soon!</p>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Browse Categories -->
+  <section class="home-browse-categories">
+    <h2>Browse by Category</h2>
+    <div class="home-title-decoration"></div>
+    <p class="home-section-info">Find recipes that match your taste and dietary needs.</p>
+    <div class="home-category-links">
+      {% for value, label, count in top_categories %}
+      <a href="{% url 'browse-recipes' %}?category={{ value }}" class="home-cat-button">{{ label }} ({{ count }})</a>
+      {% empty %}
+      <p>No categories available yet.</p>
+      {% endfor %}
+      {% for tag in top_dietary_tags %}
+      <a href="{% url 'browse-recipes' %}?dietary_tags={{ tag.id }}" class="home-cat-button">{{ tag.get_name_display }} ({{ tag.recipe_count }})</a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- Meal Plan Teaser -->
+  <section class="home-meal-plan-teaser">
+    <h2>Your Weekly Meal Plan</h2>
+    <div class="home-title-decoration"></div>
+    <p class="home-section-info">Effortlessly organize your meals for the week ahead.</p>
+    {% if user.is_authenticated %}
+      <a href="{% url 'create_meal_plan' %}" class="home-button">Create a Meal Plan</a>
+    {% else %}
+      <a href="{% url 'signup' %}" class="home-button">Sign Up to Plan</a>
+    {% endif %}
+  </section>
+
+  <!-- Stats Section -->
+  <section class="home-stats-section">
+    <h2>Our Community</h2>
+    <div class="home-title-decoration"></div>
+    <div class="home-stats-container">
+      <div class="home-stat-item">
+        <h3>{{ recipe_count }}+</h3>
+        <p>Recipes</p>
+      </div>
+      <div class="home-stat-item">
+        <h3>{{ meal_plan_count }}</h3>
+        <p>Meal Plans</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Banners -->
+  <section class="home-cta-banner">
+    <div class="home-cta-content">
+      <h2>Follow Your Favorite Cooks</h2>
+      <p class="home-section-info">Stay inspired with recipes from chefs you love.</p>
+      {% if user.is_authenticated %}
+        <a href="{% url 'following_recipes' %}" class="home-button-lg">Discover Recipes</a>
+      {% else %}
+        <a href="{% url 'signup' %}" class="home-button-lg">Join to Follow</a>
+      {% endif %}
+    </div>
+  </section>
+
+  <section class="home-cta-banner">
+    <div class="home-cta-content">
+      <h2>Start Your Culinary Adventure</h2>
+      <p class="home-section-info">Share your recipes and plan your meals today.</p>
+      {% if user.is_authenticated %}
+        <a href="{% url 'add_recipe' %}" class="home-button-lg">Add Your Recipe</a>
+      {% else %}
+        <a href="{% url 'signup' %}" class="home-button-lg">Get Started</a>
+      {% endif %}
+    </div>
+  </section>
+</div>
+{% endblock %}

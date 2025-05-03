@@ -1,0 +1,325 @@
+/* About Container */
+.about-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    background: linear-gradient(180deg, rgba(252, 224, 224, 0.8), rgba(236, 210, 210, 0.9));
+    min-height: calc(100vh - 4rem);
+    border-radius: 24px;
+    overflow: hidden;
+    padding-bottom: 2rem;
+}
+
+/* Hero Section */
+.about-hero {
+    position: sticky;
+    top: 0;
+    text-align: center;
+    padding: 4rem 1.5rem 3rem;
+    background: linear-gradient(135deg, #e63946 0%, #f06c76 50%, #ff9a8b 100%); /* Aurora gradient */
+    color: #fff;
+    border-radius: 24px;
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%);
+    margin-bottom: 3rem;
+    backdrop-filter: blur(10px); /* Glassmorphism */
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.8s ease-out;
+    z-index: 100;
+}
+
+@keyframes fadeInHero {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 24px;
+  backdrop-filter: blur(5px);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero-content h1 {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.hero-content p {
+  font-size: 1.4rem;
+  font-weight: 400;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Mission and Vision Sections */
+.mission-section, .vision-section {
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  margin-bottom: 3rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: slideInSection 0.8s ease-out;
+  text-align: center;
+}
+
+@keyframes slideInSection {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.mission-section h2, .vision-section h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #333;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, #e63946, #f06c76);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.mission-section .section-info, .vision-section .section-info {
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Team Section */
+.team-section {
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  margin-bottom: 3rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: slideInSection 0.8s ease-out;
+  text-align: center;
+}
+
+.team-section h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #333;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, #e63946, #f06c76);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.team-section .section-info {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.team-member {
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  text-align: center;
+}
+
+.team-member:hover {
+  transform: translateY(-5px);
+}
+
+.team-image-placeholder {
+  width: 100px;
+  height: 100px;
+  background: #f0f0f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  color: #ccc;
+  font-size: 2rem;
+}
+
+.team-member h3 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.team-member p {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+}
+
+/* CTA Section */
+.cta-section {
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, #e63946 0%, #f06c76 50%, #ff9a8b 100%);
+  border-radius: 16px;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: slideInSection 0.8s ease-out;
+}
+
+.cta-section h2 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, #fff, #f0f0f0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.cta-section .section-info {
+  font-size: 1.2rem;
+  font-weight: 300;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+.cta-button {
+  display: inline-block;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #fff, #f0f0f0);
+  color: #e63946;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cta-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark Theme */
+.dark-theme .about-container {
+  background: linear-gradient(180deg, #1a1a1a, #2a2a2a);
+}
+
+.dark-theme .about-hero {
+  background: linear-gradient(135deg, rgba(42, 42, 42, 0.9), rgba(60, 60, 60, 0.9)), url('{% static "images/hero-bg.jpg" %}') center/cover no-repeat;
+}
+
+.dark-theme .hero-content h1 {
+  color: #e63946;
+}
+
+.dark-theme .hero-content p {
+  color: #aaa;
+}
+
+.dark-theme .mission-section, .dark-theme .vision-section,
+.dark-theme .team-section {
+  background: rgba(42, 42, 42, 0.9);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.dark-theme .mission-section h2, .dark-theme .vision-section h2,
+.dark-theme .team-section h2 {
+  background: linear-gradient(90deg, #f06c76, #e63946);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.dark-theme .section-info {
+  color: #aaa;
+}
+
+.dark-theme .team-member {
+  background: #2a2a2a;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.dark-theme .team-member h3 {
+  color: #ddd;
+}
+
+.dark-theme .team-member p {
+  color: #aaa;
+}
+
+.dark-theme .team-image-placeholder {
+  background: #333;
+  color: #666;
+}
+
+.dark-theme .cta-section {
+  background: linear-gradient(135deg, #d9273a, #e63946, #ff6b6b);
+}
+
+.dark-theme .cta-button {
+  background: linear-gradient(135deg, #f06c76, #e63946);
+  color: #fff;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .about-hero {
+    padding: 4rem 1.5rem;
+  }
+  .hero-content h1 {
+    font-size: 2.8rem;
+  }
+  .hero-content p {
+    font-size: 1.2rem;
+  }
+  .mission-section, .vision-section, .team-section {
+    padding: 1.5rem;
+  }
+  .team-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .about-hero {
+    padding: 3rem 1rem;
+  }
+  .hero-content h1 {
+    font-size: 2.2rem;
+  }
+  .hero-content p {
+    font-size: 1rem;
+  }
+  .mission-section h2, .vision-section h2, .team-section h2,
+  .cta-section h2 {
+    font-size: 2rem;
+  }
+  .cta-button {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+  }
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+}

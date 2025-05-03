@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/about.css' %}">
+<div class="about-container">
+  <!-- Hero Section -->
+  <section class="about-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <h1>About SmartMeal</h1>
+      <p>Empowering food lovers to create, plan, and share delicious meals with ease.</p>
+    </div>
+  </section>
+
+  <!-- Mission Section -->
+  <section class="mission-section">
+    <h2>Our Mission</h2>
+    <p class="section-info">At SmartMeal, we believe cooking should be joyful and accessible. Our mission is to simplify meal planning and inspire creativity in the kitchen by connecting food enthusiasts with a vibrant community of recipes and tools.</p>
+  </section>
+
+  <!-- Vision Section -->
+  <section class="vision-section">
+    <h2>Our Vision</h2>
+    <p class="section-info">We envision a world where everyone can enjoy home-cooked meals tailored to their tastes and needs. SmartMeal aims to be the ultimate hub for culinary inspiration, fostering connections through shared recipes and meal plans.</p>
+  </section>
+
+  <!-- Team Section -->
+  <section class="team-section">
+    <h2>Meet Our Team</h2>
+    <p class="section-info">Our passionate team is dedicated to making your culinary journey extraordinary.</p>
+    <div class="team-grid">
+      <div class="team-member">
+        <div class="team-image-placeholder">
+          <i class="fas fa-user"></i>
+        </div>
+        <h3>Jane Doe</h3>
+        <p>Founder & Chef</p>
+      </div>
+      <div class="team-member">
+        <div class="team-image-placeholder">
+          <i class="fas fa-user"></i>
+        </div>
+        <h3>John Smith</h3>
+        <p>Tech Lead</p>
+      </div>
+      <div class="team-member">
+        <div class="team-image-placeholder">
+          <i class="fas fa-user"></i>
+        </div>
+        <h3>Emily Chen</h3>
+        <p>Community Manager</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <h2>Join Our Culinary Community</h2>
+    <p class="section-info">Be part of SmartMeal and start exploring, creating, and sharing today.</p>
+    {% if user.is_authenticated %}
+      <a href="{% url 'browse-recipes' %}" class="cta-button">Explore Recipes</a>
+    {% else %}
+      <a href="{% url 'signup' %}" class="cta-button">Join Now</a>
+    {% endif %}
+  </section>
+</div>
+
+{% endblock %}

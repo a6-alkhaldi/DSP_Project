@@ -1,0 +1,297 @@
+{% extends 'base.html' %}
+{% load static recipe_filters %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/grocery_lists.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<div class="my-lists-container">
+    <!-- Header -->
+    <header class="my-lists-header sticky">
+        <a href="{% url 'profile' %}" class="back-button" aria-label="Back to My Profile">
+            <i class="fas fa-arrow-left"></i>  My Profile
+        </a>
+        <h1 class="my-lists-title">
+            <span class="accent-text">My</span> Grocery Lists
+            <div class="title-decoration"></div>
+        </h1>
+        <p class="my-lists-subtitle">Organize your shopping with elegance and ease</p>
+        <div class="search-filter">
+            <input type="text" id="list-search" placeholder="Search grocery lists..." class="search-input" aria-label="Search grocery lists">
+            <button class="search-btn" aria-label="Search">
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Grocery List Grid -->
+    <section class="browse-recipe-grid" id="grocery-list-grid">
+        {% for list in grocery_lists %}
+        <article class="grocery-list-card" id="grocery-{{ list.id }}" data-title="{{ list.title|lower }}" data-tilt>
+            <div class="grocery-list-card-content">
+                <div class="card-progress">
+                    <div class="progress-circle" data-progress="{{ list.ingredients|count_ingredients|default:0 }}">
+                        <svg class="progress-ring">
+                            <circle class="progress-ring-bg" />
+                            <circle class="progress-ring-circle" />
+                        </svg>
+                        <span class="progress-text">{{ list.ingredients|count_ingredients|default:0 }}</span>
+                    </div>
+                </div>
+                <h2 class="card-title">{{ list.title }}</h2>
+                <div class="card-divider"></div>
+                <div class="card-meta">
+                    <span class="meta-item">
+                        <i class="fas fa-calendar"></i> {{ list.created_at|date:"M d, Y, g:i A" }}
+                    </span>
+                    {% if list.meal_plan %}
+                    <span class="meta-item">
+                        <i class="fas fa-utensils"></i> From <a href="{% url 'meal_plan_detail' list.meal_plan.id %}" class="meta-link">Meal Plan: {{ list.meal_plan.title }}</a>
+                    </span>
+                    {% elif list.recipe %}
+                    <span class="meta-item">
+                        <i class="fas fa-book-open"></i> From <a href="{% url 'recipe_detail' list.recipe.id %}" class="meta-link">Recipe: {{ list.recipe.title }}</a>
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="grocery-list-actions">
+                    <a href="{% url 'grocery_list_detail' list.id %}" class="action-btn view-btn" title="View List" aria-label="View Grocery List">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                    <a href="{% url 'grocery_list_edit' list.id %}" class="action-btn edit-btn" title="Edit List" aria-label="Edit Grocery List">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <button class="action-btn delete-btn" data-list-id="{{ list.id }}" title="Delete List" aria-label="Delete Grocery List">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </article>
+        {% empty %}
+        <div class="no-results">
+            <i class="fas fa-shopping-cart"></i>
+            <p>No grocery lists yet. Create one from a recipe or meal plan!</p>
+            <a href="{% url 'browse-recipes' %}" class="action-btn browse-btn" aria-label="Browse Recipes">Browse Recipes</a>
+        </div>
+        {% endfor %}
+    </section>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination-nav">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a href="?page={{ page_obj.previous_page_number }}" class="page-link" aria-label="Previous">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-label="Next">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    <!-- FAB -->
+    <button class="fab" id="fab" aria-label="Create New List">
+        <i class="fas fa-plus"></i>
+    </button>
+    <div class="fab-menu" id="fab-menu">
+        <button class="fab-option" data-action="browse-recipes" aria-label="Browse Recipes">
+            <i class="fas fa-utensils"></i> Browse Recipes
+        </button>
+        <button class="fab-option" data-action="create-meal-plan" aria-label="Create Meal Plan">
+            <i class="fas fa-calendar-plus"></i> Create Meal Plan
+        </button>
+    </div>
+    <div class="fab-backdrop" id="fab-backdrop"></div>
+</div>
+
+<script>
+// Utility to debounce functions
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Toast Notification
+    function showToast(message, type) {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.innerHTML = `
+            <span>${message}</span>
+            <span class="toast-close">×</span>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+        toast.querySelector('.toast-close').addEventListener('click', () => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        });
+    }
+
+    // Update Progress Circle
+    function updateProgressCircles() {
+        document.querySelectorAll('.progress-circle').forEach(circle => {
+            const progress = Math.min(parseInt(circle.getAttribute('data-progress')) || 0, 20);
+            const percentage = progress / 20;
+            const size = circle.offsetWidth;
+            const radius = (size / 2) - 4; // Adjust for stroke width
+            const circumference = 2 * Math.PI * radius;
+            const offset = circumference * (1 - percentage);
+            const svg = circle.querySelector('.progress-ring');
+            svg.setAttribute('width', size);
+            svg.setAttribute('height', size);
+            const circles = svg.querySelectorAll('circle');
+            circles.forEach(c => {
+                c.setAttribute('cx', size / 2);
+                c.setAttribute('cy', size / 2);
+                c.setAttribute('r', radius);
+                if (c.classList.contains('progress-ring-circle')) {
+                    c.style.strokeDasharray = circumference;
+                    c.style.strokeDashoffset = offset;
+                }
+            });
+        });
+    }
+
+    // Initial Progress Circle Update
+    updateProgressCircles();
+
+    // Update on Resize
+    window.addEventListener('resize', debounce(updateProgressCircles, 100));
+
+    // Delete Button
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        const handleDelete = () => {
+            if (confirm('Are you sure you want to delete this grocery list?')) {
+                const listId = btn.getAttribute('data-list-id');
+                btn.classList.add('loading');
+                fetch(`/grocery-lists/${listId}/delete/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    btn.classList.remove('loading');
+                    if (data.success) {
+                        const card = document.getElementById(`grocery-${listId}`);
+                        card.classList.add('fade-out');
+                        setTimeout(() => {
+                            card.remove();
+                            showToast('Grocery list deleted successfully!', 'success');
+                            if (!document.querySelector('.grocery-list-card')) {
+                                document.getElementById('grocery-list-grid').innerHTML = `
+                                    <div class="no-results">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <p>No grocery lists yet. Create one from a recipe or meal plan!</p>
+                                        <a href="{% url 'browse-recipes' %}" class="action-btn browse-btn" aria-label="Browse Recipes">Browse Recipes</a>
+                                    </div>
+                                `;
+                            }
+                        }, 600);
+                    } else {
+                        showToast('Failed to delete list: ' + (data.error || 'Unknown error'), 'error');
+                    }
+                })
+                .catch(error => {
+                    btn.classList.remove('loading');
+                    showToast('An error occurred: ' + error.message, 'error');
+                });
+            }
+        };
+
+        btn.addEventListener('click', handleDelete);
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleDelete();
+        }, { passive: false });
+    });
+
+    // Floating Action Button
+    const fab = document.getElementById('fab');
+    const fabMenu = document.getElementById('fab-menu');
+    const fabBackdrop = document.getElementById('fab-backdrop');
+    fab.addEventListener('click', () => {
+        const isActive = fabMenu.classList.toggle('active');
+        fab.classList.toggle('rotate');
+        fabBackdrop.classList.toggle('active', isActive);
+    });
+
+    fabBackdrop.addEventListener('click', () => {
+        fabMenu.classList.remove('active');
+        fab.classList.remove('rotate');
+        fabBackdrop.classList.remove('active');
+    });
+
+    document.querySelectorAll('.fab-option').forEach(option => {
+        const handleOption = () => {
+            const action = option.getAttribute('data-action');
+            if (action === 'browse-recipes') {
+                window.location.href = '{% url "browse-recipes" %}';
+            } else if (action === 'create-meal-plan') {
+                window.location.href = '{% url "create_meal_plan" %}';
+            }
+            fabMenu.classList.remove('active');
+            fab.classList.remove('rotate');
+            fabBackdrop.classList.remove('active');
+        };
+
+        option.addEventListener('click', handleOption);
+        option.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            handleOption();
+        }, { passive: false });
+    });
+
+    // Search Filter
+    const searchInput = document.getElementById('list-search');
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.toLowerCase();
+        document.querySelectorAll('.grocery-list-card').forEach(card => {
+            const title = card.getAttribute('data-title');
+            card.style.display = title.includes(query) ? 'block' : 'none';
+        });
+    });
+
+    // Animate Card Entry
+    document.querySelectorAll('.grocery-list-card').forEach((card, index) => {
+        card.style.animation = `cardEntry 0.5s ease forwards ${index * 0.1}s`;
+    });
+});
+</script>
+
+{% endblock %}

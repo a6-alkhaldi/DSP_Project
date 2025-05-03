@@ -1,0 +1,596 @@
+{% extends 'base.html' %}
+{% load static recipe_filters %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/browse_recipes.css' %}">
+
+<div class="browse-container">
+    <!-- Page Header -->
+    <header class="browse-header">
+        <h1 class="browse-title">
+            <span class="accent-text">Explore</span> Recipes
+            <div class="title-decoration"></div>
+        </h1>
+        <p class="browse-subtitle">Discover delicious creations from our community of food enthusiasts</p>
+    </header>
+    <!-- Search and Filters Section -->
+    <section class="search-filters">
+        <form method="GET" class="filter-form">
+            <div class="search-bar">
+                <div class="search-input-group">
+                    <input type="text" name="q" placeholder="Search recipes..." 
+                           value="{{ request.GET.q }}" class="search-input">
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-group">
+                    <div class="filter-dropdown">
+                        <select name="sort" class="filter-select" onchange="this.form.submit()">
+                            <option value="newest" {% if request.GET.sort == 'newest' or not request.GET.sort %}selected{% endif %}>Newest First</option>
+                            <option value="highest_rating" {% if request.GET.sort == 'highest_rating' %}selected{% endif %}>Highest Rating</option>
+                            <option value="popular" {% if request.GET.sort == 'popular' %}selected{% endif %}>Most Popular</option>
+                            <option value="quickest" {% if request.GET.sort == 'quickest' %}selected{% endif %}>Quickest First</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-dropdown">
+                        <select name="time" class="filter-select" onchange="this.form.submit()">
+                            <option value="">All Cooking Time</option>
+                            <option value="15" {% if request.GET.time == '15' %}selected{% endif %}>Under 15 mins</option>
+                            <option value="30" {% if request.GET.time == '30' %}selected{% endif %}>Under 30 mins</option>
+                            <option value="60" {% if request.GET.time == '60' %}selected{% endif %}>Under 1 hour</option>
+                        </select>
+                    </div>
+
+                    <div class="quick-filters">
+                        <label class="filter-chip {% if request.GET.new %}active{% endif %}">
+                            <input type="checkbox" name="new" value="1" 
+                                   {% if request.GET.new %}checked{% endif %} 
+                                   onchange="this.form.submit()">
+                            New Recipes
+                        </label>
+                        <label class="filter-chip {% if request.GET.popular %}active{% endif %}">
+                            <input type="checkbox" name="popular" value="1" 
+                                   {% if request.GET.popular %}checked{% endif %} 
+                                   onchange="this.form.submit()">
+                            Popular
+                        </label>
+                        <label class="filter-chip {% if request.GET.quick %}active{% endif %}">
+                            <input type="checkbox" name="quick" value="1" 
+                                   {% if request.GET.quick %}checked{% endif %} 
+                                   onchange="this.form.submit()">
+                            Quick Meals
+                        </label>
+                    </div>
+                </div>
+                <button type="button" class="advanced-toggle" onclick="toggleAdvancedFilters()">
+                    Advanced Filters <i class="fas fa-sliders-h"></i>
+                </button>
+
+                <!-- Active Filters -->
+                <div class="active-filters">
+                    {% for tag_id in selected_dietary_tags %}
+                        {% with tag=tag_id|get_dietary_tag %}
+                        {% if tag %}
+                        <span class="active-filter">
+                            {{ tag.get_name_display }}
+                            <a href="?{% param_replace request dietary_tags=tag_id|remove_from_list:request.GET.dietary_tags %}" 
+                            class="remove-filter" data-param="dietary_tags" data-value="{{ tag_id }}">&times;</a>
+                        </span>
+                        {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+
+                    {% for category in selected_categories %}
+                    <span class="active-filter">
+                        {{ category|get_category_label }}
+                        <a href="?{% param_replace request category=category|remove_from_list:request.GET.category %}" 
+                        class="remove-filter" data-param="category" data-value="{{ category }}">&times;</a>
+                    </span>
+                    {% endfor %}
+
+                    {% if request.GET.calories_min or request.GET.calories_max %}
+                    <span class="active-filter">
+                        Calories: {{ request.GET.calories_min|default:"Any" }} - {{ request.GET.calories_max|default:"Any" }}
+                        <a href="?{% param_replace request calories_min=None calories_max=None %}" 
+                        class="remove-filter" data-param="calories">&times;</a>
+                    </span>
+                    {% endif %}
+
+                    {% if request.GET.proteins_min or request.GET.proteins_max %}
+                    <span class="active-filter">
+                        Proteins: {{ request.GET.proteins_min|default:"Any" }} - {{ request.GET.proteins_max|default:"Any" }}g
+                        <a href="?{% param_replace request proteins_min=None proteins_max=None %}" 
+                        class="remove-filter" data-param="proteins">&times;</a>
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="clear-controls">
+                <button type="button" class="clear-button" onclick="clearFilters()">
+                    Clear All <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Advanced Filters -->
+            <div class="advanced-filters" id="advancedFilters">
+                <div class="filter-column">
+                    <div class="filter-header">
+                        <h4 class="filter-heading">Dietary Tags</h4>
+                    </div>
+                    <div class="tag-filters">
+                        {% for tag in dietary_tags %}
+                        <label class="tag-checkbox">
+                            <input type="checkbox" name="dietary_tags" value="{{ tag.id }}"
+                                   {% if tag.id|stringformat:"s" in selected_dietary_tags %}checked{% endif %}>
+                            <span class="checkmark">{{ tag.get_name_display }}</span>
+                            <span class="checkmark-close"></span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="filter-column">
+                    <h4 class="filter-heading">Nutrition</h4>
+                    <div class="range-filter">
+                        <label>Calories</label>
+                        <div class="range-input">
+                            <input type="number" name="calories_min" placeholder="Min" 
+                                   value="{{ request.GET.calories_min }}">
+                            <span>-</span>
+                            <input type="number" name="calories_max" placeholder="Max" 
+                                   value="{{ request.GET.calories_max }}">
+                        </div>
+                    </div>
+                    
+                    <div class="range-filter">
+                        <label>Proteins (g)</label>
+                        <div class="range-input">
+                            <input type="number" name="proteins_min" placeholder="Min" 
+                                   value="{{ request.GET.proteins_min }}">
+                            <span>-</span>
+                            <input type="number" name="proteins_max" placeholder="Max" 
+                                   value="{{ request.GET.proteins_max }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="filter-column">
+                    <h4 class="filter-heading">Category</h4>
+                    <div class="category-filters">
+                        {% for value, label in category_choices %}
+                        <label class="category-option">
+                            <input type="checkbox" name="category" value="{{ value }}"
+                                   {% if value in selected_categories %}checked{% endif %}>
+                            <span class="category-checkmark">{{ label }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button type="submit" class="apply-filters">Apply Filters</button>
+                </div>
+            </div>
+        </form>
+    </section>
+
+    <!-- Recipe Grid -->
+    <section class="browse-recipe-grid">
+        {% for recipe in recipes %}
+        <article class="browse-recipe-card">
+            <div class="browse-card-image">
+                {% if recipe.images.first %}
+                <img src="{{ recipe.images.first.image.url }}" alt="{{ recipe.title }}" loading="lazy">
+                {% else %}
+                <div class="browse-image-placeholder">
+                    <i class="fas fa-image"></i>
+                </div>
+                {% endif %}
+
+                <!-- Status Labels -->
+                <div class="browse-status-labels">
+                    {% if recipe.is_popular %}
+                        <span class="browse-label popular">
+                            <i class="fas fa-fire"></i>
+                            Popular Choice
+                        </span>
+                    {% endif %}
+                    
+                    {% if recipe.is_quick_meal %}
+                        <span class="browse-label quick">
+                            <i class="fas fa-clock"></i>
+                            Quick Meal
+                        </span>
+                    {% endif %}
+                    
+                    {% if recipe.is_new %}
+                        <span class="browse-label new">
+                            <i class="fas fa-certificate"></i>
+                            New Recipe
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="browse-card-overlay">
+                    <div class="browse-quick-actions">
+                        <div class="browse-quick-actions">
+                            {% if request.user.is_authenticated %}
+                              <!-- 1) Save -->
+                              <button
+                                class="browse-action-btn browse-save-btn"
+                                data-recipe-id="{{ recipe.pk }}"
+                                title="{% if recipe.pk in saved_recipe_ids %}Unsave Recipe{% else %}Save Recipe{% endif %}"
+                              >
+                                <i class="{% if recipe.pk in saved_recipe_ids %}fas fa-bookmark saved{% else %}far fa-bookmark{% endif %}"></i>
+                              </button>
+                            {% else %}
+                              <!-- 1) Save (redirect to login) -->
+                              <button
+                                class="browse-action-btn"
+                                title="Log in to save recipes"
+                                onclick="window.location.href='{% url 'login' %}?next={{ request.get_full_path|urlencode }}'"
+                              >
+                                <i class="far fa-bookmark"></i>
+                              </button>
+                            {% endif %}
+                          
+                            <!-- 3) Quick View (always available) -->
+                            <button
+                              class="browse-action-btn browse-quick-view-btn"
+                              data-recipe-id="{{ recipe.pk }}"
+                              title="Quick View"
+                            >
+                              <i class="fas fa-eye"></i>
+                            </button>
+                          </div>
+                          
+                    </div>
+                </div>
+            </div>
+            <div class="browse-card-content">
+                <h3 class="browse-card-title">
+                    <a href="{% url 'recipe-detail' recipe.pk %}" class="browse-title-link">
+                        {{ recipe.title }}
+                        <span class="browse-link-hover"></span>
+                    </a>
+                </h3>
+                <div class="browse-card-category">
+                    <span class="browse-category-label">
+                        {{ recipe.category|get_category_label }}
+                    </span>
+                </div>
+                <div class="browse-card-meta">
+                    <span class="browse-meta-item">
+                        <i class="fas fa-clock"></i>
+                        {{ recipe.cooking_time }} min
+                    </span>
+                    <span class="browse-meta-item">
+                        <i class="fas fa-fire"></i>
+                        {{ recipe.calories|default:"-" }} kcal
+                    </span>
+                </div>
+
+                <div class="browse-card-footer">
+                    <div class="browse-engagement">
+                        <div class="browse-rating-display">
+                            <i class="fas fa-star"></i>
+                            <span class="browse-rating-value">
+                                {% if recipe.average_rating %}{{ recipe.average_rating|floatformat:1 }}{% else %}--{% endif %}
+                            </span>
+                            <span class="browse-rating-count">({{ recipe.total_ratings }})</span>
+                        </div>
+                        <div class="browse-comments">
+                            <i class="fas fa-comment"></i>
+                            <span>{{ recipe.comments.count }}</span>
+                        </div>
+                    </div>
+                    <a href="{% url 'public_profile' recipe.author.username %}" class="browse-author">
+                        <i class="fas fa-user"></i> {{ recipe.author.username }}
+                    </a>
+                </div>
+            
+            {% if recipe.dietary_tags.exists %}
+            <div class="browse-card-tags">
+                {% for tag in recipe.dietary_tags.all|slice:":3" %}
+                <span class="browse-tag">{{ tag.get_name_display }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </article>
+        {% empty %}
+        <div class="browse-no-results">
+            <i class="fas fa-utensils"></i>
+            <p>No recipes found matching your criteria</p>
+        </div>
+        {% endfor %}
+    </section>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav class="pagination-nav">
+        <ul class="pagination">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a href="?{% param_replace request page=page_obj.previous_page_number %}" class="page-link">
+                    <i class="fas fa-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+    
+            {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active">
+                <span class="page-link">{{ num }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+                <a href="?{% param_replace request page=num %}" class="page-link">{{ num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+    
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a href="?{% param_replace request page=page_obj.next_page_number %}" class="page-link">
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+
+<!-- Quick View Modal -->
+<div id="quick-view-drawer" class="browse-quick-view-drawer">
+    <div class="browse-drawer-content">
+        <div id="quick-view-loader" class="browse-skeleton-loader">
+            <div class="browse-skeleton-image"></div>
+            <div class="browse-skeleton-text"></div>
+            <div class="browse-skeleton-text"></div>
+        </div>
+        <div id="quick-view-content"></div>
+    </div>
+</div>
+
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Updated Quick View Handler
+            document.querySelectorAll('.browse-quick-view-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const recipeId = btn.dataset.recipeId;
+                    const drawer = document.getElementById('quick-view-drawer');
+                    const loader = document.getElementById('quick-view-loader');
+                    
+                    loader.style.display = 'block';
+                    drawer.classList.add('active');
+                    
+                    try {
+                        const response = await fetch(`/recipes/${recipeId}/quick-view/`);
+                        const content = await response.text();
+                        document.getElementById('quick-view-content').innerHTML = content;
+                    } catch (error) {
+                        document.getElementById('quick-view-content').innerHTML = `
+                            <div class="error-state">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <p>Failed to load recipe details</p>
+                            </div>
+                        `;
+                    } finally {
+                        loader.style.display = 'none';
+                    }
+                });
+            });
+    
+            document.addEventListener('click', (e) => {
+                // Handle close button from quick view
+                if (e.target.classList.contains('qv-close') || 
+                   e.target.classList.contains('drawer-close')) {
+                    document.getElementById('quick-view-drawer').classList.remove('active');
+                }
+            });
+        
+
+        
+            document.querySelectorAll('.save-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const recipeId = e.target.closest('button').dataset.recipeId;
+                    try {
+                        const response = await fetch(`/save-recipe/${recipeId}/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                            }
+                        });
+                        const data = await response.json();
+                        btn.classList.toggle('saved', data.saved);
+                        showToast(data.saved ? 'Recipe saved!' : 'Recipe removed', 'success');
+                    } catch (error) {
+                        showToast('Failed to save recipe', 'error');
+                    }
+                });
+            });
+        });
+
+            // Filter management functions
+        function removeFilter(param, value) {
+            const url = new URL(window.location.href);
+            const params = new URLSearchParams(url.search);
+            
+            if (param === 'category' || param === 'dietary_tags') {
+                const current = params.getAll(param);
+                params.delete(param);
+                current.filter(v => v !== value).forEach(v => params.append(param, v));
+            } else {
+                params.delete(param);
+            }
+            
+            window.location.href = url.pathname + '?' + params.toString();
+        }
+
+        function clearDietaryTags() {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('dietary_tags');
+            window.location.href = url.toString();
+        }
+
+        // Initialize filter chips
+        document.querySelectorAll('.active-filter .remove-filter').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const param = this.dataset.param;
+                const value = this.dataset.value;
+                removeFilter(param, value);
+            });
+        });
+        document.addEventListener('DOMContentLoaded', () => {
+            // Handle filter removal
+            document.querySelectorAll('.remove-filter').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const url = new URL(window.location.href);
+                    const params = new URLSearchParams(url.search);
+                    const param = this.dataset.param;
+                    const value = this.dataset.value;
+
+                    if (param === 'dietary_tags' || param === 'category') {
+                        // Handle array parameters
+                        const currentValues = params.getAll(param);
+                        const newValues = currentValues.filter(v => v !== value);
+                        params.delete(param);
+                        newValues.forEach(v => params.append(param, v));
+                    } else if (param === 'calories' || param === 'proteins') {
+                        // Handle range parameters
+                        params.delete(`${param}_min`);
+                        params.delete(`${param}_max`);
+                    }
+
+                    // Update URL
+                    window.location.href = url.pathname + '?' + params.toString();
+                });
+            });
+        });
+
+        function toggleAdvancedFilters() {
+            const advanced = document.getElementById('advancedFilters');
+            advanced.classList.toggle('show');
+        }
+        
+        function clearFilters() {
+            const form = document.querySelector('.filter-form');
+            form.reset();
+            window.location = window.location.pathname;
+        }
+        
+        // Handle checkbox styling
+        document.querySelectorAll('.filter-chip input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                this.parentElement.classList.toggle('active', this.checked);
+            });
+        });
+        // Real-time validation for number inputs
+    document.querySelectorAll('.range-input input').forEach(input => {
+        input.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '');
+            if (this.value > 9999) this.value = 9999;
+        });
+    });
+    document.querySelector('.filter-form').addEventListener('submit', function(e) {
+    const inputs = this.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        // Skip checkboxes/radios as they’re only included if checked
+        if (input.type !== 'checkbox' && input.type !== 'radio' && !input.value) {
+            input.name = '';  // Remove name so it’s not submitted
+        }
+    });
+});
+        // Function to show toast notifications with custom types
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            // Use specific types for follow/unfollow, fallback to success/error
+            toast.className = `toast-notification ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            // Show toast
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+
+            // Hide and remove toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300); // Match transition duration
+            }, 3000);
+        }
+            // Modal Functions
+            function openModal(modalId) {
+                const modal = document.getElementById(modalId);
+                modal.classList.add('active');
+            }
+        
+            function closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                modal.classList.remove('active');
+            }
+        
+            document.querySelectorAll('.modal-close').forEach(btn => {
+                btn.addEventListener('click', () => closeModal(btn.closest('.modal').id));
+            });
+        
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) closeModal(modal.id);
+                });
+            });
+        
+            // Save to My Saved Recipes
+            document.querySelectorAll('.browse-save-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const recipeId = btn.dataset.recipeId;
+                    try {
+                        const response = await fetch(`/recipes/${recipeId}/save/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                                'Content-Type': 'application/json'
+                            }
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            const icon = btn.querySelector('i');
+                            if (data.action === 'saved') {
+                                icon.classList.remove('far');
+                                icon.classList.add('fas', 'saved');
+                                btn.title = 'Unsave Recipe';
+                                showToast('Recipe saved!', 'success');
+                            } else {
+                                icon.classList.remove('fas', 'saved');
+                                icon.classList.add('far');
+                                btn.title = 'Save Recipe';
+                                showToast('Recipe removed from saved recipes.', 'info');
+                            }
+                        } else {
+                            showToast('Failed to save recipe.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showToast('An error occurred. Please try again.', 'error');
+                    }
+                });
+            });
+            
+        </script>
+<style>
+
+
+</style>
+{% endblock %}

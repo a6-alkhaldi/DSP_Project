@@ -1,0 +1,585 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+
+<div class="public-profile-wrapper">
+
+  <!-- Back Button (only if the owner is viewing their own profile) -->
+  {% if request.user == viewed_user %}
+    <a href="{% url 'profile' %}" class="back-button">
+      <i class="fas fa-arrow-left"></i> Back to My Profile
+    </a>
+  {% endif %}
+
+  <!-- =========================================
+       HERO BANNER 
+       ========================================= -->
+  <section class="public-profile-hero modern-hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+
+      <!-- Avatar -->
+      <div class="public-profile-avatar-container">
+        {% if profile_obj.show_avatar and profile_obj.avatar %}
+          <img 
+            src="{{ profile_obj.avatar.url }}" 
+            alt="{{ viewed_user.username }}'s Avatar" 
+            class="public-profile-avatar"
+            onclick="openAvatarModal('{{ profile_obj.avatar.url }}')"
+          />
+        {% else %}
+          <div class="public-profile-avatar-fallback">
+            {{ viewed_user.username|first|upper }}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Name & Username -->
+      <div class="hero-info">
+        {% if profile_obj.show_name %}
+          <h1 class="public-profile-fullname">
+            {{ viewed_user.first_name }} {{ viewed_user.last_name }}
+          </h1>
+          <p class="public-profile-username">
+            @{{ viewed_user.username }}
+          </p>
+        {% else %}
+          <!-- If user doesn't show name, display just the username in large font -->
+          <h1 class="public-profile-username large">
+            {{ viewed_user.username }}
+          </h1>
+        {% endif %}
+
+        <!-- Follow/Unfollow Buttons (only if different user) -->
+
+        {% if request.user != viewed_user %}
+        <div class="public-profile-follow-btn">
+            {% if is_following %}
+                <form class="unfollow" data-username="{{ viewed_user.username }}" data-action="unfollow">
+                    {% csrf_token %}
+                    <button type="button" class="button unfollow-btn" data-action="unfollow">
+                        <i class="fas fa-user-minus"></i> Unfollow
+                    </button>
+                </form>
+            {% else %}
+                <form class="follow" data-username="{{ viewed_user.username }}" data-action="follow">
+                    {% csrf_token %}
+                    <button type="button" class="button" data-action="follow">
+                        <i class="fas fa-user-plus"></i> Follow
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+        {% endif %}
+
+      <!-- Followers & Following Stats -->
+      <div class="hero-stats">
+        <div class="hero-stat" onclick="openFollowersModal('{{ viewed_user.username }}')">
+          <strong>Followers</strong>
+          <span>{{ profile_obj.get_followers_count }}</span>
+        </div>
+        <div class="hero-stat" onclick="openFollowingModal('{{ viewed_user.username }}')">
+          <strong>Following</strong>
+          <span>{{ profile_obj.get_following_count }}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+<!-- Bio Section -->
+<div class="public-profile-card">
+    <h2 class="public-profile-card-title">
+      <i class="fas fa-user"></i> About Me
+    </h2>
+    <p class="public-profile-bio">
+      {% if profile_obj.bio %}
+        {{ profile_obj.bio }}
+      {% else %}
+        <span class="public-profile-placeholder">No bio available.</span>
+      {% endif %}
+    </p>
+  </div>
+  
+  <!-- MAIN CONTENT CARDS -->
+  {% if profile_obj.show_social_links %}
+  <div class="public-profile-card">
+    <h2 class="public-profile-card-title">
+      <i class="fas fa-link"></i> Social Links
+    </h2>
+    {% if profile_obj.twitter_url or profile_obj.instagram_url or profile_obj.personal_website %}
+      <ul class="public-profile-social-links">
+        {% if profile_obj.twitter_url %}
+        <li>
+          <i class="fab fa-twitter"></i>
+          <a href="{{ profile_obj.twitter_url }}" target="_blank">{{ profile_obj.twitter_url }}</a>
+        </li>
+        {% endif %}
+        {% if profile_obj.instagram_url %}
+        <li>
+          <i class="fab fa-instagram"></i>
+          <a href="{{ profile_obj.instagram_url }}" target="_blank">{{ profile_obj.instagram_url }}</a>
+        </li>
+        {% endif %}
+        {% if profile_obj.personal_website %}
+        <li>
+          <i class="fas fa-globe"></i>
+          <a href="{{ profile_obj.personal_website }}" target="_blank">{{ profile_obj.personal_website }}</a>
+        </li>
+        {% endif %}
+      </ul>
+    {% else %}
+      <p class="public-profile-placeholder">No social links provided.</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if profile_obj.show_dietary_restrictions %}
+  <div class="public-profile-card">
+    <h2 class="public-profile-card-title">
+      <i class="fas fa-carrot"></i> Dietary Restrictions
+    </h2>
+    {% if profile_obj.dietary_restrictions.all %}
+      <ul class="public-profile-dietary-list">
+        {% for restriction in profile_obj.dietary_restrictions.all %}
+        <li>{{ restriction }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="public-profile-placeholder">No dietary restrictions specified.</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if profile_obj.show_recipes %}
+  <div class="public-profile-card">
+      <h2 class="public-profile-card-title">
+          <i class="fas fa-utensils"></i> {{ viewed_user.username }}'s Recipes
+      </h2>
+      {% if recipes %}
+      <div class="recipe-grid">
+          {% for r in recipes %}
+          <a href="{% url 'recipe_detail' r.pk %}" class="recipe-card">
+              <div class="card-image">
+                  {% if r.images.all %}
+                      <img src="{{ r.images.first.image.url }}" alt="{{ r.title }}">
+                  {% else %}
+                      <div class="image-fallback">
+                          <i class="fas fa-camera-retro"></i>
+                      </div>
+                  {% endif %}
+                  <div class="image-overlay"></div>
+              </div>
+              <div class="card-content">
+                  <h3 class="recipe-title">{{ r.title }}</h3>
+                  <div class="recipe-meta">
+                      <span class="category">{{ r.get_category_display }}</span>
+                      {% if r.visibility == 'followers_only' %}
+                      <span class="visibility-label">
+                          <i class="fas fa-lock"></i> Followers Only
+                      </span>
+                      {% endif %}
+                  </div>
+                  <div class="stats">
+                      <span><i class="fas fa-clock"></i> {{ r.cooking_time }} mins</span>
+                      {% if r.calories %}
+                      <span><i class="fas fa-fire"></i> {{ r.calories }} kcal</span>
+                      {% endif %}
+                  </div>
+              </div>
+          </a>
+          {% endfor %}
+      </div>
+      {% else %}
+      <p class="public-profile-placeholder">No recipes found.</p>
+      {% endif %}
+  </div>
+  {% endif %}
+
+<!-- Avatar Modal -->
+<div id="avatarModal" class="public-profile-avatar-modal">
+  <span class="public-profile-avatar-modal-close" onclick="closeAvatarModal()">×</span>
+  <img id="avatarModalImage" class="public-profile-avatar-modal-content">
+</div>
+
+<!-- Followers Modal -->
+<div id="followersModal" class="followers-following-modal">
+    <div class="followers-following-modal-content">
+        <span class="followers-following-modal-close" onclick="closeModal('followersModal')">×</span>
+        <h3>Followers</h3>
+        <ul id="followersList" class="followers-following-list"></ul>
+    </div>
+</div>
+
+<!-- Following Modal -->
+<div id="followingModal" class="followers-following-modal">
+    <div class="followers-following-modal-content">
+        <span class="followers-following-modal-close" onclick="closeModal('followingModal')">×</span>
+        <h3>Following</h3>
+        <ul id="followingList" class="followers-following-list"></ul>
+    </div>
+</div>
+
+<script>
+    // Function to get CSRF token (for Django security)
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+
+    function openFollowersModal(username) {
+        const modal = document.getElementById('followersModal');
+        fetchFollowersOrFollowing(username, 'followers', 'followersList');
+        modal.style.display = 'flex';
+    }
+
+    function openFollowingModal(username) {
+        const modal = document.getElementById('followingModal');
+        fetchFollowersOrFollowing(username, 'following', 'followingList');
+        modal.style.display = 'flex';
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.style.display = 'none';
+    }
+
+    function fetchFollowersOrFollowing(username, type, listId) {
+    fetch(`/api/${type}/${username}/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            if (response.status === 403) {
+                return response.json().then(data => {
+                    if (data.private) {
+                        throw new Error(data.error);
+                    }
+                    throw new Error('Access denied.');
+                });
+            }
+            throw new Error('Unable to load the list.');
+        }
+        return response.json();
+    })
+    
+    .then(data => {
+        const list = document.getElementById(listId);
+        if (data.error && data.private) {  // ← Check for private flag
+        list.innerHTML = `
+            <li class="private-list-message">
+                <div class="private-list-container">
+                    <i class="fas fa-lock private-icon"></i>
+                    <p>${data.error}</p>
+                </div>
+            </li>
+        `;
+        return;
+    }
+        list.innerHTML = '';
+        if (data.error) {
+            list.innerHTML = `<li class="public-profile-placeholder">${data.error}</li>`;
+            return;
+        }
+        const users = type === 'followers' ? data.followers : data.following;
+        if (!users || users.length === 0) {
+            list.innerHTML = `<li class="public-profile-placeholder">No ${type} found.</li>`;
+            return;
+        }
+        users.forEach(user => {
+            const li = document.createElement('li');
+            const avatarImg = user.avatar ? 
+                `<img src="${user.avatar}" alt="${user.username}" class="follower-avatar">` :
+                `<div class="follower-avatar-fallback">${user.username.charAt(0).toUpperCase()}</div>`;
+            let followAction = '';
+            if ('{{ request.user.is_authenticated }}' === 'True' && user.username !== '{{ request.user.username }}') {
+                followAction = user.is_following ? 
+                    `<button class="follow-action unfollow-btn" onclick="unfollowUser('${user.username}', this)">Unfollow</button>` :
+                    `<button class="follow-action follow-btn" onclick="followUser('${user.username}', this)">Follow</button>`;
+            }
+            li.innerHTML = `
+                ${avatarImg}
+                <a href="/public_profile/${user.username}" class="follower-username">${user.username}</a>
+                ${followAction}
+            `;
+            list.appendChild(li);
+        });
+    })
+
+}
+// Function to show toast notifications with custom types
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    // Use specific types for follow/unfollow, fallback to success/error
+    toast.className = `toast-notification ${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    // Show toast
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 100);
+
+    // Hide and remove toast after 3 seconds
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 300); // Match transition duration
+    }, 3000);
+}
+function followUser(username, button) {
+    if (username === '{{ request.user.username }}') {
+        showToast('You cannot follow yourself.', 'error');
+        return;
+    }
+    fetch(`/follow_user/${username}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
+            'X-Requested-With': 'XMLHttpRequest'  // Mark as AJAX
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Follow response:', data); // Debug the response
+        if (data.success) {
+            showToast(data.message, 'follow');
+            // Update button HTML with icon
+            if (button) {
+                button.innerHTML = '<i class="fas fa-user-minus"></i> Unfollow';
+                button.className = 'follow-action unfollow-btn';
+                button.onclick = function() { unfollowUser(username, this); };
+            }
+            const activeModal = document.querySelector('.followers-following-modal[style*="display: flex"]');
+            if (activeModal) {
+                const listId = activeModal.id === 'followersModal' ? 'followersList' : 'followingList';
+                const usernameParam = activeModal.id === 'followersModal' ? 
+                    document.querySelector('.hero-stat[onclick*="openFollowersModal"]').getAttribute('onclick').match(/'([^']+)'/)[1] :
+                    document.querySelector('.hero-stat[onclick*="openFollowingModal"]').getAttribute('onclick').match(/'([^']+)'/)[1];
+                fetchFollowersOrFollowing(usernameParam, activeModal.id === 'followersModal' ? 'followers' : 'following', listId);
+                updateFollowCounts(usernameParam); // Update counts after follow
+            }
+        } else {
+            showToast(data.error || 'Error following user.', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error following user:', error);
+        showToast('Error following user. Please try again.', 'error');
+    });
+}
+
+function unfollowUser(username, button) {
+    if (username === '{{ request.user.username }}') {
+        showToast('You cannot unfollow yourself.', 'error');
+        return;
+    }
+    fetch(`/unfollow_user/${username}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken(),
+            'X-Requested-With': 'XMLHttpRequest'  // Mark as AJAX
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Unfollow response:', data); // Debug the response
+        if (data.success) {
+            showToast(data.message, 'unfollow');
+            // Update button HTML with icon
+            if (button) {
+                button.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
+                button.className = 'follow-action follow-btn';
+                button.onclick = function() { followUser(username, this); };
+            }
+            const activeModal = document.querySelector('.followers-following-modal[style*="display: flex"]');
+            if (activeModal) {
+                const listId = activeModal.id === 'followersModal' ? 'followersList' : 'followingList';
+                const usernameParam = activeModal.id === 'followersModal' ? 
+                    document.querySelector('.hero-stat[onclick*="openFollowersModal"]').getAttribute('onclick').match(/'([^']+)'/)[1] :
+                    document.querySelector('.hero-stat[onclick*="openFollowingModal"]').getAttribute('onclick').match(/'([^']+)'/)[1];
+                fetchFollowersOrFollowing(usernameParam, activeModal.id === 'followersModal' ? 'followers' : 'following', listId);
+                updateFollowCounts(usernameParam); // Update counts after unfollow
+            }
+        } else {
+            showToast(data.error || 'Error unfollowing user.', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error unfollowing user:', error);
+        showToast('Error unfollowing user. Please try again.', 'error');
+    });
+}
+
+function updateFollowCounts(username) {
+    // Update followers count
+    fetch(`/api/followers/${username}/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const followersCount = data.followers_count !== undefined ? data.followers_count : document.querySelector('.hero-stat[onclick*="openFollowersModal"] span').textContent;
+        document.querySelector('.hero-stat[onclick*="openFollowersModal"] span').textContent = followersCount;
+    })
+    .catch(error => console.error('Error updating followers count:', error));
+
+    // Update following count
+    fetch(`/api/following/${username}/`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCSRFToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const followingCount = data.following_count !== undefined ? data.following_count : document.querySelector('.hero-stat[onclick*="openFollowingModal"] span').textContent;
+        document.querySelector('.hero-stat[onclick*="openFollowingModal"] span').textContent = followingCount;
+    })
+    .catch(error => console.error('Error updating following count:', error));
+}
+
+
+// Handle hero section follow/unfollow button clicks with AJAX
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.public-profile-follow-btn form').forEach(form => {
+        form.addEventListener('click', (e) => {
+            e.preventDefault(); // Prevent default form submission
+            const button = e.target.closest('button');
+            if (!button) return;
+
+            const username = form.getAttribute('data-username');
+            const action = form.getAttribute('data-action');
+
+            if (action === 'follow') {
+                followUserFromHero(username, button);
+            } else if (action === 'unfollow') {
+                unfollowUserFromHero(username, button);
+            }
+        });
+    });
+});
+
+// Follow from hero section
+function followUserFromHero(username, button) {
+    if ('{{ request.user.is_authenticated }}' !== 'True') {
+        window.location.href = `/accounts/login/?next=/public_profile/${username}/`;
+        return;
+    }
+    if (username === '{{ request.user.username }}') {
+        showToast('You cannot follow yourself.', 'error');
+        return;
+    }
+    fetch(`/follow_user/${username}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': getCSRFToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'follow'); // Green for following
+            button.innerHTML = '<i class="fas fa-user-minus"></i> Unfollow';
+            button.className = 'button unfollow-btn';
+            button.closest('form').setAttribute('data-action', 'unfollow');
+            button.closest('form').className = 'unfollow';
+            updateFollowCounts(username);
+        } else {
+            showToast(data.error, 'error'); // Red for errors
+        }
+    })
+    .catch(error => {
+        console.error('Error following user from hero:', error);
+        showToast('Error following user. Please try again.', 'error');
+    });
+}
+
+// Unfollow from hero section
+function unfollowUserFromHero(username, button) {
+    if ('{{ request.user.is_authenticated }}' !== 'True') {
+        window.location.href = `/accounts/login/?next=/public_profile/${username}/`;
+        return;
+    }
+    if (username === '{{ request.user.username }}') {
+        showToast('You cannot unfollow yourself.', 'error');
+        return;
+    }
+    fetch(`/unfollow_user/${username}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': getCSRFToken()
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showToast(data.message, 'unfollow'); // Red for unfollowed
+            button.innerHTML = '<i class="fas fa-user-plus"></i> Follow';
+            button.className = 'button';
+            button.closest('form').setAttribute('data-action', 'follow');
+            button.closest('form').className = 'follow';
+            updateFollowCounts(username);
+        } else {
+            showToast(data.error, 'error'); // Red for errors
+        }
+    })
+    .catch(error => {
+        console.error('Error unfollowing user from hero:', error);
+        showToast('Error unfollowing user. Please try again.', 'error');
+    });
+}
+
+    // Existing avatar modal functions
+    function openAvatarModal(imageUrl) {
+        const modal = document.getElementById("avatarModal");
+        const modalImage = document.getElementById("avatarModalImage");
+        modalImage.src = imageUrl;
+        modal.style.display = "flex";
+    }
+
+    function closeAvatarModal() {
+        const modal = document.getElementById("avatarModal");
+        modal.style.display = "none";
+    }
+
+    window.onclick = function(e) {
+        const modal = document.getElementById("avatarModal");
+        if (e.target === modal) {
+            modal.style.display = "none";
+        }
+        const followersModal = document.getElementById("followersModal");
+        if (e.target === followersModal) {
+            followersModal.style.display = "none";
+        }
+        const followingModal = document.getElementById("followingModal");
+        if (e.target === followingModal) {
+            followingModal.style.display = "none";
+        }
+    }
+</script>
+{% endblock content %}

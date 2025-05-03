@@ -1,0 +1,1299 @@
+{% extends 'base.html' %}
+{% load static recipe_filters %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/recipes.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<div class="recipe-detail-wrapper">
+    <!-- Hero Section -->
+    <section class="recipe-hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <!-- Nutrition Floater (Left Side) -->
+            <div class="recipe-nutrition-floater">
+                {% if recipe.calories %}
+                    <div class="nutrition-item">
+                        <i class="fas fa-fire"></i>
+                        <span>{{ recipe.calories }} kcal</span>
+                    </div>
+                {% endif %}
+                {% if recipe.proteins %}
+                    <div class="nutrition-item">
+                        <i class="fas fa-dumbbell"></i>
+                        <span>{{ recipe.proteins }}g Protein</span>
+                    </div>
+                {% endif %}
+                {% if recipe.carbs %}
+                    <div class="nutrition-item">
+                        <i class="fas fa-bread-slice"></i>
+                        <span>{{ recipe.carbs }}g Carbs</span>
+                    </div>
+                {% endif %}
+            </div>
+            <!-- Centered Title and Meta -->
+            <div class="hero-text">
+                <h1 class="recipe-hero-title">{{ recipe.title }}</h1>
+                <div class="recipe-hero-meta">
+                    <span>
+                        <i class="fas fa-user"></i>
+                        <a href="{% url 'public_profile' recipe.author.username %}" class="author-link">{{ recipe.author.username }}</a>
+                    </span>
+                    <span><i class="fas fa-clock"></i> {{ recipe.cooking_time }} min</span>
+                    <span><i class="fas fa-calendar-alt"></i> {{ recipe.created_at|date:"M d, Y, g:i A" }}</span>
+                </div>
+                <div class="recipe-rating" aria-label="Recipe rating">
+                    {% if recipe.total_ratings > 0 %}
+                        <span class="average-rating">{{ recipe.average_rating|floatformat:1 }}</span>
+                        <span class="stars" aria-hidden="true">
+                            {% for star in stars %}
+                                {% if star == 'full' %}
+                                    <i class="fas fa-star star full"></i>
+                                {% elif star == 'half' %}
+                                    <i class="fas fa-star-half-alt star half"></i>
+                                {% else %}
+                                    <i class="far fa-star star empty"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </span>
+                        <span class="total-ratings">({{ recipe.total_ratings }} {% if recipe.total_ratings == 1 %}rating{% else %}ratings{% endif %})</span>
+                    {% else %}
+                        <span class="no-ratings">Be the first to rate this recipe!</span>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- Floating Action Buttons (Right Side) -->
+            <div class="recipe-action-floater" id="action-floater">
+                {% if request.user.is_authenticated %}
+                    <button class="action-btn meal-plan-btn" data-recipe-id="{{ recipe.pk }}">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span class="action-label">Add to Meal Plan</span>
+                    </button>
+                    <button class="action-btn save-btn" data-recipe-id="{{ recipe.pk }}" aria-label="{% if request.user in recipe.savedrecipe_set.all %}Unsave Recipe{% else %}Save Recipe{% endif %}">
+                        <i class="{% if request.user in recipe.savedrecipe_set.all %}fas{% else %}far{% endif %} fa-bookmark"></i>
+                        <span class="action-label">{% if request.user in recipe.savedrecipe_set.all %}Unsave from My Saved Recipes{% else %}Save to My Saved Recipes{% endif %}</span>
+                    </button>
+                {% else %}
+                    <button class="action-btn login-required" data-action="meal-plan" title="Log in to use this feature">
+                        <i class="fas fa-calendar-plus"></i>
+                        <span class="action-label">Add to Meal Plan</span>
+                    </button>
+                    <button class="action-btn login-required" data-action="save" title="Log in to use this feature">
+                        <i class="fas fa-bookmark"></i>
+                        <span class="action-label">Save to My Saved Recipes</span>
+                    </button>
+                {% endif %}
+                <button class="action-btn grocery-btn" data-recipe-id="{{ recipe.pk }}">
+                    <i class="fas fa-list-ul"></i>
+                    <span class="action-label">View Grocery List</span>
+                </button>
+                <button class="action-btn share-btn" onclick="shareRecipe()">
+                    <i class="fas fa-share-alt"></i>
+                    <span class="action-label">Share Recipe</span>
+                </button>
+            </div>
+        </div>
+        <!-- Image Carousel -->
+        <div class="recipe-hero-images">
+            {% for image in recipe.images.all %}
+                <div class="hero-image {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}">
+                    <img src="{{ image.image.url }}" alt="{{ recipe.title }}" onclick="openImageModal('{{ image.image.url }}')">
+                </div>
+            {% empty %}
+                <div class="hero-image active">
+                    <div class="image-placeholder"><i class="fas fa-image"></i> No Image</div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+    <!-- Main Content -->
+    <main class="recipe-main">
+        <!-- Left Column: Details -->
+        <div class="recipe-details-column">
+            <div class="recipe-card rate-recipe">
+                <h2><i class="fas fa-star"></i> Rate this Recipe</h2>
+                {% if request.user.is_authenticated %}
+                    <div class="rating-container">
+                        <div class="rating-stars" role="radiogroup" aria-label="Rate this recipe">
+                            {% for i in "12345" %}
+                                <i class="fas fa-star rating-star {% if forloop.counter <= user_rating %}filled{% endif %}" 
+                                   data-value="{{ forloop.counter }}"
+                                   tabindex="0"
+                                   role="radio"
+                                   aria-checked="{% if forloop.counter == user_rating %}true{% else %}false{% endif %}"></i>
+                            {% endfor %}
+                        </div>
+                        <span class="rating-feedback" aria-live="polite"></span>
+                        <button class="remove-rating-btn {% if user_rating %}visible{% endif %}" aria-label="Remove your rating">Remove Rating</button>
+                    </div>
+                {% else %}
+                    <div class="rating-container disabled">
+                        <div class="rating-stars" aria-label="Rating stars (login required)">
+                            {% for i in "12345" %}
+                                <i class="fas fa-star rating-star disabled"></i>
+                            {% endfor %}
+                        </div>
+                        <p class="login-prompt">Please <button class="login-trigger">Log in</button> to rate this recipe.</p>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="recipe-card">
+                <h2><i class="fas fa-info-circle"></i> Description</h2>
+                <p>{{ recipe.description }}</p>
+            </div>
+            <!-- Gallery Section -->
+            {% if recipe.images.all %}
+                <div class="recipe-card">
+                    <h2><i class="fas fa-images"></i> Gallery</h2>
+                    <div class="image-gallery">
+                        {% for image in recipe.images.all %}
+                            <img src="{{ image.image.url }}" alt="{{ recipe.title }}" class="gallery-image" onclick="openImageModal('{{ image.image.url }}')">
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            <div class="recipe-card">
+                <h2><i class="fas fa-list-ol"></i> Ingredients</h2>
+                <ul class="ingredient-list">
+                    {% for ingredient in ingredients_list %}
+                        <li>{{ ingredient }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="recipe-card">
+                <h2><i class="fas fa-book-open"></i> Instructions</h2>
+                <ol class="instruction-list">
+                    {% for instruction in instructions_list %}
+                        <li>{{ instruction }}</li>
+                    {% endfor %}
+                </ol>
+            </div>
+            {% if recipe.dietary_tags.exists %}
+                <div class="recipe-card">
+                    <h2><i class="fas fa-tags"></i> Dietary Tags</h2>
+                    <div class="tag-cloud">
+                        {% for tag in recipe.dietary_tags.all %}
+                        <span class="tag">{{ tag.get_name_display }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Right Column: Comments -->
+        <div class="recipe-comments-column">
+            <div class="recipe-card comments-card">
+                <h2><i class="fas fa-comments"></i> Comments ({{ recipe.comments.count }})</h2>
+                {% if request.user.is_authenticated %}
+                    <form method="post" class="comment-form">
+                        {% csrf_token %}
+                        <textarea name="comment" placeholder="Add your comment..." required></textarea>
+                        <button type="submit" class="comment-submit">Post</button>
+                    </form>
+                {% else %}
+                    <div class="login-prompt">
+                        <p>Please <button class="login-trigger">Log in</button> to leave a comment.</p>
+                    </div>
+                {% endif %}
+
+                <!-- Top-Level Comments List -->
+                <div class="comment-list">
+                    {% for comment in comments %}
+                        <div class="comment {% if comment.user == recipe.author %}author-comment{% endif %}"
+                             data-comment-id="{{ comment.pk }}">
+                            <div class="comment-header">
+                                <span class="comment-author">
+                                    <a href="{% url 'public_profile' comment.user.username %}" class="author-link">
+                                        {{ comment.user.username }}
+                                    </a>
+                                    {% if comment.user == recipe.author %}
+                                        <span class="author-badge">Author</span>
+                                    {% endif %}
+                                </span>
+                                <span class="comment-date">{{ comment.created_at|date:"M d, Y" }}</span>
+                            </div>
+
+                            <!-- Comment Text -->
+                            <p>{{ comment.text }}</p>
+
+                            <!-- Like/Dislike Actions -->
+                            <div class="comment-actions">
+                                {% if request.user.is_authenticated and request.user != comment.user %}
+                                    <button class="like-btn {% if comment.user_rating == True %}active{% endif %}"
+                                            data-action="like">
+                                        <i class="fas fa-thumbs-up"></i>
+                                        <span class="like-count">{{ comment.like_count|default:0 }}</span>
+                                    </button>
+                                    <button class="dislike-btn {% if comment.user_rating == False %}active{% endif %}"
+                                            data-action="dislike">
+                                        <i class="fas fa-thumbs-down"></i>
+                                        <span class="dislike-count">{{ comment.dislike_count|default:0 }}</span>
+                                    </button>
+                                {% elif request.user == comment.user %}
+                                    <button class="like-btn disabled" data-action="like" disabled>
+                                        <i class="fas fa-thumbs-up"></i>
+                                        <span class="like-count">{{ comment.like_count|default:0 }}</span>
+                                    </button>
+                                    <button class="dislike-btn disabled" data-action="dislike" disabled>
+                                        <i class="fas fa-thumbs-down"></i>
+                                        <span class="dislike-count">{{ comment.dislike_count|default:0 }}</span>
+                                    </button>
+                                {% endif %}
+                            </div>
+
+                            <!-- Reply Button and Form (Only for Authenticated Users) -->
+                            {% if request.user.is_authenticated %}
+                                <button class="reply-btn">Reply</button>
+                                <form method="post" class="reply-form" style="display: none;">
+                                    {% csrf_token %}
+                                    <textarea name="comment" placeholder="Reply to this comment..." required></textarea>
+                                    <button type="submit" class="reply-submit">Post Reply</button>
+                                </form>
+                            {% endif %}
+
+                            <!-- Child Replies (Limited preview) -->
+                            <div class="replies">
+                                {% for reply in comment.child_replies %}
+                                    <div class="comment reply initial-reply {% if reply.user == recipe.author %}author-comment{% endif %}"
+                                         data-comment-id="{{ reply.id }}">
+                                        <div class="comment-header">
+                                            <span class="comment-author">
+                                                <a href="{% url 'public_profile' reply.user.username %}" class="author-link">
+                                                    {{ reply.user.username }}
+                                                </a>
+                                                {% if reply.user == recipe.author %}
+                                                    <span class="author-badge">Author</span>
+                                                {% endif %}
+                                            </span>
+                                            <span class="comment-date">{{ reply.created_at|date:"M d, Y" }}</span>
+                                        </div>
+                                        <p>{{ reply.text }}</p>
+                                        <div class="comment-actions">
+                                            {% if request.user.is_authenticated and request.user != reply.user %}
+                                                <button class="like-btn {% if reply.user_rating == True %}active{% endif %}"
+                                                        data-action="like">
+                                                    <i class="fas fa-thumbs-up"></i>
+                                                    <span class="like-count">{{ reply.like_count|default:0 }}</span>
+                                                </button>
+                                                <button class="dislike-btn {% if reply.user_rating == False %}active{% endif %}"
+                                                        data-action="dislike">
+                                                    <i class="fas fa-thumbs-down"></i>
+                                                    <span class="dislike-count">{{ reply.dislike_count|default:0 }}</span>
+                                                </button>
+                                            {% elif request.user == reply.user %}
+                                                <button class="like-btn disabled" data-action="like" disabled>
+                                                    <i class="fas fa-thumbs-up"></i>
+                                                    <span class="like-count">{{ reply.like_count|default:0 }}</span>
+                                                </button>
+                                                <button class="dislike-btn disabled" data-action="dislike" disabled>
+                                                    <i class="fas fa-thumbs-down"></i>
+                                                    <span class="dislike-count">{{ reply.dislike_count|default:0 }}</span>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                                {% if comment.total_replies > comment.child_replies|length %}
+                                    <button class="toggle-replies-btn"
+                                            data-comment-id="{{ comment.pk }}"
+                                            data-expanded="false"
+                                            data-total-replies="{{ comment.total_replies }}">
+                                        <span class="toggle-text">Show all {{ comment.total_replies }} replies</span>
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="no-comments">No comments yet. Be the first!</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination for top-level comments -->
+                {% if page_obj.has_other_pages %}
+                <nav class="pagination-nav" aria-label="Comment pagination">
+                    <ul class="pagination">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a href="?page={{ page_obj.previous_page_number }}" class="page-link" aria-label="Previous">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+                            </li>
+                        {% endif %}
+
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > page_obj.number|add:-3 and num < page_obj.number|add:3 %}
+                                <li class="page-item">
+                                    <a href="?page={{ num }}" class="page-link">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a href="?page={{ page_obj.next_page_number }}" class="page-link" aria-label="Next">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals -->
+    <div id="image-modal" class="modal">
+        <span class="modal-close">×</span>
+        <img id="modal-image" class="modal-content" src="" alt="Full-size preview">
+    </div>
+
+    <!-- Grocery List Modal -->
+    <div id="grocery-modal" class="modal" role="dialog" aria-labelledby="grocery-modal-title" aria-modal="true">
+        <div class="modal-content">
+            <span class="modal-close" role="button" tabindex="0" aria-label="Close modal">×</span>
+            <h2 id="grocery-modal-title">Grocery List for {{ recipe.title }}</h2>
+            {% if ingredients_list %}
+            <div class="grocery-controls">
+                <button class="select-all-btn">Select All</button>
+                <button class="deselect-all-btn">Deselect All</button>
+            </div>
+            <ul class="grocery-list">
+                {% for ingredient in ingredients_list %}
+                    <li class="ingredient-item">
+                        <label>
+                            <input type="checkbox" class="ingredient-checkbox">
+                            <span>{{ ingredient }}</span>
+                        </label>
+                    </li>
+                {% endfor %}
+            </ul>
+            <div class="action-buttons">
+                <button class="copy-btn">Copy List to Clipboard</button>
+                {% if request.user.is_authenticated %}
+                    <button class="save-btn">Save to My Grocery List</button>
+                {% else %}
+                <button class="login-trigger" data-action="save-grocery" aria-label="Log in to save to grocery list">
+                    Save to My Grocery List
+                </button>
+                {% endif %}
+                <button class="print-btn">Print List</button>
+            </div>
+            {% else %}
+            <p class="no-ingredients">No ingredients listed.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal" role="dialog" aria-labelledby="login-modal-title" aria-modal="true">
+        <div class="modal-content">
+            <span class="modal-close" role="button" tabindex="0" aria-label="Close login modal">×</span>
+            <h2 id="login-modal-title">Log In to Continue</h2>
+            <form method="post" action="{% url 'login' %}?next={{ request.path }}" class="login-form">
+                {% csrf_token %}
+                <div class="login-form-group">
+                    <label for="id_username">Username or Email</label>
+                    <input type="text" name="username" id="id_username" required>
+                </div>
+                <div class="login-form-group">
+                    <label for="id_password">Password</label>
+                    <input type="password" name="password" id="id_password" required>
+                </div>
+                <p><a href="{% url 'password_reset' %}" class="login-forgot-password">Forgot Password?</a></p>
+                <button type="submit" class="login-button">Login</button>
+            </form>
+            <p class="login-signup-link">Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
+        </div>
+    </div>
+</div>
+<!-- Meal Plan Modal -->
+<div id="meal-plan-modal" class="modal" role="dialog" aria-labelledby="meal-plan-modal-title" aria-modal="true">
+    <div class="modal-content">
+        <span class="modal-close" role="button" tabindex="0" aria-label="Close modal">×</span>
+        <h2 id="meal-plan-modal-title">Add to Meal Plan</h2>
+        <form id="add-to-meal-plan-form" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="recipe_id" value="{{ recipe.pk }}">
+            <div class="form-group">
+                <label for="meal_plan_select">Select Meal Plan</label>
+                <select id="meal_plan_select" name="meal_plan" required>
+                    <!-- Options will be populated via JavaScript -->
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="day_input">Select Day</label>
+                <input type="date" id="day_input" name="day" required>
+            </div>
+            <div class="form-group">
+                <label for="meal_type_select">Select Meal Type</label>
+                <select id="meal_type_select" name="meal_type" required>
+                    <option value="breakfast">Breakfast</option>
+                    <option value="lunch">Lunch</option>
+                    <option value="dinner">Dinner</option>
+                    <option value="snack">Snack</option>
+                </select>
+            </div>
+            <button type="submit" class="submit-btn">Add to Meal Plan</button>
+        </form>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        //---------------------------------------------------
+        // 1) IMAGE CAROUSEL & SHARED UI LOGIC (UNCHANGED)
+        //---------------------------------------------------
+        const images = document.querySelectorAll('.hero-image');
+        let currentIndex = 0;
+
+        const floater = document.getElementById('action-floater');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                floater.classList.toggle('scrolled', !entry.isIntersecting);
+            });
+        }, { threshold: 0.1 });
+        observer.observe(floater);
+
+        function openModal(modalId, contentSrc = null) {
+            const modal = document.getElementById(modalId);
+            if (contentSrc && modalId === 'image-modal') {
+                document.getElementById('modal-image').src = contentSrc;
+            }
+            modal.classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('active');
+        }
+
+        document.querySelectorAll('.modal-close').forEach(btn => {
+            btn.addEventListener('click', () => closeModal(btn.closest('.modal').id));
+        });
+
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(modal.id);
+            });
+        });
+
+        window.openImageModal = (url) => openModal('image-modal', url);
+
+        // Handle login-required buttons
+        document.querySelectorAll('.login-required, .login-trigger').forEach(btn => {
+            btn.addEventListener('click', () => {
+                openModal('login-modal');
+            });
+        });
+    
+  // Action Buttons
+  const recipeSaveBtn = document.querySelector('.save-btn');
+  if (recipeSaveBtn) {
+    // 1) AJAX save/un-save handler
+    recipeSaveBtn.addEventListener('click', () => {
+      const recipeId = recipeSaveBtn.getAttribute('data-recipe-id');
+      fetch(`/recipes/${recipeId}/save/`, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          showToast(
+            data.action === 'saved'
+              ? 'Recipe saved!'
+              : 'Recipe removed from saved recipes.',
+            'success'
+          );
+        } else {
+          showToast('Failed to save recipe.', 'error');
+        }
+      })
+      .catch(() => showToast('An error occurred. Please try again.', 'error'));
+    });
+
+    // 2) Cache the <i> icon element
+    const icon = recipeSaveBtn.querySelector('i');
+
+    // 3) Toggle the bookmark UI
+    recipeSaveBtn.addEventListener('click', function() {
+      if (icon.classList.contains('fas')) {
+        icon.classList.replace('fas', 'far');
+        this.querySelector('.action-label').textContent = 'Save to My Saved Recipes';
+        this.setAttribute('aria-label', 'Save Recipe');
+      } else {
+        icon.classList.replace('far', 'fas');
+        this.querySelector('.action-label').textContent = 'Unsave from My Saved Recipes';
+        this.setAttribute('aria-label', 'Unsave Recipe');
+      }
+    });
+  }
+  // ───────────────────────────────────────────────
+  //  “Add to Meal Plan” button (guarded now!)
+  // ───────────────────────────────────────────────
+  const mealPlanBtn = document.querySelector('.meal-plan-btn');
+  if (mealPlanBtn) {
+    mealPlanBtn.addEventListener('click', () => {
+      fetch('/get-user-meal-plans/', {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (!data.length) {
+          alert('You need to create a meal plan first.');
+        } else {
+          // populate select, set date‑bounds, then open
+          const sel = document.getElementById('meal_plan_select');
+          sel.innerHTML = '<option disabled selected>Choose a Meal Plan</option>';
+          data.forEach(mp => {
+            const opt = document.createElement('option');
+            opt.value = mp.id;
+            opt.textContent = `${mp.title} (${mp.start_date} – ${mp.end_date || mp.start_date})`;
+            opt.dataset.startDate = mp.start_date;
+            opt.dataset.endDate = mp.end_date || mp.start_date;
+            sel.appendChild(opt);
+          });
+          const dayInput = document.getElementById('day_input');
+          dayInput.min = sel.options[1].dataset.startDate;
+          dayInput.max = sel.options[1].dataset.endDate;
+          openModal('meal-plan-modal');
+        }
+      })
+      .catch(() => alert('Failed to load meal plans.'));
+    });
+
+    // Adjust day bounds when user picks a different plan
+    document.getElementById('meal_plan_select').addEventListener('change', e => {
+      const opt = e.target.selectedOptions[0];
+      document.getElementById('day_input').min = opt.dataset.startDate;
+      document.getElementById('day_input').max = opt.dataset.endDate;
+    });
+
+    // Form submission (this was already there)
+    document.getElementById('add-to-meal-plan-form')
+      .addEventListener('submit', e => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        fetch('/add-recipe-to-meal-plan/', {
+          method: 'POST',
+          headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+          body: fd
+        })
+        .then(r => r.json())
+        .then(d => {
+          if (d.success) {
+            alert('Recipe added to meal plan successfully!');
+            closeModal('meal-plan-modal');
+          } else {
+            alert('Failed to add recipe: ' + d.error);
+          }
+        })
+        .catch(() => alert('An error occurred. Please try again.'));
+      });
+  }
+    
+
+        document.querySelector('.grocery-btn').addEventListener('click', () => {
+            openModal('grocery-modal');
+        });
+            
+    
+        window.shareRecipe = () => {
+            if (navigator.share) {
+                navigator.share({
+                    title: '{{ recipe.title }}',
+                    text: '{{ recipe.description }}',
+                    url: window.location.href
+                }).catch(err => console.log('Share failed', err));
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+            }
+        };
+    
+        //---------------------------------------------------
+        // 2) POST NEW COMMENT / REPLY
+        //---------------------------------------------------
+        const commentForm = document.querySelector('.comment-form');
+        if (commentForm) {
+            commentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(commentForm);
+                const recipeId = '{{ recipe.pk }}';
+    
+                try {
+                    const response = await fetch(`/recipes/${recipeId}/add_comment/`, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        }
+                    });
+    
+                    const data = await response.json();
+                    if (data.success) {
+                        const commentList = document.querySelector('.comment-list');
+                        const newComment = document.createElement('div');
+                        newComment.className = 'comment';
+                        newComment.setAttribute('data-comment-id', data.comment_id);
+                        newComment.innerHTML = `
+                            <div class="comment-header">
+                                <span class="comment-author">
+                                    <a href="/users/${data.username}/" class="author-link">${data.username}</a>
+                                    ${data.username === '{{ recipe.author.username }}' ? '<span class="author-badge">Author</span>' : ''}
+                                </span>
+                                <span class="comment-date">${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                            </div>
+                            <p>${data.comment_text}</p>
+                            <div class="comment-actions">
+                                ${data.username === '{{ request.user.username }}' ? `
+                                    <button class="like-btn disabled" data-action="like" disabled>
+                                        <i class="fas fa-thumbs-up"></i> <span class="like-count">0</span>
+                                    </button>
+                                    <button class="dislike-btn disabled" data-action="dislike" disabled>
+                                        <i class="fas fa-thumbs-down"></i> <span class="dislike-count">0</span>
+                                    </button>
+                                ` : `
+                                    <button class="like-btn" data-action="like">
+                                        <i class="fas fa-thumbs-up"></i> <span class="like-count">0</span>
+                                    </button>
+                                    <button class="dislike-btn" data-action="dislike">
+                                        <i class="fas fa-thumbs-down"></i> <span class="dislike-count">0</span>
+                                    </button>
+                                `}
+                            </div>
+                            <button class="reply-btn">Reply</button>
+                            <form method="post" class="reply-form" style="display: none;">
+                                {% csrf_token %}
+                                <textarea name="comment" placeholder="Reply to this comment..." required></textarea>
+                                <button type="submit" class="reply-submit">Post Reply</button>
+                            </form>
+                            <div class="replies"></div>
+                        `;
+                        // Update comment count in comments header
+                        const commentsHeader = document.querySelector('.comments-card h2');
+                        if (commentsHeader) {
+                            const currentCount = parseInt(commentsHeader.textContent.match(/\d+/)?.[0] || 0);
+                            commentsHeader.innerHTML = `<i class="fas fa-comments"></i> Comments (${currentCount + 1})`;
+                        }
+                        if (commentList.querySelector('.no-comments')) {
+                            commentList.innerHTML = '';
+                        }
+                        commentList.insertBefore(newComment, commentList.firstChild);
+                        commentForm.reset();
+                        bindCommentEvents(newComment);
+                    } else {
+                        alert('Failed to post comment: ' + (data.error || 'Unknown error'));
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again.');
+                }
+            });
+        }
+    
+        //---------------------------------------------------
+        // 3) BIND EVENTS TO COMMENTS (LIKE / DISLIKE / REPLY)
+        //---------------------------------------------------
+        function bindCommentEvents(commentElement) {
+            // Like / Dislike
+            const likeBtn = commentElement.querySelector('.like-btn');
+            const dislikeBtn = commentElement.querySelector('.dislike-btn');
+            if (likeBtn && !likeBtn.disabled) {
+                likeBtn.addEventListener('click', async () => {
+                    const commentId = likeBtn.closest('.comment').getAttribute('data-comment-id');
+                    const isLike = true;
+                    try {
+                        const response = await fetch(`/comments/${commentId}/rate/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ like: isLike })
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            likeBtn.querySelector('.like-count').textContent = data.likes;
+                            dislikeBtn.querySelector('.dislike-count').textContent = data.dislikes;
+                            likeBtn.classList.toggle('active', data.user_rating === 'like');
+                            dislikeBtn.classList.toggle('active', data.user_rating === 'dislike');
+                        } else {
+                            alert('Failed to rate comment: ' + data.error);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            }
+            if (dislikeBtn && !dislikeBtn.disabled) {
+                dislikeBtn.addEventListener('click', async () => {
+                    const commentId = dislikeBtn.closest('.comment').getAttribute('data-comment-id');
+                    const isLike = false;
+                    try {
+                        const response = await fetch(`/comments/${commentId}/rate/`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ like: isLike })
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            likeBtn.querySelector('.like-count').textContent = data.likes;
+                            dislikeBtn.querySelector('.dislike-count').textContent = data.dislikes;
+                            likeBtn.classList.toggle('active', data.user_rating === 'like');
+                            dislikeBtn.classList.toggle('active', data.user_rating === 'dislike');
+                        } else {
+                            alert('Failed to rate comment: ' + data.error);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            }
+    
+            // Toggle “Reply” form
+            const replyBtn = commentElement.querySelector('.reply-btn');
+            if (replyBtn) {
+                replyBtn.addEventListener('click', () => {
+                    const form = replyBtn.nextElementSibling;
+                    form.style.display = (form.style.display === 'none') ? 'block' : 'none';
+                });
+            }
+    
+        // Submit a new reply
+            const replyForm = commentElement.querySelector('.reply-form');
+            if (replyForm) {
+                replyForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const commentId = replyForm.closest('.comment').getAttribute('data-comment-id');
+                    const formData = new FormData(replyForm);
+                    formData.append('parent_id', commentId);
+                    const recipeId = '{{ recipe.pk }}';
+
+                    try {
+                        const response = await fetch(`/recipes/${recipeId}/add_comment/`, {
+                            method: 'POST',
+                            body: formData,
+                            headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value }
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            const repliesDiv = replyForm.nextElementSibling;
+                            const newReply = document.createElement('div');
+                            newReply.className = 'comment reply';
+                            newReply.innerHTML = `
+                                <div class="comment-header">
+                                    <span class="comment-author">
+                                        <a href="/users/${data.username}/" class="author-link">${data.username}</a>
+                                        ${data.username === '{{ recipe.author.username }}' ? '<span class="author-badge">Author</span>' : ''}
+                                    </span>
+                                    <span class="comment-date">${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                </div>
+                                <p>${data.comment_text}</p>
+                                <div class="comment-actions">
+                                    ${data.username === '{{ request.user.username }}' ? `
+                                        <button class="like-btn disabled" data-action="like" disabled>
+                                            <i class="fas fa-thumbs-up"></i> <span class="like-count">0</span>
+                                        </button>
+                                        <button class="dislike-btn disabled" data-action="dislike" disabled>
+                                            <i class="fas fa-thumbs-down"></i> <span class="dislike-count">0</span>
+                                        </button>
+                                    ` : `
+                                        <button class="like-btn" data-action="like">
+                                            <i class="fas fa-thumbs-up"></i> <span class="like-count">0</span>
+                                        </button>
+                                        <button class="dislike-btn" data-action="dislike">
+                                            <i class="fas fa-thumbs-down"></i> <span class="dislike-count">0</span>
+                                        </button>
+                                    `}
+                                </div>
+                                <div class="replies"></div>
+                            `;
+                            repliesDiv.insertBefore(newReply, repliesDiv.firstChild);
+                            replyForm.reset();
+                            replyForm.style.display = 'none';
+                            bindCommentEvents(newReply);
+
+                            // Update total comment count in comments header
+                            const commentsHeader = document.querySelector('.comments-card h2');
+                            if (commentsHeader) {
+                                const currentCount = parseInt(commentsHeader.textContent.match(/\d+/)?.[0] || 0);
+                                commentsHeader.innerHTML = `<i class="fas fa-comments"></i> Comments (${currentCount + 1})`;
+                            }
+
+                            // Update reply count for the parent comment
+                            const parentComment = replyForm.closest('.comment');
+                            let toggleRepliesBtn = parentComment.querySelector('.toggle-replies-btn');
+                            if (toggleRepliesBtn) {
+                                const totalReplies = parseInt(toggleRepliesBtn.dataset.totalReplies) + 1;
+                                toggleRepliesBtn.dataset.totalReplies = totalReplies;
+                                const toggleText = toggleRepliesBtn.querySelector('.toggle-text');
+                                toggleText.textContent = toggleRepliesBtn.dataset.expanded === 'true' ? 'Show fewer replies' : `Show all ${totalReplies} replies`;
+                            } else {
+                                // If no toggle button exists yet, create one if replies exceed preview limit
+                                const childReplies = repliesDiv.querySelectorAll('.reply').length;
+                                if (childReplies > 3) { // Assuming MAX_REPLIES_PREVIEW = 3 from your view
+                                    toggleRepliesBtn = document.createElement('button');
+                                    toggleRepliesBtn.className = 'toggle-replies-btn';
+                                    toggleRepliesBtn.dataset.commentId = commentId;
+                                    toggleRepliesBtn.dataset.expanded = 'false';
+                                    toggleRepliesBtn.dataset.totalReplies = childReplies;
+                                    toggleRepliesBtn.innerHTML = `<span class="toggle-text">Show all ${childReplies} replies</span>`;
+                                    repliesDiv.appendChild(toggleRepliesBtn);
+                                    bindToggleRepliesEvent(toggleRepliesBtn);
+                                }
+                            }
+                        } else {
+                            alert('Failed to post reply: ' + data.error);
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('An error occurred: ' + error.message);
+                    }
+                });
+            }
+        }
+    
+        //---------------------------------------------------
+        // 4) INITIAL BIND TO EXISTING COMMENTS
+        //---------------------------------------------------
+        document.querySelectorAll('.comment').forEach(comment => {
+            bindCommentEvents(comment);
+        });
+    
+        //---------------------------------------------------
+        // 5) TOGGLE REPLIES (SHOW MORE / SHOW FEWER)
+        //---------------------------------------------------
+        document.querySelectorAll('.toggle-replies-btn').forEach(button => {
+            button.addEventListener('click', async () => {
+                const commentId = button.dataset.commentId;
+                const expanded = button.dataset.expanded === 'true';
+                const totalReplies = parseInt(button.dataset.totalReplies, 10);
+                const repliesContainer = button.closest('.comment').querySelector('.replies');
+                const toggleText = button.querySelector('.toggle-text');
+        
+                if (!expanded) {
+                    // Expand: Fetch and show all replies
+                    try {
+                        const response = await fetch(`/comments/${commentId}/get_replies/`, {
+                            method: 'GET',
+                            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                        });
+                        if (!response.ok) {
+                            throw new Error(`Server error: ${response.status}`);
+                        }
+                        const data = await response.json();
+                        if (data.error) {
+                            alert(data.error);
+                            return;
+                        }
+        
+                        // Get IDs of initial replies already in the DOM
+                        const initialReplyIds = Array.from(repliesContainer.querySelectorAll('.initial-reply'))
+                            .map(el => el.dataset.replyId);
+        
+                        // Filter out initial replies and append additional ones
+                        const additionalReplies = data.replies.filter(reply => !initialReplyIds.includes(reply.id.toString()));
+                        additionalReplies.forEach(reply => {
+                            const replyDiv = document.createElement('div');
+                            replyDiv.classList.add('comment', 'reply', 'additional-reply');
+                            replyDiv.dataset.replyId = reply.id;
+                            replyDiv.innerHTML = `
+                                <div class="comment-header">
+                                    <span class="comment-author">
+                                        <a href="/users/${reply.username}/" class="author-link">${reply.username}</a>
+                                        ${reply.username === '{{ recipe.author.username }}' ? '<span class="author-badge">Author</span>' : ''}
+                                    </span>
+                                    <span class="comment-date">${reply.created_at}</span>
+                                </div>
+                                <p>${reply.text}</p>
+                                <div class="comment-actions">
+                                    ${reply.username === '{{ request.user.username }}' ? `
+                                        <button class="like-btn disabled" data-action="like" disabled>
+                                            <i class="fas fa-thumbs-up"></i> <span class="like-count">${reply.like_count || 0}</span>
+                                        </button>
+                                        <button class="dislike-btn disabled" data-action="dislike" disabled>
+                                            <i class="fas fa-thumbs-down"></i> <span class="dislike-count">${reply.dislike_count || 0}</span>
+                                        </button>
+                                    ` : `
+                                        <button class="like-btn ${reply.user_rating === true ? 'active' : ''}" data-action="like">
+                                            <i class="fas fa-thumbs-up"></i> <span class="like-count">${reply.like_count || 0}</span>
+                                        </button>
+                                        <button class="dislike-btn ${reply.user_rating === false ? 'active' : ''}" data-action="dislike">
+                                            <i class="fas fa-thumbs-down"></i> <span class="dislike-count">${reply.dislike_count || 0}</span>
+                                        </button>
+                                    `}
+                                </div>
+                            `;
+                            repliesContainer.insertBefore(replyDiv, button);
+                            bindCommentEvents(replyDiv); // Bind events to new replies
+                        });
+        
+                        // Update button to "Show fewer replies"
+                        toggleText.textContent = 'Show fewer replies';
+                        button.dataset.expanded = 'true';
+                    } catch (err) {
+                        console.error(err);
+                        alert('Could not load more replies. Please try again later.');
+                    }
+                } else {
+                    // Collapse: Remove additional replies
+                    const additionalReplies = repliesContainer.querySelectorAll('.additional-reply');
+                    additionalReplies.forEach(el => el.remove());
+        
+                    // Update button to "Show all X replies"
+                    toggleText.textContent = `Show all ${totalReplies} replies`;
+                    button.dataset.expanded = 'false';
+                }
+            });
+        });
+
+        // Rating System (Consolidated for both input and hero)
+        const ratingStars = document.querySelectorAll('.rating-stars .rating-star');
+        const heroRating = document.querySelector('.recipe-rating');
+        const recipeId = '{{ recipe.pk }}';
+        let currentRating = {{ user_rating|default:0 }};
+        const feedbackElement = document.querySelector('.rating-feedback');
+        const removeRatingBtn = document.querySelector('.remove-rating-btn');
+
+        function updateStars(value) {
+            ratingStars.forEach(star => {
+                const starValue = parseInt(star.getAttribute('data-value'));
+                star.classList.toggle('filled', starValue <= value);
+                star.setAttribute('aria-checked', starValue === value ? 'true' : 'false');
+            });
+            if (removeRatingBtn) {
+                removeRatingBtn.classList.toggle('visible', value > 0);
+            }
+        }
+
+        function updateHeroRating(averageRating, totalRatings, userRating) {
+            const avgRatingElement = heroRating.querySelector('.average-rating');
+            const starsElement = heroRating.querySelector('.stars');
+            const totalRatingsElement = heroRating.querySelector('.total-ratings');
+            const noRatingsElement = heroRating.querySelector('.no-ratings');
+
+            if (totalRatings > 0) {
+                const fullStars = Math.floor(averageRating);
+                const decimalPart = averageRating - fullStars;
+                const hasHalfStar = decimalPart >= 0.5;
+
+                const starsHTML = Array(5).fill(0).map((_, i) => {
+                    if (i + 1 <= fullStars) {
+                        return '<i class="fas fa-star star full"></i>';
+                    } else if (i + 1 === fullStars + 1 && hasHalfStar) {
+                        return '<i class="fas fa-star-half-alt star half"></i>';
+                    } else {
+                        return '<i class="far fa-star star empty"></i>';
+                    }
+                }).join('');
+
+                if (noRatingsElement) {
+                    heroRating.innerHTML = `
+                        <span class="average-rating">${averageRating.toFixed(1)}</span>
+                        <span class="stars" aria-hidden="true">${starsHTML}</span>
+                        <span class="total-ratings">(${totalRatings} ${totalRatings === 1 ? 'rating' : 'ratings'})</span>
+                    `;
+                } else {
+                    avgRatingElement.textContent = averageRating.toFixed(1);
+                    totalRatingsElement.textContent = `(${totalRatings} ${totalRatings === 1 ? 'rating' : 'ratings'})`;
+                    starsElement.innerHTML = starsHTML;
+                }
+            } else if (!noRatingsElement) {
+                heroRating.innerHTML = '<span class="no-ratings">Be the first to rate this recipe!</span>';
+            }
+        }
+
+        function showFeedback(message, isError = false) {
+            feedbackElement.textContent = message;
+            feedbackElement.classList.add('show');
+            setTimeout(() => feedbackElement.classList.remove('show'), 3000);
+        }
+
+        function submitRating(ratingValue) {
+            fetch(`/recipes/${recipeId}/rate/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ rating: ratingValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentRating = data.user_rating;
+                    updateStars(currentRating);
+                    updateHeroRating(data.average_rating, data.total_ratings, data.user_rating);
+                    showFeedback('Thank you for your rating!');
+                } else {
+                    showFeedback('Failed to submit rating.', true);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showFeedback('An error occurred. Please try again.', true);
+            });
+        }
+
+        function removeRating() {
+            fetch(`/recipes/${recipeId}/rate/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ rating: 0 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    currentRating = 0;
+                    updateStars(0);
+                    updateHeroRating(data.average_rating, data.total_ratings, 0);
+                    showFeedback('Your rating has been removed.');
+                } else {
+                    showFeedback('Failed to remove rating.', true);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showFeedback('An error occurred. Please try again.', true);
+            });
+        }
+
+        // Initialize
+        updateStars(currentRating);
+        updateHeroRating({{ recipe.average_rating }}, {{ recipe.total_ratings }}, currentRating);
+
+        ratingStars.forEach(star => {
+            const ratingValue = parseInt(star.getAttribute('data-value'));
+
+            star.addEventListener('mouseover', () => {
+                ratingStars.forEach(s => {
+                    const val = parseInt(s.getAttribute('data-value'));
+                    s.classList.toggle('hover', val <= ratingValue);
+                    s.classList.toggle('filled', val <= ratingValue);
+                });
+            });
+
+            star.addEventListener('mouseout', () => {
+                ratingStars.forEach(s => {
+                    s.classList.remove('hover');
+                    const val = parseInt(s.getAttribute('data-value'));
+                    s.classList.toggle('filled', val <= currentRating);
+                });
+            });
+
+            star.addEventListener('click', () => {
+                submitRating(ratingValue);
+            });
+
+            star.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    submitRating(ratingValue);
+                }
+            });
+        });
+
+        if (removeRatingBtn) {
+            removeRatingBtn.addEventListener('click', removeRating);
+        }
+
+        // Grocery List Modal 
+        const selectAllBtn = document.querySelector('#grocery-modal .select-all-btn');
+        const deselectAllBtn = document.querySelector('#grocery-modal .deselect-all-btn');
+        const checkboxes = document.querySelectorAll('.ingredient-checkbox');
+
+        if (selectAllBtn) {
+            selectAllBtn.addEventListener('click', () => {
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = true;
+                    checkbox.parentElement.parentElement.classList.add('checked');
+                });
+            });
+        }
+
+        if (deselectAllBtn) {
+            deselectAllBtn.addEventListener('click', () => {
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                    checkbox.parentElement.parentElement.classList.remove('checked');
+                });
+            });
+        }
+
+        document.querySelectorAll('.ingredient-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                checkbox.parentElement.parentElement.classList.toggle('checked', checkbox.checked);
+            });
+        });
+
+        // Function to show toast notifications with custom types
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            // Use specific types for follow/unfollow, fallback to success/error
+            toast.className = `toast-notification ${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            // Show toast
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 100);
+
+            // Hide and remove toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300); // Match transition duration
+            }, 3000);
+        }
+        document.addEventListener('click', (event) => {
+            if (event.target.classList.contains('print-btn') && event.target.closest('#grocery-modal')) {
+                // Get the title and list content
+                const title = document.getElementById('grocery-modal-title').textContent;
+                const listClone = document.querySelector('.grocery-list').cloneNode(true);
+                listClone.querySelectorAll('.ingredient-checkbox').forEach(cb => cb.remove());
+                const listHTML = listClone.outerHTML;
+        
+                // Attempt to open a new window
+                const printWindow = window.open('', '_blank');
+                if (printWindow) {
+                    // If the window opened successfully, write the content
+                    printWindow.document.write(`
+                        <html>
+                            <head>
+                                <title>${title}</title>
+                                <style>
+                                    body { font-family: Arial, sans-serif; }
+                                    h2 { text-align: center; }
+                                    .grocery-list { list-style-type: none; padding: 0; }
+                                    .grocery-list li { padding: 8px 0; border-bottom: 1px solid #eee; position: relative; padding-left: 25px; }
+                                    .grocery-list li::before { content: '○'; position: absolute; left: 0; color: #ccc; }
+                                </style>
+                            </head>
+                            <body>
+                                <h2>${title}</h2>
+                                ${listHTML}
+                            </body>
+                        </html>
+                    `);
+                    printWindow.document.close(); // Finalize the document
+                    printWindow.print(); // Trigger the print dialog
+                } else {
+                }
+            }
+        });
+        // Copy button event listener
+        document.querySelector('#grocery-modal .copy-btn').addEventListener('click', () => {
+            const listText = [...document.querySelectorAll('.grocery-list li')]
+                .map(li => li.textContent.trim())
+                .join('\n');
+            navigator.clipboard.writeText(listText).then(() => {
+                showToast('Grocery list copied to clipboard!', 'success');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showToast('Failed to copy list. Please try again.', 'error');
+            });
+        });
+
+        // Save button event listener
+        const saveBtn = document.querySelector('#grocery-modal .save-btn');
+        if (saveBtn) {
+            saveBtn.addEventListener('click', () => {
+                const recipeId = document.querySelector('.grocery-btn').getAttribute('data-recipe-id');
+                const selectedIngredients = [...document.querySelectorAll('.ingredient-checkbox:checked')]
+                    .map(checkbox => checkbox.parentElement.textContent.trim());
+                
+                if (!selectedIngredients.length) {
+                    showToast('Please select at least one ingredient to save.', 'warning');
+                    return;
+                }
+
+                fetch('/save-grocery-list/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify({
+                        recipe_id: recipeId,
+                        ingredients: selectedIngredients
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showToast('Saved successfully to your grocery list!', 'success');
+                    } else {
+                        showToast('Failed to save: ' + data.error, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('An error occurred while saving.', 'error');
+                });
+            });
+        }
+
+        document.querySelector('#grocery-modal .print-btn').addEventListener('click', () => {
+            const title = document.getElementById('grocery-modal-title').textContent;
+            const listClone = document.querySelector('.grocery-list').cloneNode(true);
+            listClone.querySelectorAll('.ingredient-checkbox').forEach(cb => cb.remove());
+            const listHTML = listClone.outerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>${title}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; }
+                            h2 { text-align: center; }
+                            .grocery-list { list-style-type: none; padding: 0; }
+                            .grocery-list li { padding: 8px 0; border-bottom: 1px solid #eee; position: relative; padding-left: 25px; }
+                            .grocery-list li::before { content: '○'; position: absolute; left: 0; color: #ccc; }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>${title}</h2>
+                        ${listHTML}
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        });
+
+        // Accessibility: Close modal with keyboard
+        document.querySelector('#grocery-modal .modal-close').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                closeModal('grocery-modal');
+            }
+        });
+    });
+</script>
+{% endblock content %}

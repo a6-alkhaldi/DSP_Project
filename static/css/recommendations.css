@@ -1,0 +1,643 @@
+    /* Recommendations Page Styles */
+    .recommendations-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        background: linear-gradient(180deg, rgba(252, 224, 224, 0.8), rgba(236, 210, 210, 0.9));
+        min-height: calc(100vh - 4rem);
+        border-radius: 24px;
+        padding-bottom: 1rem;
+    }
+    
+    /* Header */
+    .recommendations-header {
+        text-align: center;
+        padding: 4rem 1.5rem 3rem;
+        background: linear-gradient(135deg, #e63946 0%, #f06c76 50%, #ff9a8b 100%);
+        color: #fff;
+        border-radius: 24px;
+        clip-path: polygon(0 0, 100% 0, 100% 85%, 50% 100%, 0 85%);
+        margin-bottom: 3rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        animation: fadeIn 0.8s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        0% { opacity: 0; transform: translateY(-20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .recommendations-title {
+        font-size: 2.8rem;
+        font-weight: 900;
+        margin: 0;
+        letter-spacing: -0.03em;
+        text-transform: uppercase;
+        background: linear-gradient(90deg, #fff, #f0f0f0);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .recommendations-title .accent-text {
+        color: #fff;
+        font-weight: 900;
+        background: none;
+    }
+    
+    .title-decoration {
+        width: 120px;
+        height: 5px;
+        background: linear-gradient(90deg, #fff, #f06c76);
+        margin: 0.75rem auto;
+        border-radius: 2px;
+        animation: slideIn 1s ease-out;
+    }
+    
+    @keyframes slideIn {
+        0% { width: 0; }
+        100% { width: 120px; }
+    }
+    
+    .recommendations-subtitle {
+        font-size: 1.3rem;
+        font-weight: 300;
+        margin: 0.5rem 0 1rem;
+        opacity: 0.9;
+        color: #f0f0f0;
+    }
+    
+    /* Recipe Grid */
+    .recommendations-recipe-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+        margin: 2rem 1rem;
+    }
+    
+    .recommendations-recipe-card {
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        animation: cardFadeIn 0.8s ease-out;
+    }
+    
+    .recommendations-recipe-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    @keyframes cardFadeIn {
+        0% { opacity: 0; transform: translateY(20px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .recommendations-card-image {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+    }
+    
+    .recommendations-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .recommendations-recipe-card:hover .recommendations-card-image img {
+        transform: scale(1.05);
+    }
+    
+    .recommendations-image-placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        background: #f0f0f0;
+        color: #ccc;
+        font-size: 2rem;
+    }
+    
+    .recommendations-status-labels {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .recommendations-label {
+        padding: 5px 10px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .recommendations-label.popular {
+        background: linear-gradient(90deg, #e63946, #f06c76);
+    }
+    .recommendations-label.popular i{
+        color: #ffd700;
+    }
+    .recommendations-label.quick {
+        background: linear-gradient(90deg, #3498db, #1abc9c);
+    }
+    
+    .recommendations-label.new {
+        background: linear-gradient(90deg, #f1c40f, #f39c12);
+    }
+    
+    .recommendations-card-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .recommendations-recipe-card:hover .recommendations-card-overlay {
+        opacity: 1;
+    }
+    
+    .recommendations-quick-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .recommendations-action-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .recommendations-action-btn:hover {
+        background: #e63946;
+        color: #fff;
+        transform: scale(1.1);
+    }
+    
+    .recommendations-action-btn i {
+        font-size: 1.2rem;
+    }
+    .recommendations-action-btn:hover i{
+        color: #fff;
+    }
+    .recommendations-card-content {
+        padding: 1.5rem;
+    }
+    
+    .recommendations-card-title {
+        font-size: 1.6rem;
+        margin: 0 0 0.5rem;
+        font-weight: 700;
+    }
+    
+    .recommendations-title-link {
+        color: #e63946;
+        text-decoration: none;
+        background: linear-gradient(90deg, #e63946, #f06c76);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        position: relative;
+    }
+    
+    .recommendations-title-link:hover {
+        color: #d9273a;
+    }
+    
+    .recommendations-link-hover {
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #f06c76;
+        transition: width 0.3s ease;
+    }
+    
+    .recommendations-title-link:hover .recommendations-link-hover {
+        width: 100%;
+    }
+    
+    .recommendations-card-category {
+        margin-bottom: 0.5rem;
+    }
+    
+    .recommendations-category-label {
+        font-size: 0.9rem;
+        color: #666;
+        background: rgba(230, 57, 70, 0.1);
+        padding: 4px 8px;
+        border-radius: 12px;
+    }
+    
+    .recommendations-card-meta {
+        display: flex;
+        gap: 1rem;
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+    
+    .recommendations-meta-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .recommendations-meta-item i {
+        color: #e63946;
+    }
+    
+    .recommendations-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .recommendations-engagement {
+        display: flex;
+        gap: 1rem;
+    }
+    
+    .recommendations-rating-display {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .recommendations-rating-display i {
+        color: #e63946;
+    }
+    
+    .recommendations-rating-value {
+        font-weight: 600;
+    }
+    
+    .recommendations-rating-count {
+        color: #999;
+    }
+    
+    .recommendations-comments {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .recommendations-comments i {
+        color: #e63946;
+    }
+    
+    .recommendations-author {
+        font-size: 0.9rem;
+        color: #666;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .recommendations-author i {
+        color: #e63946;
+    }
+    
+    .recommendations-author:hover {
+        color: #e63946;
+    }
+    
+    .recommendations-card-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-top: 0.5rem;
+    }
+    
+    .recommendations-tag {
+        background: rgba(230, 57, 70, 0.1);
+        color: #e63946;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.8rem;
+    }
+    
+    /* No Results */
+    .recommendations-no-results {
+        text-align: center;
+        padding: 3rem;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 20px;
+        margin: 2.5rem 1rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        animation: fadeIn 0.8s ease-out;
+    }
+    
+    .recommendations-no-results i {
+        font-size: 3rem;
+        color: #e63946;
+        margin-bottom: 1.5rem;
+        animation: bounce 1.5s infinite;
+    }
+    
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    .recommendations-no-results p {
+        font-size: 1.3rem;
+        color: #555;
+        margin: 0;
+    }
+    
+    
+    
+    .recommendations-drawer-content {
+        padding: 2rem;
+        height: 100%;
+        overflow-y: auto;
+    }
+    
+    .recommendations-skeleton-loader {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .recommendations-skeleton-image {
+        width: 100%;
+        height: 200px;
+        background: #f0f0f0;
+        border-radius: 12px;
+        animation: pulse 1.5s infinite;
+    }
+    
+    .recommendations-skeleton-text {
+        width: 80%;
+        height: 20px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+    
+    .recommendations-error-state {
+        text-align: center;
+        padding: 2rem;
+        color: #e63946;
+    }
+    
+    .recommendations-error-state i {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+    
+    .form-group select,
+    .form-group input[type="date"] {
+        width: 100%;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 8px;
+        background: #f0f0f0;
+        font-size: 1rem;
+        color: #333;
+    }
+    
+    .form-group select:focus,
+    .form-group input[type="date"]:focus {
+        outline: none;
+        background: #e0e0e0;
+    }
+    
+    .submit-btn {
+        display: block;
+        width: 100%;
+        padding: 0.8rem;
+        background: linear-gradient(90deg, #e63946, #f06c76);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease, transform 0.2s ease;
+    }
+    
+    .submit-btn:hover {
+        background: linear-gradient(90deg, #d9273a, #e63946);
+        transform: scale(1.02);
+    }
+    
+    
+    /* Dark Theme */
+    .dark-theme .recommendations-container {
+        background: linear-gradient(180deg, #1a1a1a, #2a2a2a);
+    }
+    
+    .dark-theme .recommendations-header {
+        background: linear-gradient(135deg, #d9273a, #e63946, #ff6b6b);
+    }
+    
+    .dark-theme .recommendations-recipe-card {
+        background: rgba(42, 42, 42, 0.9);
+        color: #ddd;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .dark-theme .recommendations-title-link {
+        background: linear-gradient(90deg, #f06c76, #ff9a8b);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .dark-theme .recommendations-category-label,
+    .dark-theme .recommendations-meta-item,
+    .dark-theme .recommendations-author,
+    .dark-theme .recommendations-rating-count {
+        color: #bbb;
+    }
+    
+    .dark-theme .recommendations-tag {
+        background: rgba(240, 108, 118, 0.2);
+        color: #f06c76;
+    }
+    
+    .dark-theme .recommendations-no-results {
+        background: rgba(42, 42, 42, 0.9);
+        color: #bbb;
+    }
+    
+    .dark-theme .form-group label {
+        color: #ddd;
+    }
+    
+    .dark-theme .form-group select,
+    .dark-theme .form-group input[type="date"] {
+        background: #444;
+        color: #ddd;
+    }
+    
+    .dark-theme .form-group select:focus,
+    .dark-theme .form-group input[type="date"]:focus {
+        background: #555;
+    }
+    
+    .dark-theme .submit-btn {
+        background: linear-gradient(90deg, #d9273a, #e63946);
+    }
+    
+    .dark-theme .submit-btn:hover {
+        background: linear-gradient(90deg, #c72535, #d9273a);
+    }
+    /* Pagination Styles */
+.pagination-nav {
+    margin: 3rem auto 2rem;
+    text-align: center;
+}
+
+.pagination {
+    display: inline-flex;
+    gap: 0.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.page-item {
+    display: inline-block;
+    margin: 0 2px;
+}
+
+.page-link {
+    display: block;
+    padding: 0.75rem 1.25rem;
+    background: rgba(230, 57, 70, 0.1);
+    border: 2px solid transparent;
+    border-radius: 30px;
+    color: #e63946;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.page-link:hover {
+    background: #e63946;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(230, 57, 70, 0.2);
+}
+.page-link:hover i{
+    color: #fff;
+}
+
+.page-item.active .page-link {
+    background: #e63946;
+    color: white;
+    border-color: #e63946;
+    cursor: default;
+}
+
+.page-item.disabled .page-link {
+    opacity: 0.6;
+    pointer-events: none;
+}
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .recommendations-title {
+            font-size: 2.2rem;
+        }
+    
+        .recommendations-subtitle {
+            font-size: 1.1rem;
+        }
+    
+        .recommendations-header {
+            padding: 3.5rem 1rem 2.5rem;
+        }
+    
+        .recommendations-recipe-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .recommendations-container {
+            padding: 0 0.5rem;
+        }
+    
+        .recommendations-header {
+            padding: 3rem 0.75rem 2rem;
+        }
+    
+        .recommendations-title {
+            font-size: 1.8rem;
+        }
+    
+        .recommendations-subtitle {
+            font-size: 0.95rem;
+        }
+    
+        .recommendations-recipe-card {
+            padding: 1rem;
+        }
+    
+        .recommendations-card-title {
+            font-size: 1.4rem;
+        }
+    
+        .recommendations-no-results i {
+            font-size: 2.5rem;
+        }
+    
+        .recommendations-no-results p {
+            font-size: 1.1rem;
+        }
+    }
