@@ -6,6 +6,31 @@ from django.conf import settings
 from django.db import migrations, models
 
 
+def create_superuser(apps, schema_editor):
+    # Get the User, EmailVerification, and Profile models
+    User = apps.get_model('auth', 'User')
+    EmailVerification = apps.get_model('recipes', 'EmailVerification')
+    Profile = apps.get_model('recipes', 'Profile')
+    # Check if the superuser already exists to avoid duplicates
+    if not User.objects.filter(username='admin').exists():
+        user = User.objects.create_superuser(
+            username='admin',
+            email='admin@example.com',
+            password='admin123',
+            first_name='Admin',
+            last_name='User'
+        )
+        # Create an EmailVerification record with verified=True
+        EmailVerification.objects.create(
+            user=user,
+            verified=True
+        )
+        # Create a Profile for the superuser
+        Profile.objects.create(
+            user=user
+        )
+
+
 class Migration(migrations.Migration):
 
     initial = True
@@ -552,4 +577,5 @@ class Migration(migrations.Migration):
                 "unique_together": {("user", "recipe")},
             },
         ),
+        migrations.RunPython(create_superuser, reverse_code=migrations.RunPython.noop),
     ]
